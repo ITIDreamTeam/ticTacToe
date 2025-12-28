@@ -1,0 +1,4 @@
+com\mycompany\tictactoeserver\App.class
+module-info.class
+com\mycompany\tictactoeserver\SecondaryController.class
+com\mycompany\tictactoeserver\PrimaryController.class
