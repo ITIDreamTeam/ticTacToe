@@ -53,7 +53,7 @@ Each teammate creates a local Derby database and runs the SQL script(s). This ke
 2. Go to **Services** tab → **Databases**
 3. Create a new Derby / Java DB connection
 4. Create a database with a name like:
-   - `tictactoe_db`
+   - `ticTacToe`
 
 
 ---
@@ -67,21 +67,19 @@ Each teammate creates a local Derby database and runs the SQL script(s). This ke
 
 ## 5) Database Schema (save as db/schema.sql)
 ```sql
-CREATE TABLE player (
-    ID INTEGER NOT NULL,
-    NAME VARCHAR(100),
-    EMAIL VARCHAR(150),
-    PASSWORD VARCHAR(100),
-    PLAYER_STATE INTEGER,
-    SCORE INTEGER,
-    PRIMARY KEY (ID)
+CREATE TABLE PLAYER (
+    ID INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+    NAME VARCHAR(150) NOT NULL,
+    EMAIL VARCHAR(150) UNIQUE NOT NULL,
+    PASSWORD VARCHAR(100) NOT NULL,
+    PLAYER_STATE SMALLINT NOT NULL,
+    SCORE INT NOT NULL
 );
-
 CREATE TABLE GAME (
     PLAYER_ONE_ID INT NOT NULL,
     PLAYER_TWO_ID INT NOT NULL,
-    GAME_DATE DATE NOT NULL,
-    GAME_STATE INT,
+    GAME_DATE TIMESTAMP NOT NULL,
+    GAME_STATE SMALLINT NOT NULL,
     PRIMARY KEY (PLAYER_ONE_ID, PLAYER_TWO_ID, GAME_DATE),
     CONSTRAINT FK_PLAYER_ONE FOREIGN KEY (PLAYER_ONE_ID)
         REFERENCES PLAYER (ID),
