@@ -112,6 +112,5 @@ CREATE TABLE GAME (
 ## 7) Quick Start Checklist (new teammate)
 1. Install Java 23.0.2 + NetBeans 28
 2. Clone the repo
-3. Create local Derby DB: `tictactoe_db`
-4. Run `db/schema.sql`
-5. Run server, then client
+3. Create local Derby DB: `ticTacToe`
+4. Run server, then client
