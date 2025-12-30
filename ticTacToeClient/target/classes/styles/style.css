@@ -1,0 +1,16 @@
+@font-face {
+    font-family: 'Jaro';
+    src: url("../fonts/Jaro-Regular.ttf");
+}
+
+.button {
+    -fx-background-color:  #4E0585;
+    -fx-text-fill: white;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 22px;
+
+}
+
+.button:hover {
+    -fx-background-color: #FF00FF;
+}
