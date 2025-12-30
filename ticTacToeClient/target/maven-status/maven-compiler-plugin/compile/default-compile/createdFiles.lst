@@ -1,4 +1,8 @@
+com\mycompany\tictactoeclient\data\modles\Player$PlayerStatus.class
+com\mycompany\tictactoeclient\presentation\features\playersboard\Player_cardController$1.class
+com\mycompany\tictactoeclient\data\modles\Player.class
 com\mycompany\tictactoeclient\presentation\features\login\Login.class
+com\mycompany\tictactoeclient\data\dataSource\FakeDataSource.class
 com\mycompany\tictactoeclient\presentation\features\playersboard\Players_boardController.class
 module-info.class
 com\mycompany\tictactoeclient\App.class

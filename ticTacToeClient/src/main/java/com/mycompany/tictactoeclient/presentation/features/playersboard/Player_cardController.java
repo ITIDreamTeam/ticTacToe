@@ -4,6 +4,7 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
+import com.mycompany.tictactoeclient.data.modles.Player;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -41,10 +42,32 @@ public class Player_cardController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
+    }
 
     @FXML
     private void onClickSendRequest(ActionEvent event) {
     }
-    
+
+    public void setPlayerData(Player player) {
+        player_name.setText(player.getName());
+        player_score.setText("" + player.getScore());
+
+        // Dynamic Status Color
+        switch (player.getStatus()) {
+            case ONLINE:
+                player_state.setStyle("-fx-text-fill: #2ecc71;"); // Green
+                player_state.setText("ONLINE");
+                break; // <--- Don't forget this!
+
+            case OFFLINE:
+                player_state.setStyle("-fx-text-fill: #95a5a6;"); // Grey
+                player_state.setText("OFFLINE");
+                break;
+
+            case IN_GAME:
+                player_state.setStyle("-fx-text-fill: #f1c40f;"); // Yellow
+                player_state.setText("IN GAME");
+                break;
+        }
+    }
 }

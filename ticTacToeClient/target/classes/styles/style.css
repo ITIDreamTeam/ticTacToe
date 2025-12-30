@@ -26,3 +26,11 @@
     -fx-padding: 5 10 5 10;
     -fx-cursor: hand;
 }
+.search-text-field{
+    -fx-background-radius: 5;
+    -fx-background-color: #FF00FF;
+    -fx-padding: 5 10 5 10;
+    -fx-text-fill: white;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 15px;
+}

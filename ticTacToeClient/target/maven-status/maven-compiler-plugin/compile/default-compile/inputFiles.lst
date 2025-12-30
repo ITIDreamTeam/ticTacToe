@@ -1,6 +1,8 @@
 D:\itiMobile\java\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\home\HomeController.java
+D:\itiMobile\java\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\data\modles\Player.java
 D:\itiMobile\java\ticTacToe\ticTacToeClient\src\main\java\module-info.java
 D:\itiMobile\java\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\playersboard\Player_cardController.java
 D:\itiMobile\java\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\App.java
+D:\itiMobile\java\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\data\dataSource\FakeDataSource.java
 D:\itiMobile\java\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\login\Login.java
 D:\itiMobile\java\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\playersboard\Players_boardController.java
