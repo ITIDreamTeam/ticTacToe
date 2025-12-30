@@ -8,9 +8,21 @@
     -fx-text-fill: white;
     -fx-font-family: 'Jaro';
     -fx-font-size: 22px;
-
 }
 
 .button:hover {
     -fx-background-color: #FF00FF;
+}
+
+.label {
+    -fx-text-fill: white;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 22px;
+}
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #4E0585; 
+    -fx-font-size: 22px;
+    -fx-padding: 5 10 5 10;
+    -fx-cursor: hand;
 }
