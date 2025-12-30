@@ -2,7 +2,7 @@
 @font-face {
     font-family: 'Jaro';
     /* Ensure this path matches exactly where your fonts folder is */
-    src: url("../fonts/Jaro-Regular.ttf"); 
+    src: url("../fonts/Jaro-Regular.ttf");
 }
 
 /* 2. GLOBAL SETTINGS */
@@ -98,4 +98,25 @@
 }
 .icon-interactive:hover {
     -fx-opacity: 0.7;
+}
+
+.label {
+    -fx-text-fill: white;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 22px;
+}
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #4E0585;
+    -fx-font-size: 22px;
+    -fx-padding: 5 10 5 10;
+    -fx-cursor: hand;
+}
+.search-text-field{
+    -fx-background-radius: 5;
+    -fx-background-color: #FF00FF;
+    -fx-padding: 5 10 5 10;
+    -fx-text-fill: white;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 15px;
 }
