@@ -3,7 +3,7 @@ module com.mycompany.tictactoeclient {
     requires javafx.fxml;
     requires java.base;
     requires java.sql;
-
+    requires derbyclient;
     opens com.mycompany.tictactoeclient to javafx.fxml;
     exports com.mycompany.tictactoeclient;
 }
