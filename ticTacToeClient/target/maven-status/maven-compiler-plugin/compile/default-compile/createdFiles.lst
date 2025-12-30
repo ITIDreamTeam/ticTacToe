@@ -1,17 +1,6 @@
-<<<<<<< HEAD
-com\mycompany\tictactoeclient\PrimaryController.class
-module-info.class
-com\mycompany\tictactoeclient\App.class
-com\mycompany\tictactoeclient\DataAccessLayer.class
-com\mycompany\tictactoeclient\presentation\features\login\Login.class
-com\mycompany\tictactoeclient\presentation\test.class
-com\mycompany\tictactoeclient\SecondaryController.class
-com\mycompany\tictactoeclient\presentation\features\home\Home.class
-com\mycompany\tictactoeclient\presentation\features\test.class
-=======
 com\mycompany\tictactoeclient\DataAccessLayer.class
 com\mycompany\tictactoeclient\presentation\features\login\Login.class
 module-info.class
 com\mycompany\tictactoeclient\App.class
 com\mycompany\tictactoeclient\presentation\features\home\HomeController.class
->>>>>>> main
+com\mycompany\tictactoeclient\presentation\features\profile\ProfileController.class
