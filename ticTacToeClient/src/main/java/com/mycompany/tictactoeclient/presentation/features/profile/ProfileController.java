@@ -7,6 +7,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import java.io.IOException;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public class ProfileController implements Initializable {
 
@@ -98,7 +104,22 @@ public class ProfileController implements Initializable {
 
     @FXML
     private void onChangePasswordClicked(ActionEvent event) {
-        // Navigation Logic
+        try {
+            // 1. Load the ChangePassword FXML
+            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/changePassword.fxml"));
+
+            // 2. Get the Stage
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            // 3. Switch Scenes
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException e) {
+            System.err.println("Error loading Change Password screen: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
