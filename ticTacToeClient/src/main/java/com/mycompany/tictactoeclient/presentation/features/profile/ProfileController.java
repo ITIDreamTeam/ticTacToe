@@ -12,6 +12,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class ProfileController implements Initializable {
@@ -38,13 +40,30 @@ public class ProfileController implements Initializable {
     @FXML
     private Button viewRecordedGamesBtn;
 
+    // Image variables
+    private Image editIcon;
+    private Image saveEditIcon;
+    @FXML
+    private ImageView usernameEditIcon;
+    @FXML
+    private ImageView emailEditIcon;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // 2. Load the images
+        try {
+            // "Edit" = on press allow changes
+            editIcon = new Image(getClass().getResource("/icons/Edit-20.png").toExternalForm());
+            // "Save Edit" = on press save changes
+            saveEditIcon = new Image(getClass().getResource("/icons/Save-edit-01.png").toExternalForm());
+        } catch (Exception e) {
+            System.err.println("Error loading icons: " + e.getMessage());
+        }
     }
 
     // --- STEP 2: The Magic Logic (Toggle Edit/Save) ---
     // Now accepts the 'Button' as a parameter to change its text
-    private void toggleEditMode(TextField field, Button btn) {
+    private void toggleEditMode(TextField field, Button btn, ImageView icon) {
         if (!field.isEditable()) {
             // A. Switch to EDIT MODE
             field.setEditable(true);
@@ -57,8 +76,9 @@ public class ProfileController implements Initializable {
             field.requestFocus();
             field.positionCaret(field.getText().length());
 
-            // Button: Change text to "Save"
-            btn.setText("Save");
+            if (saveEditIcon != null) {
+                icon.setImage(saveEditIcon);
+            }
 
         } else {
             // B. Switch back to READ-ONLY (Save)
@@ -68,9 +88,9 @@ public class ProfileController implements Initializable {
             field.getStyleClass().remove("text-field-editing");
             field.getStyleClass().add("text-field-readonly");
 
-            // Button: Change text back to "Edit"
-            btn.setText("Edit");
-
+            if (editIcon != null) {
+                icon.setImage(editIcon);
+            }
             // Logic: Save to Database
             // d.updateUser(field.getText()); // Example
             System.out.println("Saving new value: " + field.getText());
@@ -81,13 +101,13 @@ public class ProfileController implements Initializable {
     @FXML
     private void onEditUsername(ActionEvent event) {
         // Pass both the Field AND the Button
-        toggleEditMode(usernameField, usernameEditIconBtn);
+        toggleEditMode(usernameField, usernameEditIconBtn, usernameEditIcon);
     }
 
     @FXML
     private void onEditEmail(ActionEvent event) {
         // Pass both the Field AND the Button
-        toggleEditMode(emailField, emailEditIconBtn);
+        toggleEditMode(emailField, emailEditIconBtn, emailEditIcon);
     }
 
     @FXML
