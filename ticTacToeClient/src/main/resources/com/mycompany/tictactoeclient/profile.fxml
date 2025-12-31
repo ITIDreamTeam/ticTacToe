@@ -30,34 +30,42 @@
          <center>
             <VBox prefHeight="293.0" prefWidth="618.0" spacing="10.0" BorderPane.alignment="CENTER">
                <children>
+                  <Label prefHeight="32.0" prefWidth="150.0" text="Username" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                      <children>
-                        <Label prefHeight="32.0" prefWidth="150.0" text="Username" />
-                        <Button fx:id="usernameEditIconBtn" mnemonicParsing="false" onAction="#onEditUsername" styleClass="back-button" text="Edit" />
+                        <TextField fx:id="usernameField" editable="false" maxWidth="-Infinity" prefWidth="110.0" styleClass="text-field-readonly" text="Player name">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </TextField>
+                        <Button fx:id="usernameEditIconBtn" mnemonicParsing="false" onAction="#onEditUsername" styleClass="icon-button">
+                           <graphic>
+                              <ImageView fx:id="usernameEditIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../icons/Edit-20.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></Button>
                      </children>
                   </HBox>
-                  <TextField fx:id="usernameField" editable="false" styleClass="text-field-readonly" text="Player name">
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                     <VBox.margin>
-                        <Insets bottom="20.0" />
-                     </VBox.margin>
-                  </TextField>
+                  <Label prefHeight="26.0" prefWidth="150.0" text="Email" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                      <children>
-                        <Label prefHeight="26.0" prefWidth="150.0" text="Email" />
-                        <Button fx:id="emailEditIconBtn" mnemonicParsing="false" onAction="#onEditEmail" styleClass="back-button" text="Edit" />
+                        <TextField fx:id="emailField" editable="false" maxWidth="-Infinity" prefWidth="110.0" styleClass="text-field-readonly" text="Player email">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </TextField>
+                        <Button fx:id="emailEditIconBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onEditEmail" styleClass="icon-button">
+                           <graphic>
+                              <ImageView fx:id="emailEditIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../icons/Edit-20.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></Button>
                      </children>
                   </HBox>
-                  <TextField fx:id="emailField" editable="false" styleClass="text-field-readonly" text="Player email">
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                     <VBox.margin>
-                        <Insets bottom="20.0" />
-                     </VBox.margin>
-                  </TextField>
                   <Label text="Score" />
                   <TextField fx:id="scoreTextField" editable="false" prefHeight="37.0" prefWidth="278.0" styleClass="text-field-readonly" text="Player score">
                      <cursor>
@@ -70,7 +78,14 @@
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                      <children>
                         <Label prefWidth="150.0" text="Recorded games" />
-                        <Button fx:id="viewRecordedGamesBtn" mnemonicParsing="false" onAction="#onViewRecordedGames" styleClass="back-button" text="view" />
+                        <Button fx:id="viewRecordedGamesBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onViewRecordedGames" styleClass="icon-button">
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../icons/Launch-02.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></Button>
                      </children>
                   </HBox>
                </children>
