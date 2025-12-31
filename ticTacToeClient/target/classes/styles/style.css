@@ -34,6 +34,24 @@
     -fx-effect: dropshadow(three-pass-box, #FF00FF, 10, 0, 0, 0);
 }
 
+.outline-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #4E0585;
+    -fx-border-width: 2;
+    -fx-border-radius: 15;
+    -fx-text-fill: #4E0585;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+    -fx-padding: 5 10 5 10;
+}
+
+.outline-button:hover {
+    -fx-background-color: rgba(78,5,133,0.2); /* Light transparent purple */
+    -fx-border-color: #FF00FF;
+    -fx-text-fill: #FF00FF;
+}
+
 /* 5. BACK BUTTON */
 .back-button {
     -fx-background-color: transparent;

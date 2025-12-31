@@ -5,6 +5,7 @@ module-info.class
 com\mycompany\tictactoeclient\App.class
 com\mycompany\tictactoeclient\presentation\features\profile\ProfileController.class
 com\mycompany\tictactoeclient\presentation\features\playersboard\Player_cardController.class
+com\mycompany\tictactoeclient\presentation\features\login\LoginController.class
 com\mycompany\tictactoeclient\data\modles\Player$PlayerStatus.class
 com\mycompany\tictactoeclient\presentation\features\playersboard\Player_cardController$1.class
 com\mycompany\tictactoeclient\data\dataSource\FakeDataSource.class
