@@ -1,6 +1,14 @@
 /ticTacToeClient/nbproject/private/
 /ticTacToeClient/dist/
 /ticTacToeClient/build/
+/ticTacToeClient/target/
 /ticTacToeServer/nbproject/private/
 /ticTacToeServer/build/
 /ticTacToeServer/dist/
+/ticTacToeServer/target/
+target/
+**/target/
+*.log
+.idea/
+*.iml
+hs_err_pid*
