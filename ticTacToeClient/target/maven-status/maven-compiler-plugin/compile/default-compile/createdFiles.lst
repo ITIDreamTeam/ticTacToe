@@ -1,0 +1,12 @@
+com\mycompany\tictactoeclient\data\modles\Player.class
+com\mycompany\tictactoeclient\DataAccessLayer.class
+com\mycompany\tictactoeclient\presentation\features\login\Login.class
+module-info.class
+com\mycompany\tictactoeclient\App.class
+com\mycompany\tictactoeclient\presentation\features\profile\ProfileController.class
+com\mycompany\tictactoeclient\presentation\features\playersboard\Player_cardController.class
+com\mycompany\tictactoeclient\data\modles\Player$PlayerStatus.class
+com\mycompany\tictactoeclient\presentation\features\playersboard\Player_cardController$1.class
+com\mycompany\tictactoeclient\data\dataSource\FakeDataSource.class
+com\mycompany\tictactoeclient\presentation\features\playersboard\Players_boardController.class
+com\mycompany\tictactoeclient\presentation\features\home\HomeController.class
