@@ -120,3 +120,18 @@
     -fx-font-family: 'Jaro';
     -fx-font-size: 15px;
 }
+/* 9. ICON BUTTONS (For Eye Toggle, Edit Icons, etc.) */
+.icon-button {
+    -fx-background-color: transparent; /* No grey box */
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 0; /* Ensures the button wraps tight to the image */
+}
+
+/* Hover Effect: Adds a subtle neon pink glow to the icon */
+.icon-button:hover {
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow(three-pass-box, #FF00FF, 5, 0.5, 0, 0);
+    -fx-opacity: 0.9;
+}
