@@ -1,6 +1,0 @@
-com\mycompany\tictactoeclient\DataAccessLayer.class
-com\mycompany\tictactoeclient\presentation\features\login\Login.class
-module-info.class
-com\mycompany\tictactoeclient\App.class
-com\mycompany\tictactoeclient\presentation\features\home\HomeController.class
-com\mycompany\tictactoeclient\presentation\features\profile\ProfileController.class
