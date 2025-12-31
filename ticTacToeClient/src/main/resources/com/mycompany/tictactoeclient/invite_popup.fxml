@@ -8,35 +8,21 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="350.0" spacing="15.0" style="-fx-background-color: #2C003E; -fx-background-radius: 20; -fx-border-color: #A90052; -fx-border-radius: 20; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.tictactoeclient.presentation.features.playersboard.Invite_popupController">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="350.0" spacing="15.0" style="-fx-background-color: #2C003E; -fx-background-radius: 20; -fx-border-color: #A90052; -fx-border-radius: 20; -fx-border-width: 2;" stylesheets="@../../../styles/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.mycompany.tictactoeclient.presentation.features.playersboard.Invite_popupController">
    <children>
-      <Label text="Game Invitation" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="20.0" />
-         </font>
-      </Label>
       
-      <Label fx:id="statusLabel" text="Sending request in..." textFill="#e0e0e0">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
+      <Label text="Game Invitation" style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;" />
+      
+      <Label fx:id="statusLabel" text="Sending request in..." style="-fx-font-size: 14px; -fx-text-fill: #e0e0e0;" />
 
-      <Label fx:id="playerNameLabel" text="Ahmed" textFill="#f1c40f">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Label>
+      <Label fx:id="playerNameLabel" text="Ahmed" style="-fx-font-size: 20px; -fx-text-fill: #f1c40f; -fx-font-weight: bold;" />
 
       <ProgressBar fx:id="timeProgressBar" prefWidth="300.0" progress="0.0" style="-fx-accent: #A90052;" />
 
-      <CheckBox fx:id="recordCheckBox" mnemonicParsing="false" onAction="#onClickCheckBox" text="Record this game?" textFill="WHITE">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </CheckBox>
+      <CheckBox fx:id="recordCheckBox" mnemonicParsing="false" text="Record this game?" textFill="WHITE" style="-fx-font-size: 14px;" />
 
-      <Button fx:id="cancel_button" mnemonicParsing="false" onAction="#onCancelClick" prefWidth="120.0" style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 15; -fx-text-fill: white;" text="Cancel" />
+      <Button mnemonicParsing="false" onAction="#onCancelClick" prefWidth="120.0" style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 15; -fx-text-fill: white; -fx-font-size: 16px; -fx-cursor: hand;" text="Cancel" />
    </children>
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
