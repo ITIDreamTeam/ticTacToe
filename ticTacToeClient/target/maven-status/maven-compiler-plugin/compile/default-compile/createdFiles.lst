@@ -10,3 +10,4 @@ com\mycompany\tictactoeclient\presentation\features\playersboard\Player_cardCont
 com\mycompany\tictactoeclient\data\dataSource\FakeDataSource.class
 com\mycompany\tictactoeclient\presentation\features\playersboard\Players_boardController.class
 com\mycompany\tictactoeclient\presentation\features\home\HomeController.class
+com\mycompany\tictactoeclient\presentation\features\change_password\ChangePasswordController.class
