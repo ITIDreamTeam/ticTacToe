@@ -1,6 +1,6 @@
 package com.mycompany.tictactoeclient.presentation.features.saved_replays;
 
-import com.mycompany.tictactoeclient.data.modles.RecordedGame;
+import com.mycompany.tictactoeclient.data.models.RecordedGame;
 import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

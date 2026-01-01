@@ -5,7 +5,7 @@
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
 import com.mycompany.tictactoeclient.data.dataSource.FakeDataSource;
-import com.mycompany.tictactoeclient.data.modles.Player;
+import com.mycompany.tictactoeclient.data.models.Player;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
