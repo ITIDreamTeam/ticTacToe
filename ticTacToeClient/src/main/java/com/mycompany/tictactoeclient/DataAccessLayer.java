@@ -20,10 +20,10 @@ public class DataAccessLayer {
         try {
             connection = DriverManager.getConnection(
                     "jdbc:derby://localhost:1527/ticTacToe",
-                    "basmala",
-                    "basmala"
+                    "root",
+                    "root"
             );
-            System.out.println("Connected to database");
+            System.out.println("************************************************Connected to database***************************************");
         } catch (SQLException e) {
             e.printStackTrace();
         }

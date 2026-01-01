@@ -1,0 +1,226 @@
+/* 1. LOAD FONT */
+@font-face {
+    font-family: 'Jaro';
+    /* Ensure this path matches exactly where your fonts folder is */
+    src: url("../fonts/Jaro-Regular.ttf");
+}
+
+/* 2. GLOBAL SETTINGS */
+.root {
+    -fx-background-color: #000000; /* Main Black Background */
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 16px;
+}
+
+/* 3. THE TOP HEADER BAR (Updated) */
+.header-pane {
+    -fx-background-color: #e0e0e0; /* Changed to Light Grey as requested */
+    -fx-border-color: #4E0585;      /* Purple border at the bottom */
+    -fx-border-width: 0 0 2 0;
+}
+
+/* 4. PRIMARY BUTTONS (like "Change Password") */
+.button {
+    -fx-background-color: #4E0585;
+    -fx-text-fill: white;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 16px;
+    -fx-background-radius: 15;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #FF00FF; /* Neon Pink hover */
+    -fx-effect: dropshadow(three-pass-box, #FF00FF, 10, 0, 0, 0);
+}
+
+.outline-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #4E0585;
+    -fx-border-width: 2;
+    -fx-border-radius: 15;
+    -fx-text-fill: #4E0585;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+    -fx-padding: 5 10 5 10;
+}
+
+.outline-button:hover {
+    -fx-background-color: rgba(78,5,133,0.2); /* Light transparent purple */
+    -fx-border-color: #FF00FF;
+    -fx-text-fill: #FF00FF;
+}
+
+/* 5. BACK BUTTON */
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #4E0585; /* CHANGED to Purple so it is visible on Light Grey */
+    -fx-font-size: 22px;
+    -fx-padding: 5 10 5 10;
+    -fx-cursor: hand;
+}
+
+.back-button:hover {
+    -fx-text-fill: #FF00FF; /* Text turns pink on hover */
+    -fx-background-color: transparent;
+}
+
+/* 6. LABELS */
+.label {
+    -fx-text-fill: white;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 22px;
+}
+/* Use this for "UserName", "Email" titles */
+.label-title {
+    -fx-text-fill: #4E0585; /* Purple Text */
+    -fx-font-size: 18px;
+}
+
+/* Use this for "Recorded Games" */
+.label-link {
+    -fx-text-fill: white;
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+.label-link:hover {
+    -fx-text-fill: #FF00FF;
+}
+
+/* 7. TEXT FIELDS */
+
+/* Default state (Read Only) */
+.text-field-readonly {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FF00FF;
+    -fx-font-size: 15px;
+    -fx-font-family: 'Jaro';
+    -fx-background-insets: 0;
+    -fx-padding: 5;
+}
+
+/* Editing state */
+.text-field-editing {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+    -fx-border-color: #4E0585;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* 8. ICONS */
+.icon-interactive {
+    -fx-cursor: hand;
+}
+.icon-interactive:hover {
+    -fx-opacity: 0.7;
+}
+
+.label {
+    -fx-text-fill: white;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 22px;
+}
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #4E0585;
+    -fx-font-size: 22px;
+    -fx-padding: 5 10 5 10;
+    -fx-cursor: hand;
+}
+.search-text-field{
+    -fx-background-radius: 5;
+    -fx-background-color: #FF00FF;
+    -fx-padding: 5 10 5 10;
+    -fx-text-fill: white;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 15px;
+}
+/* 9. ICON BUTTONS (For Eye Toggle, Edit Icons, etc.) */
+.icon-button {
+    -fx-background-color: transparent; /* No grey box */
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 0; /* Ensures the button wraps tight to the image */
+}
+
+/* Hover Effect: Adds a subtle neon pink glow to the icon */
+.icon-button:hover {
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow(three-pass-box, #FF00FF, 5, 0.5, 0, 0);
+    -fx-opacity: 0.9;
+}
+
+/* --- LIST VIEW STYLING --- */
+
+/* The container of the list */
+.list-view {
+    -fx-background-color: transparent; /* Remove white box */
+    -fx-border-color: #4E0585;         /* Purple border */
+}
+
+/* The actual scrolling area */
+.list-view .virtual-flow .clipped-container .sheet {
+    -fx-background-color: transparent;
+}
+
+/* Each individual row (cell) */
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 16px;
+    -fx-padding: 5 0 5 0;
+}
+
+/* Hover Effect for rows */
+.list-cell:filled:hover {
+    -fx-background-color: #333333; /* Dark Grey on hover */
+    -fx-cursor: hand;
+}
+
+/* Selected Item Effect */
+.list-cell:filled:selected {
+    -fx-background-color: #4E0585; /* Purple when clicked */
+    -fx-text-fill: white;
+}
+/* --- RECORDED GAME ROW STYLING --- */
+
+/* --- ROW STYLING --- */
+.game-row {
+    -fx-background-color: transparent; /* Remove white background */
+    -fx-border-color: #4E0585;         /* Purple bottom border */
+}
+
+/* Force all labels inside a game row to be white */
+.game-row .label {
+    -fx-text-fill: white;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 16px;
+}
+/* --- HIDE ALL SCROLLBARS --- */
+
+/* Target both Vertical and Horizontal bars in the ListView */
+.list-view .scroll-bar:horizontal,
+.list-view .scroll-bar:vertical {
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-max-width: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+    -fx-padding: 0;
+}
+
+/* Hide the little corner box */
+.list-view .corner {
+    -fx-background-color: transparent;
+}
+
+/* Ensure the scroll track is also invisible */
+.list-view .scroll-bar .track,
+.list-view .scroll-bar .thumb {
+    -fx-background-color: transparent;
+}
