@@ -15,8 +15,8 @@
 
 /* 3. THE TOP HEADER BAR (Updated) */
 .header-pane {
-    -fx-background-color: #e0e0e0; /* Changed to Light Grey as requested */
-    -fx-border-color: #4E0585;      /* Purple border at the bottom */
+    -fx-background-color: rgba(224, 224, 224, 0.5); 
+    -fx-border-color: #4E0585;     
     -fx-border-width: 0 0 2 0;
 }
 
@@ -299,4 +299,51 @@
 .list-view .scroll-bar .track,
 .list-view .scroll-bar .thumb {
     -fx-background-color: transparent;
+}
+/* GRID BORDERS */
+.game-grid {
+    /* The "Line Color" */
+    -fx-background-color: #4E0585; /* Purple */
+    
+    /* Outer Border */
+    -fx-border-color: #4E0585;
+    -fx-border-width: 5px; /* Thicker border around the whole box */
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+/* THE BUTTONS */
+.game-tile {
+    /* The "Cell Color" */
+    -fx-background-color: #000000; /* Black */
+    -fx-background-radius: 0; /* Square edges for sharp grid look */
+    
+    /* Text styling */
+    -fx-text-fill: white;
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 36px;
+    -fx-cursor: hand;
+}
+
+/* HOVER EFFECT */
+.game-tile:hover {
+    -fx-background-color: #1a1a1a; /* Subtle lighten on hover */
+}
+/* Player Colors */
+.tile-x {
+    -fx-text-fill: #FF00FF; /* Neon Pink */
+    -fx-effect: dropshadow(gaussian, #FF00FF, 10, 0.5, 0, 0); /* Glow */
+}
+
+.tile-o {
+    -fx-text-fill: #00FFFF; 
+    -fx-effect: dropshadow(gaussian, #00FFFF, 10, 0.5, 0, 0); 
+}
+
+/* The Winning Line Style */
+.winning-line {
+    -fx-stroke: #4E0585; 
+    -fx-stroke-width: 8;
+    -fx-stroke-linecap: round;
+    -fx-effect: dropshadow(three-pass-box, #4E0585, 15, 0.5, 0, 0); 
 }
