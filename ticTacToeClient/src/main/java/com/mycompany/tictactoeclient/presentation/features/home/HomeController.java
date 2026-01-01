@@ -33,6 +33,7 @@ public class HomeController implements Initializable {
     private Button withAFriendButton;
     @FXML
     private Hyperlink firstHyperlink;
+
     @FXML
     private Hyperlink secondHyperlink;
    
@@ -66,21 +67,32 @@ public class HomeController implements Initializable {
 
     @FXML
     private void onFirstHyperlink(ActionEvent event) {
+
         if (firstHyperlink.getText().equals("Login")) {
             navigateToLogin();
         } else {
             navigateToProfile();
         }
+
+        if(firstHyperlink.getText().equals("Logout")){
+            userSession.logout();
+        }else{
+            App.setRoot();
+        }
+        System.out.println("Login button clicked");
+
     }
 
     @FXML
     private void onSecondHyperlink(ActionEvent event) {
+
         if (secondHyperlink.getText().equals("Register")) {
             navigateToRegister();
         } else if (secondHyperlink.getText().equals("Logout")) {
             userSession.logout();
             updateLoginUI();
         }
+
     }
    
     @FXML
