@@ -5,5 +5,6 @@ module com.mycompany.tictactoeserver {
     requires java.sql;
 
     opens com.mycompany.tictactoeserver to javafx.fxml;
+    opens com.mycompany.tictactoeserver.presentation.features.home to javafx.fxml;
     exports com.mycompany.tictactoeserver;
 }
