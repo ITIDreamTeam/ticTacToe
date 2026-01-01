@@ -13,9 +13,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
+import com.mycompany.tictactoeclient.App;
 import javafx.scene.paint.Color;
-import java.io.IOException;
-import javafx.fxml.FXML;
 
 
 /**
@@ -33,7 +32,7 @@ public class HomeController implements Initializable {
     private Button withAFriendButton;
     @FXML
     private Hyperlink firstHyperlink;
-    
+
     @FXML
     private Hyperlink secondHyperlink;
    
@@ -67,17 +66,29 @@ public class HomeController implements Initializable {
 
     @FXML
     private void onFirstHyperlink(ActionEvent event) {
-        if(firstHyperlink.getText().equals("Logout")){
+
+        if(firstHyperlink.getText().equals("Login")){
             userSession.logout();
         }else{
-            App.setRoot();
+           navigateToProfile();
         }
-        System.out.println("Login button clicked");
+
     }
 
     @FXML
     private void onSecondHyperlink(ActionEvent event) {
-        System.out.println("Register button clicked");
+
+        if (secondHyperlink.getText().equals("Register")) {
+            System.out.println("navigateToRegister");
+            navigateToRegister();
+        } else if (secondHyperlink.getText().equals("Logout")) {
+            System.out.println("Logout");
+            userSession.logout();
+            updateLoginUI();
+        }else{
+            System.out.println("non");
+        }
+
     }
    
     @FXML
@@ -121,10 +132,7 @@ public class HomeController implements Initializable {
             
             Stage popupStage = new Stage();
             popupStage.setTitle(title);
-            popupStage.initModality(Modality.APPLICATION_MODAL);
-//            popupStage.initStyle(StageStyle.TRANSPARENT);
-//            popupStage.setScene(new Scene(root, Color.TRANSPARENT));
-            
+            popupStage.initModality(Modality.APPLICATION_MODAL);      
             if (onePlayerButton != null && onePlayerButton.getScene() != null) {
                 popupStage.initOwner(onePlayerButton.getScene().getWindow());
             }
@@ -172,6 +180,29 @@ public class HomeController implements Initializable {
         for (Button btn : buttons) {
             btn.setOnMouseEntered(e -> btn.setStyle("-fx-background-color: #FF00FF; -fx-text-fill: white;"));
             btn.setOnMouseExited(e -> btn.setStyle("-fx-background-color: #4E0585; -fx-text-fill: white;"));
+        }
+    }
+    private void navigateToRegister() {
+        try {
+            App.setRoot("register");  
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void navigateToLogin() {
+        try {
+            App.setRoot("login");  
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void navigateToProfile() {
+        try {
+            
+            App.setRoot("profile");  
+            
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

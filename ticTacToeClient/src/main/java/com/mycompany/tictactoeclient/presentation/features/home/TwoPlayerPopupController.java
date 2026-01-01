@@ -8,6 +8,7 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  *
  * @author Basmala
  */
+import com.mycompany.tictactoeclient.App;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -51,13 +52,8 @@ public class TwoPlayerPopupController implements Initializable {
         startButton.setOnAction(e -> {
             startGame();
             try {
-                Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/changePassword.fxml"));
-                Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
-                stage.show();
+                App.setRoot("players_board");
             } catch (IOException ex) {
-                System.err.println("Error loading Change Password screen: " + ex.getMessage());
                 ex.printStackTrace();
             }
 
