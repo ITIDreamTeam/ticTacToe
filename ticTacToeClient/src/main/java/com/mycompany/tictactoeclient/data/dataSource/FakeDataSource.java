@@ -4,8 +4,8 @@
  */
 package com.mycompany.tictactoeclient.data.dataSource;
 
-import com.mycompany.tictactoeclient.data.modles.Player;
-import com.mycompany.tictactoeclient.data.modles.Player.PlayerStatus;
+import com.mycompany.tictactoeclient.data.models.Player;
+import com.mycompany.tictactoeclient.data.models.Player.PlayerStatus;
 import java.util.ArrayList;
 import java.util.List;
 

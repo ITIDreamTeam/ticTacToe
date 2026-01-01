@@ -1,6 +1,6 @@
 package com.mycompany.tictactoeclient.presentation.features.saved_replays;
 
-import com.mycompany.tictactoeclient.data.modles.RecordedGame; // Import your POJO
+import com.mycompany.tictactoeclient.data.models.RecordedGame; // Import your POJO
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;

@@ -33,7 +33,7 @@
                   <Label prefHeight="32.0" prefWidth="150.0" text="Username" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                      <children>
-                        <TextField fx:id="usernameField" editable="false" maxWidth="-Infinity" prefWidth="110.0" styleClass="text-field-readonly" text="Player name">
+                        <TextField fx:id="usernameField" editable="false" maxWidth="-Infinity" prefWidth="200.0" styleClass="text-field-readonly" text="Player name">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
@@ -51,7 +51,7 @@
                   <Label prefHeight="26.0" prefWidth="150.0" text="Email" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                      <children>
-                        <TextField fx:id="emailField" editable="false" maxWidth="-Infinity" prefWidth="110.0" styleClass="text-field-readonly" text="Player email">
+                        <TextField fx:id="emailField" editable="false" maxWidth="-Infinity" prefWidth="200.0" styleClass="text-field-readonly" text="Player email">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
@@ -77,7 +77,7 @@
                   </TextField>
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                      <children>
-                        <Label prefWidth="150.0" text="Recorded games" />
+                        <Label prefWidth="200.0" text="Recorded games" />
                         <Button fx:id="viewRecordedGamesBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onViewRecordedGames" styleClass="icon-button">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
