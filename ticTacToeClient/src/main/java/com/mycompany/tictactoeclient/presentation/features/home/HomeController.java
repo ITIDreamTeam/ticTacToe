@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 
 
@@ -111,8 +112,23 @@ public class HomeController implements Initializable {
     }
     
     @FXML
-    public void onUserNameButton() {
-        showPopup("one-player-popup.fxml", "One Player Game Setup");
+    public void onUserNameButton(ActionEvent event) {
+                try {
+            // 1. Load the ChangePassword FXML
+            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/profile.fxml"));
+
+            // 2. Get the Stage
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            // 3. Switch Scenes
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException e) {
+            System.err.println("Error loading Change Password screen: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     
     private void showPopup(String fxmlFile, String title) {
