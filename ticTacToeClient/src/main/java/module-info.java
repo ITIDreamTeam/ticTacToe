@@ -10,6 +10,7 @@ module com.mycompany.tictactoeclient {
      opens com.mycompany.tictactoeclient.presentation.features.saved_replays to javafx.fxml;
     opens com.mycompany.tictactoeclient.presentation.features.profile to javafx.fxml;
     opens com.mycompany.tictactoeclient.presentation.features.login to javafx.fxml;
+    opens com.mycompany.tictactoeclient.presentation.features.game_board to javafx.fxml;
     opens com.mycompany.tictactoeclient.presentation.features.register to javafx.fxml;
 
     opens com.mycompany.tictactoeclient to javafx.fxml;
