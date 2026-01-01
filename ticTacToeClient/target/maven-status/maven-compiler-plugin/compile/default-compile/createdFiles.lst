@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+com\mycompany\tictactoeclient\presentation\features\saved_replays\GameListCell.class
+com\mycompany\tictactoeclient\data\modles\Player.class
+com\mycompany\tictactoeclient\data\modles\RecordedGame.class
+com\mycompany\tictactoeclient\DataAccessLayer.class
+module-info.class
+>>>>>>> main
 com\mycompany\tictactoeclient\App.class
 com\mycompany\tictactoeclient\presentation\features\register\RegisterController.class
 com\mycompany\tictactoeclient\data\models\Player.class
@@ -6,8 +14,14 @@ com\mycompany\tictactoeclient\data\models\RecordedGame.class
 com\mycompany\tictactoeclient\presentation\features\login\LoginController.class
 com\mycompany\tictactoeclient\presentation\features\home\TwoPlayerPopupController.class
 com\mycompany\tictactoeclient\presentation\features\playersboard\Player_cardController$1.class
+<<<<<<< HEAD
 com\mycompany\tictactoeclient\data\models\Player$PlayerStatus.class
 com\mycompany\tictactoeclient\presentation\features\game_board\GameEngine$Player.class
+=======
+com\mycompany\tictactoeclient\presentation\features\saved_replays\RecordedGamesController.class
+com\mycompany\tictactoeclient\data\dataSource\FakeDataSource.class
+com\mycompany\tictactoeclient\presentation\features\playersboard\Players_boardController.class
+>>>>>>> main
 com\mycompany\tictactoeclient\presentation\features\home\HomeController.class
 com\mycompany\tictactoeclient\presentation\features\saved_replays\GameListCell.class
 com\mycompany\tictactoeclient\DataAccessLayer.class
