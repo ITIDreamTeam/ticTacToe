@@ -2,6 +2,7 @@ com\mycompany\tictactoeclient\data\modles\Player.class
 com\mycompany\tictactoeclient\DataAccessLayer.class
 module-info.class
 com\mycompany\tictactoeclient\App.class
+com\mycompany\tictactoeclient\presentation\features\register\RegisterController.class
 com\mycompany\tictactoeclient\presentation\features\profile\ProfileController.class
 com\mycompany\tictactoeclient\presentation\features\playersboard\Player_cardController.class
 com\mycompany\tictactoeclient\presentation\features\login\LoginController.class

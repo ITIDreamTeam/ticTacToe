@@ -12,6 +12,8 @@ import javafx.fxml.Initializable;
 
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 /**
@@ -20,7 +22,6 @@ import javafx.scene.input.MouseEvent;
  * @author Nadin
  */
 public class RegisterController implements Initializable {
-
 
     @FXML
     private TextField userNameTextField;
@@ -31,19 +32,35 @@ public class RegisterController implements Initializable {
     @FXML
     private TextField passwordTextField;
     @FXML
-    private ImageView eyeIcon;
+    private ImageView eyeIconPassword;
     @FXML
     private PasswordField confirmPasswordField;
     @FXML
     private TextField confirmPasswordTextField;
     @FXML
-    private ImageView eyeIcon1;
-    /**
-     * Initializes the controller class.
-     */
+    private ImageView eyeIconConfirmPass;
+    @FXML
+    private ToggleButton togglePassButton;
+    @FXML
+    private ToggleButton toggleConfirmPassButton;
+        
+    private Image eyeOpenImage;
+    private Image eyeClosedImage;
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        passwordTextField.setVisible(false);
+        passwordTextField.setManaged(false);
+
+        confirmPasswordTextField.setVisible(false);
+        confirmPasswordTextField.setManaged(false);
+        
+        try {
+            eyeOpenImage = new Image(getClass().getResource("/icons/visibility-on_1.png").toExternalForm());
+            eyeClosedImage = new Image(getClass().getResource("/icons/Visibility-off-02.png").toExternalForm());
+        } catch (Exception e) {
+            System.err.println("Error loading icons: " + e.getMessage());
+        }
     }    
     
     @FXML
@@ -51,15 +68,80 @@ public class RegisterController implements Initializable {
     }
 
     @FXML
-    private void toggalePassword(MouseEvent event) {
+    private void toggalePassword(ActionEvent event) {
+        toggleVisibility(
+                togglePassButton,
+                passwordField,
+                passwordTextField,
+                eyeIconPassword
+        );
     }
 
+
+    @FXML
+    private void toggaleConfirmPassword(ActionEvent event) {
+        toggleVisibility(
+                toggleConfirmPassButton,
+                confirmPasswordField,
+                confirmPasswordTextField,
+                eyeIconConfirmPass
+        );
+    }
+
+    
     @FXML
     private void onSignUpClicked(ActionEvent event) {
+        String password = passwordField.isVisible()
+            ? passwordField.getText()
+            : passwordTextField.getText();
+
+        String confirmPassword = confirmPasswordField.isVisible()
+                ? confirmPasswordField.getText()
+                : confirmPasswordTextField.getText();
+
+        if (!password.equals(confirmPassword)) {
+            System.out.println("Passwords do not match!");
+            return;
+        }
+
+        System.out.println("Register Success");
     }
 
     @FXML
     private void onSignInClicked(ActionEvent event) {
     }
+
+    private void toggleVisibility(
+        ToggleButton toggleButton,
+        PasswordField passwordField,
+        TextField textField,
+        ImageView eyeIcon
+        ) {
+            System.out.println("before toggale burron selcted");
+            if (toggleButton.isSelected()) {
+                System.out.println("toggale burron selcted");
+                System.out.println("Register Success");
+                // SHOW password
+                textField.setText(passwordField.getText());
+                textField.setVisible(true);
+                textField.setManaged(true);
+
+                passwordField.setVisible(false);
+                passwordField.setManaged(false);
+
+                eyeIcon.setImage(eyeOpenImage);
+            } else {
+                // HIDE password
+                passwordField.setText(textField.getText());
+                passwordField.setVisible(true);
+                passwordField.setManaged(true);
+
+                textField.setVisible(false);
+                textField.setManaged(false);
+
+                eyeIcon.setImage(eyeClosedImage);
+            }
+        }
+
 
 }

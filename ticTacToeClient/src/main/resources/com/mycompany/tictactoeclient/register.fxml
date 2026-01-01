@@ -80,7 +80,7 @@
                <children>
                   <PasswordField fx:id="passwordField" layoutX="150.0" layoutY="-1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="340.0" styleClass="text-field-editing" stylesheets="@../../../styles/style.css" />
                   <TextField fx:id="passwordTextField" layoutX="150.0" layoutY="-1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="340.0" styleClass="text-field-editing" stylesheets="@../../../styles/style.css" visible="false" />
-                  <ToggleButton layoutX="298.0" layoutY="2.0" mnemonicParsing="false" onMouseClicked="#toggalePassword" styleClass="icon-button" stylesheets="@../../../styles/style.css" AnchorPane.rightAnchor="160.0">
+                  <ToggleButton fx:id="togglePassButton" layoutX="298.0" layoutY="2.0" mnemonicParsing="false" onAction="#toggalePassword" styleClass="icon-button" stylesheets="@../../../styles/style.css" AnchorPane.rightAnchor="160.0">
                      <graphic>
                         <ImageView fx:id="eyeIconPassword" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#toggalePassword" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -107,9 +107,9 @@
                <children>
                   <PasswordField fx:id="confirmPasswordField" layoutX="150.0" layoutY="-1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="340.0" styleClass="text-field-editing" stylesheets="@../../../styles/style.css" />
                   <TextField fx:id="confirmPasswordTextField" layoutX="150.0" layoutY="-1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="340.0" styleClass="text-field-editing" stylesheets="@../../../styles/style.css" visible="false" />
-                  <ToggleButton layoutX="298.0" layoutY="2.0" mnemonicParsing="false" onMouseClicked="#toggalePassword" styleClass="icon-button" stylesheets="@../../../styles/style.css" AnchorPane.rightAnchor="160.0">
+                  <ToggleButton fx:id="toggleConfirmPassButton" layoutX="298.0" layoutY="2.0" mnemonicParsing="false" onAction="#toggaleConfirmPassword" styleClass="icon-button" stylesheets="@../../../styles/style.css" AnchorPane.rightAnchor="160.0">
                      <graphic>
-                        <ImageView fx:id="eyeIconConfirmPass" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#toggalePassword" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="eyeIconConfirmPass" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#toggaleConfirmPassword" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../../../icons/Visibility-off-02.png" />
                            </image>
