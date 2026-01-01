@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -22,7 +23,7 @@
          <children>
             <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="640.0">
                <children>
-                  <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#onBackClicked" prefHeight="42.0" prefWidth="75.0" styleClass="back-button" stylesheets="@../../../styles/style.css" text="&lt; Back">
+                  <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#onBackClicked" prefHeight="33.0" prefWidth="64.0" stylesheets="@../../../styles/style.css" text="&lt; Back">
                      <HBox.margin>
                         <Insets left="16.0" />
                      </HBox.margin>
@@ -44,7 +45,7 @@
                   <Insets />
                </VBox.margin>
             </HBox>
-            <TextField fx:id="emailTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="340.0" stylesheets="@../../../styles/style.css">
+            <TextField fx:id="emailTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="340.0" styleClass="text-field-editing" stylesheets="@../../../styles/style.css">
                <VBox.margin>
                   <Insets bottom="16.0" />
                </VBox.margin>
@@ -61,31 +62,24 @@
                   </Label>
                </children>
             </HBox>
-            <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="640.0" spacing="8.0">
-               <VBox.margin>
-                  <Insets bottom="32.0" />
-               </VBox.margin>
+            <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="640.0">
                <children>
-                  <PasswordField fx:id="passwordField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="320.0" stylesheets="@../../../styles/style.css">
-                     <HBox.margin>
-                        <Insets left="150.0" />
-                     </HBox.margin>
-                  </PasswordField>
-                  <TextField fx:id="passwordTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="320.0" stylesheets="@../../../styles/style.css" visible="false">
-                     <HBox.margin>
-                        <Insets left="150.0" />
-                     </HBox.margin>
-                  </TextField>
-                  <ImageView fx:id="eyeIcon" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#toggalePassword" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../../eye.png" />
-                     </image>
-                  </ImageView>
+                  <PasswordField fx:id="passwordField" layoutX="150.0" layoutY="-1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="340.0" styleClass="text-field-editing" stylesheets="@../../../styles/style.css" />
+                  <TextField fx:id="passwordTextField" layoutX="150.0" layoutY="-1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="340.0" styleClass="text-field-editing" stylesheets="@../../../styles/style.css" visible="false" />
+                  <ToggleButton layoutX="298.0" layoutY="2.0" mnemonicParsing="false" onMouseClicked="#toggalePassword" styleClass="icon-button" stylesheets="@../../../styles/style.css" AnchorPane.rightAnchor="160.0">
+                     <graphic>
+                        <ImageView fx:id="eyeIcon" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#toggalePassword" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../icons/Visibility-off-02.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </ToggleButton>
                </children>
-            </HBox>
+            </AnchorPane>
             <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onSignInClicked" prefHeight="40.0" prefWidth="240.0" stylesheets="@../../../styles/style.css" text="Sign In" textAlignment="CENTER">
                <VBox.margin>
-                  <Insets bottom="8.0" />
+                  <Insets bottom="12.0" top="40.0" />
                </VBox.margin>
             </Button>
             <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onSignUpClicked" prefHeight="40.0" prefWidth="240.0" styleClass="outline-button" stylesheets="@../../../styles/style.css" text="Sign Up" />
