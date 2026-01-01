@@ -1,5 +1,8 @@
+com\mycompany\tictactoeclient\presentation\features\home\TwoPlayerPopupController.class
 com\mycompany\tictactoeclient\DataAccessLayer.class
 com\mycompany\tictactoeclient\presentation\features\login\Login.class
+com\mycompany\tictactoeclient\presentation\features\home\OnePlayerPopupController.class
 module-info.class
 com\mycompany\tictactoeclient\App.class
+com\mycompany\tictactoeclient\data\models\userSession\UserSession.class
 com\mycompany\tictactoeclient\presentation\features\home\HomeController.class

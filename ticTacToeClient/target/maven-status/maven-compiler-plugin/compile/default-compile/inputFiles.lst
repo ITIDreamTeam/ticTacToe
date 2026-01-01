@@ -1,5 +1,8 @@
 E:\ITI\Java\Project\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\home\HomeController.java
+E:\ITI\Java\Project\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\data\models\userSession\UserSession.java
 E:\ITI\Java\Project\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\DataAccessLayer.java
+E:\ITI\Java\Project\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\home\TwoPlayerPopupController.java
 E:\ITI\Java\Project\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\App.java
 E:\ITI\Java\Project\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\login\Login.java
 E:\ITI\Java\Project\ticTacToe\ticTacToeClient\src\main\java\module-info.java
+E:\ITI\Java\Project\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\home\OnePlayerPopupController.java

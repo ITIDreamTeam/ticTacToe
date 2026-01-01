@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="347.0" prefWidth="452.0" spacing="20" style="-fx-background-color: #000000; -fx-padding: 30;" stylesheets="@../../../styles/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.tictactoeclient.presentation.features.home.TwoPlayerPopupController">
+
+    <Label styleClass="two-player-title" text="Two Players">
+      <font>
+         <Font name="Jaro" size="36.0" />
+      </font>
+      <padding>
+         <Insets bottom="10" />
+      </padding>
+   </Label>
+   
+   <GridPane hgap="20" style="-fx-padding: 30; -fx-background-color: black;" styleClass="player-input-section" vgap="25">
+      <padding>
+         <Insets bottom="25" left="30" right="30" top="25" />
+      </padding>
+      
+      <Label styleClass="popup-label" text="Player 1:" GridPane.columnIndex="0" GridPane.rowIndex="0">
+         <font>
+            <Font name="Arial" size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="player1Field" prefWidth="220" promptText="Enter Player 1 name" styleClass="popup-text-field" GridPane.columnIndex="1" GridPane.rowIndex="0">
+         <font>
+            <Font name="Arial" size="16.0" />
+         </font>
+      </TextField>
+      
+      <Label styleClass="popup-label" text="Player 2:" GridPane.columnIndex="0" GridPane.rowIndex="1">
+         <font>
+            <Font name="Arial" size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="player2Field" prefWidth="220" promptText="Enter Player 2 name" styleClass="popup-text-field" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <font>
+            <Font name="Arial" size="16.0" />
+         </font>
+      </TextField>
+      <columnConstraints>
+         <ColumnConstraints />
+         <ColumnConstraints />
+      </columnConstraints>
+      <rowConstraints>
+         <RowConstraints />
+         <RowConstraints />
+      </rowConstraints>
+   </GridPane>
+   
+   <HBox alignment="CENTER" spacing="40">
+      <CheckBox fx:id="recordButton" mnemonicParsing="false" onAction="#onRecordButton" prefHeight="18.0" prefWidth="207.0" text="Record" textFill="WHITE">
+         <font>
+            <Font size="16.0" />
+         </font></CheckBox>
+      <Button fx:id="startButton" prefHeight="40" prefWidth="100" style="-fx-text-fill: white; -fx-background-radius: 8;" text="Start">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+   </HBox>
+   
+   <padding>
+      <Insets bottom="30" left="20" right="20" top="20" />
+   </padding>
+</VBox>
