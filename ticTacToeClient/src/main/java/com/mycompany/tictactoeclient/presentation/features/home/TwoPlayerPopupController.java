@@ -48,25 +48,13 @@ public class TwoPlayerPopupController implements Initializable {
         player1Field.setText("Player1");
         player2Field.setText("Player2");
 
-        startButton.setOnAction(e -> {
-            startGame();
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/changePassword.fxml"));
-                Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
-                stage.show();
-            } catch (IOException ex) {
-                System.err.println("Error loading Change Password screen: " + ex.getMessage());
-                ex.printStackTrace();
-            }
-
-        });
+        // Add button actions
+        startButton.setOnAction(e -> startGame());
         recordButton.setOnAction(e -> showRecords());
     }
 
     @FXML
-    public void onRecordButton() {
+    public void onRecordButton(){
 
     }
 

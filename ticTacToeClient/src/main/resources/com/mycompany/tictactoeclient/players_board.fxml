@@ -24,7 +24,7 @@
             <top>
                 <HBox prefWidth="640.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Button mnemonicParsing="false" text="&lt; Back" />
+                        <Button mnemonicParsing="false" onAction="#onClickBack" text="&lt; Back" />
                         <Label text="Leaderboard">
                             <HBox.margin>
                                 <Insets left="120.0" />
