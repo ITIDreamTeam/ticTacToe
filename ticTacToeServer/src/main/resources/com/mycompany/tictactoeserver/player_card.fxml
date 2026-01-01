@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: #4E0585; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);" stylesheets="@../../../styles/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.tictactoeserver.presentation.features.playersDetails.Player_cardController">
+   <padding>
+      <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+   </padding>
+   <children>
+   
+      <ImageView fx:id="player_card_image" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../avatar.png" />
+         </image>
+      </ImageView>
+
+      <Label fx:id="player_name" minWidth="100.0" prefWidth="100.0" text="yassen" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+         <HBox.margin>
+            <Insets />
+         </HBox.margin>
+      </Label>
+
+      <HBox alignment="CENTER_LEFT" spacing="10.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="200.0">
+               <children>
+                  <Label text="W" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label id="label" fx:id="win_score" stylesheets="@../../../styles/style.css" text="5" textFill="WHITE">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="200.0">
+               <children>
+                  <Label text="L" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label id="label" fx:id="lose_score" stylesheets="@../../../styles/style.css" text="20" textFill="WHITE">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+
+      <Label fx:id="player_state" alignment="CENTER" minWidth="100.0" prefWidth="70.0" text="OnLine" textFill="#6ed92b">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+         <HBox.margin>
+            <Insets left="60.0" />
+         </HBox.margin>
+      </Label>
+
+      <VBox alignment="CENTER_RIGHT" prefWidth="100.0">
+         <children>
+            <Label text="Score" textFill="WHITE">
+               <font>
+                  <Font size="12.0" />
+               </font>
+            </Label>
+            <Label id="label" fx:id="player_score" stylesheets="@../../../styles/style.css" text="5000" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      
+   </children>
+</HBox>

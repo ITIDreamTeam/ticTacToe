@@ -6,5 +6,7 @@ module com.mycompany.tictactoeserver {
 
     opens com.mycompany.tictactoeserver to javafx.fxml;
     opens com.mycompany.tictactoeserver.presentation.features.home to javafx.fxml;
+    opens com.mycompany.tictactoeserver.presentation.features.playersDetails to javafx.fxml;
+
     exports com.mycompany.tictactoeserver;
 }

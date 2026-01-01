@@ -224,3 +224,42 @@
 .list-view .scroll-bar .thumb {
     -fx-background-color: transparent;
 }
+
+/*Bar Chart*/
+.chart {
+    -fx-background-color: transparent;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-vertical-grid-lines,
+.chart-horizontal-grid-lines {
+    -fx-stroke: #333333;
+}
+
+.bar-chart-bar {
+    -fx-bar-width: 10px;     /* عرض كل عمود */
+}
+
+/* Axis Labels */
+.chart .axis-label {
+    -fx-text-fill: white;      /* عنوان المحور */
+}
+
+/* Tick Labels لكل المحاور */
+.chart .axis .tick-label {
+    -fx-text-fill: white;      /* النصوص الصغيرة على المحور */
+}
+
+/* Lines color (optional) */
+.chart .axis .tick-mark {
+    -fx-stroke: white;         /* لون الخطوط الصغيرة */
+}
+
+.chart .axis .axis-line {
+    -fx-stroke: white;         /* الخط الرئيسي للمحور */
+}
+
+

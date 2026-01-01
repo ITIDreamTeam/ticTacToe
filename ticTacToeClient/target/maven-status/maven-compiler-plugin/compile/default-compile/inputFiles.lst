@@ -5,6 +5,9 @@ C:\ITI\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\pre
 C:\ITI\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\playersboard\Players_boardController.java
 C:\ITI\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\playersboard\Player_cardController.java
 C:\ITI\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\login\LoginController.java
+C:\ITI\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\saved_replays\GameListCell.java
+C:\ITI\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\data\modles\RecordedGame.java
+C:\ITI\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\presentation\features\saved_replays\RecordedGamesController.java
 C:\ITI\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\data\modles\Player.java
 C:\ITI\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\App.java
 C:\ITI\ticTacToe\ticTacToeClient\src\main\java\com\mycompany\tictactoeclient\DataAccessLayer.java
