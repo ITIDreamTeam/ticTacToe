@@ -58,11 +58,13 @@ public class TwoPlayerPopupController implements Initializable {
             }
 
         });
+        // Add button actions
+        startButton.setOnAction(e -> startGame());
         recordButton.setOnAction(e -> showRecords());
     }
 
     @FXML
-    public void onRecordButton() {
+    public void onRecordButton(){
 
     }
 

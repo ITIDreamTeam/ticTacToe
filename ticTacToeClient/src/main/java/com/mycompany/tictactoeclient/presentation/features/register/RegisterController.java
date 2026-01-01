@@ -4,6 +4,8 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.register;
 
+import com.mycompany.tictactoeclient.App;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -65,6 +67,12 @@ public class RegisterController implements Initializable {
     
     @FXML
     private void onBackClicked(ActionEvent event) {
+        
+        try {
+            App.setRoot("/com/mycompany/tictactoeclient/changePassword.fxml");
+        } catch (IOException ex) {
+           ex.printStackTrace();
+        }
     }
 
     @FXML
@@ -105,10 +113,16 @@ public class RegisterController implements Initializable {
         }
 
         System.out.println("Register Success");
+        try {
+            App.setRoot("/com/mycompany/tictactoeclient/changePassword.fxml");
+        } catch (IOException ex) {
+           ex.printStackTrace();
+        }
     }
 
     @FXML
     private void onSignInClicked(ActionEvent event) {
+        
     }
 
     private void toggleVisibility(

@@ -66,7 +66,7 @@ public class Player_cardController implements Initializable {
         
         popupStage.getScene().setFill(Color.TRANSPARENT);
 
-        popupController.setDisplayData(this.player, popupStage);
+        popupController.setDisplayData(this.player, popupStage,event);
         popupStage.showAndWait();
 
     } catch (IOException e) {
