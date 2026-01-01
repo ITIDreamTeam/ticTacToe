@@ -13,8 +13,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
-import javafx.scene.Node;
 import javafx.scene.paint.Color;
+import java.io.IOException;
+import javafx.fxml.FXML;
 
 
 /**
@@ -31,11 +32,11 @@ public class HomeController implements Initializable {
     @FXML
     private Button withAFriendButton;
     @FXML
-    private Hyperlink loginButton;
+    private Hyperlink firstHyperlink;
+    
     @FXML
-    private Hyperlink registerButton;
-    @FXML
-    private Hyperlink userNameButton;
+    private Hyperlink secondHyperlink;
+   
     
     private UserSession userSession;
 
@@ -51,38 +52,11 @@ public class HomeController implements Initializable {
     } 
     private void updateLoginUI() {
         if (userSession.isLoggedIn()) {
-            if (userNameButton != null) {
-               // userNameButton.setText("Basmala"+userSession.getUsername());
-               userNameButton.setText("Basmala");
-                userNameButton.setVisible(true);
-                userNameButton.setManaged(true);
-            }
-            
-            if (loginButton != null) {
-                loginButton.setVisible(false);
-                loginButton.setManaged(false);
-            }
-            
-            if (registerButton != null) {
-                registerButton.setVisible(false);
-                registerButton.setManaged(false);
-            }
+            firstHyperlink.setText("Basmala");
+            secondHyperlink.setText("Logout");
         } else {
-            if (userNameButton != null) {
-                userNameButton.setVisible(false);
-                userNameButton.setManaged(false);
-            }
-            
-            // Show login/register buttons
-            if (loginButton != null) {
-                loginButton.setVisible(true);
-                loginButton.setManaged(true);
-            }
-            
-            if (registerButton != null) {
-                registerButton.setVisible(true);
-                registerButton.setManaged(true);
-            }
+            firstHyperlink.setText("Login");
+            secondHyperlink.setText("Register");
         }
     }
 
@@ -92,12 +66,17 @@ public class HomeController implements Initializable {
     }
 
     @FXML
-    private void onLoginButton(ActionEvent event) {
+    private void onFirstHyperlink(ActionEvent event) {
+        if(firstHyperlink.getText().equals("Logout")){
+            userSession.logout();
+        }else{
+            App.setRoot();
+        }
         System.out.println("Login button clicked");
     }
 
     @FXML
-    private void onRegisterButton(ActionEvent event) {
+    private void onSecondHyperlink(ActionEvent event) {
         System.out.println("Register button clicked");
     }
    
@@ -112,23 +91,8 @@ public class HomeController implements Initializable {
     }
     
     @FXML
-    public void onUserNameButton(ActionEvent event) {
-                try {
-            // 1. Load the ChangePassword FXML
-            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/profile.fxml"));
-
-            // 2. Get the Stage
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            // 3. Switch Scenes
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-
-        } catch (IOException e) {
-            System.err.println("Error loading Change Password screen: " + e.getMessage());
-            e.printStackTrace();
-        }
+    public void onUserNameButton() {
+        showPopup("one-player-popup.fxml", "One Player Game Setup");
     }
     
     private void showPopup(String fxmlFile, String title) {
