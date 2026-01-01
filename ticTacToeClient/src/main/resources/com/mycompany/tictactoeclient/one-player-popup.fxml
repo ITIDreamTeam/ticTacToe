@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="285.0" prefWidth="450.0" style="-fx-background-color: black; -fx-padding: 30;" styleClass="popup-background" stylesheets="@../../../styles/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController">
+   
+   <Label style="-fx-font-weight: 36;" styleClass="popup-title" text="One Player">
+      <font>
+         <Font name="Jaro Regular" size="36.0" />
+      </font>
+      <padding>
+         <Insets bottom="10.0" />
+      </padding>
+   </Label>
+   
+   <VBox spacing="20" styleClass="popup-section">
+      <Label style="-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #FF00FF;" text="Choose a level">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      
+      <!-- REMOVED: <ToggleGroup fx:id="difficultyGroup" /> -->
+      
+      <HBox alignment="CENTER" spacing="0" style="-fx-border-color: #4E0585; -fx-border-radius: 8; -fx-border-width: 5;">
+         <!-- Easy Button - Create ToggleGroup here -->
+         <ToggleButton fx:id="easyButton" onAction="#onEasyButton" prefHeight="60" prefWidth="150" selected="true" styleClass="choose-level-ToggleButton" text="Easy" userData="Easy">
+            <toggleGroup>
+               <ToggleGroup fx:id="difficultyGroup" />
+            </toggleGroup>
+            <font>
+               <Font name="Arial" size="18.0" />
+            </font>
+         </ToggleButton>
+         
+         <ToggleButton fx:id="mediumButton" onAction="#onMediumButton" prefHeight="60" prefWidth="150" styleClass="choose-level-ToggleButton" text="Medium" userData="Medium">
+            <toggleGroup>
+               <fx:reference source="difficultyGroup" />
+            </toggleGroup>
+            <font>
+               <Font name="Arial" size="18.0" />
+            </font>
+         </ToggleButton>
+         
+         <!-- Hard Button - Reference existing ToggleGroup -->
+         <ToggleButton fx:id="hardButton" onAction="#onHardButton" prefHeight="60" prefWidth="150" styleClass="choose-level-ToggleButton" text="Hard" userData="Hard">
+            <toggleGroup>
+               <fx:reference source="difficultyGroup" />
+            </toggleGroup>
+            <font>
+               <Font name="Arial" size="18.0" />
+            </font>
+         </ToggleButton>
+      </HBox>
+      <VBox.margin>
+         <Insets bottom="15.0" top="20.0" />
+      </VBox.margin>
+      <padding>
+         <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+      </padding>
+   </VBox>
+   
+   <HBox alignment="CENTER" spacing="40">
+      <CheckBox fx:id="recordButton" mnemonicParsing="false" onAction="#onRecordButton" prefHeight="18.0" prefWidth="207.0" text="Record" textFill="WHITE">
+         <font>
+            <Font size="16.0" />
+         </font></CheckBox>
+      <Button fx:id="startButton" prefHeight="40" prefWidth="100" style="-fx-text-fill: white; -fx-background-radius: 8;" text="Start">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+   </HBox>
+   
+   <padding>
+      <Insets bottom="30" left="20" right="20" top="20" />
+   </padding>
+</VBox>

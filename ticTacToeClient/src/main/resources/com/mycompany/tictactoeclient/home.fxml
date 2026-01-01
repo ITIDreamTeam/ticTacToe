@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" stylesheets="@../../../styles/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.tictactoeclient.presentation.features.home.HomeController">
+   <children>
+      <ImageView fitHeight="480.0" fitWidth="640.0" layoutX="69.0" layoutY="92.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <image>
+            <Image url="@../../../background.png" />
+         </image>
+      </ImageView>
+      <VBox alignment="TOP_CENTER" layoutX="1.0" prefHeight="480.0" prefWidth="640.0">
+         <children>
+            <HBox alignment="TOP_RIGHT" prefHeight="142.0" prefWidth="640.0">
+               <children>
+                  <Hyperlink fx:id="loginButton" onAction="#onLoginButton" prefHeight="35.0" prefWidth="60.0" stylesheets="@../../../styles/style.css" text="Login" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Hyperlink>
+                  <Hyperlink fx:id="registerButton" onAction="#onRegisterButton" stylesheets="@../../../styles/style.css" text="/  Register  " textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Hyperlink>
+                  <Hyperlink fx:id="userNameButton" contentDisplay="RIGHT" nodeOrientation="RIGHT_TO_LEFT" onAction="#onUserNameButton" prefHeight="30.0" prefWidth="451.0" text="test" textAlignment="RIGHT" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <padding>
+                        <Insets right="10.0" />
+                     </padding>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Hyperlink>
+               </children>
+               <padding>
+                  <Insets top="10.0" />
+               </padding>
+            </HBox>
+            <Button fx:id="onePlayerButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onOnePlayerButton" prefHeight="50.0" prefWidth="240.0" stylesheets="@../../../styles/style.css" text="One Player" textAlignment="CENTER" textFill="WHITE">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets bottom="40.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="Cambria Math" size="22.0" />
+               </font>
+            </Button>
+            <Button fx:id="twoPlayerButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onTwoPlayerButton" prefHeight="50.0" prefWidth="240.0" stylesheets="@../../../styles/style.css" text="Two Players" textFill="WHITE">
+               <VBox.margin>
+                  <Insets bottom="40.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="Cambria Math" size="22.0" />
+               </font>
+            </Button>
+            <Button fx:id="withAFriendButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onWithAFriendButton" prefHeight="50.0" prefWidth="240.0" text="With a Friend" textFill="WHITE">
+               <font>
+                  <Font name="Cambria Math" size="22.0" />
+               </font>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
