@@ -56,24 +56,17 @@ public class Player_cardController implements Initializable {
     @FXML
     private void onClickSendRequest(ActionEvent event) {
         try {
-        // 1. Load the Popup FXML
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/invite_popup.fxml"));
         Parent root = loader.load();
-
-        // 2. Pass Data to the Controller
         Invite_popupController popupController = loader.getController();
-        
-        // Create the Stage
         Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL); // Blocks interaction with main window
-        popupStage.initStyle(StageStyle.TRANSPARENT); // Removes default OS window frame
+        popupStage.initModality(Modality.APPLICATION_MODAL); 
+        popupStage.initStyle(StageStyle.TRANSPARENT); 
         popupStage.setScene(new Scene(root));
         
         popupStage.getScene().setFill(Color.TRANSPARENT);
 
         popupController.setDisplayData(this.player, popupStage);
-
-        // 3. Show it
         popupStage.showAndWait();
 
     } catch (IOException e) {
@@ -82,9 +75,7 @@ public class Player_cardController implements Initializable {
     }
 
     public void setPlayerData(Player player) {
-        // --- 2. SAVE THE DATA HERE ---
         this.player = player; 
-        // We take the 'player' coming from the outside and save it into our private field.
 
         player_name.setText(player.getName());
         player_score.setText("" + player.getScore());

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" styleClass="root" stylesheets="@../../../styles/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController">
+   <children>
+      <ImageView fitHeight="480.0" fitWidth="640.0" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <image>
+             <Image url="@../../../background.png" />
+         </image>
+      </ImageView>
+
+      <BorderPane prefHeight="480.0" prefWidth="640.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         
+         <top>
+            <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="640.0" spacing="20.0" styleClass="header-pane" BorderPane.alignment="CENTER">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onBackClicked" styleClass="back-button" text="&lt; Back" />
+                  <Label styleClass="label-title" text="Tic Tac Toe Arena" />
+               </children>
+               <padding>
+                  <Insets left="10.0" />
+               </padding>
+            </HBox>
+         </top>
+
+         <center>
+            <VBox alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
+               <children>
+                  
+                  <HBox alignment="CENTER" spacing="50.0">
+                     <children>
+                        <VBox alignment="CENTER">
+                           <children>
+                              <Label styleClass="label-title" text="Player X" />
+                              <Label fx:id="scoreXLabel" styleClass="label" text="0" textFill="#ff00ff" />
+                           </children>
+                        </VBox>
+                        <Label styleClass="label" text="VS" />
+                        <VBox alignment="CENTER">
+                           <children>
+                              <Label styleClass="label-title" text="Player O" />
+                              <Label fx:id="scoreOLabel" styleClass="label" text="0" textFill="#00ffff" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+
+                  <Label fx:id="statusLabel" styleClass="label" text="Player X Turn">
+                     <font> <Font size="18.0" /> </font>
+                  </Label>
+
+                  <StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                     <children>
+                        
+                        <GridPane fx:id="gameGrid" alignment="CENTER" hgap="5.0" maxHeight="500.0" maxWidth="500.0" styleClass="game-grid" vgap="5.0">
+                          <columnConstraints>
+                             <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33" />
+                             <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33" />
+                             <ColumnConstraints hgrow="ALWAYS" percentWidth="33.33" />
+                          </columnConstraints>
+                          <rowConstraints>
+                             <RowConstraints percentHeight="33.33" vgrow="ALWAYS" />
+                             <RowConstraints percentHeight="33.33" vgrow="ALWAYS" />
+                             <RowConstraints percentHeight="33.33" vgrow="ALWAYS" />
+                          </rowConstraints>
+                        </GridPane>
+
+                        <Pane fx:id="linePane" maxHeight="500.0" maxWidth="500.0" mouseTransparent="true">
+                           <children>
+                              <Line fx:id="winningLine" styleClass="winning-line" visible="false" />
+                           </children>
+                        </Pane>
+                     </children>
+                  </StackPane>
+
+               </children>
+               <padding>
+                  <Insets bottom="10.0" top="10.0" />
+               </padding>
+            </VBox>
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>
