@@ -117,10 +117,7 @@ public class RegisterController implements Initializable {
         TextField textField,
         ImageView eyeIcon
         ) {
-            System.out.println("before toggale burron selcted");
             if (toggleButton.isSelected()) {
-                System.out.println("toggale burron selcted");
-                System.out.println("Register Success");
                 // SHOW password
                 textField.setText(passwordField.getText());
                 textField.setVisible(true);
@@ -142,6 +139,4 @@ public class RegisterController implements Initializable {
                 eyeIcon.setImage(eyeClosedImage);
             }
         }
-
-
 }
