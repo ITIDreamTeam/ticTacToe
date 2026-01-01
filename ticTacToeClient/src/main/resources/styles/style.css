@@ -5,6 +5,7 @@
     src: url("../fonts/Jaro-Regular.ttf");
 }
 
+/* Main buttons */
 /* 2. GLOBAL SETTINGS */
 .root {
     -fx-background-color: #000000; /* Main Black Background */
@@ -133,10 +134,85 @@
 .search-text-field{
     -fx-background-radius: 5;
     -fx-background-color: #FF00FF;
-    -fx-padding: 5 10 5 10;
-    -fx-text-fill: white;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.popup-title {
     -fx-font-family: 'Jaro';
-    -fx-font-size: 15px;
+    -fx-font-size: 36px;
+    -fx-text-fill: #4E0585;
+    -fx-font-weight: bold;
+}
+
+.popup-section {
+    -fx-background-color: black;
+    -fx-background-radius: 10;
+    -fx-border-color: #4E0585;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(78, 5, 133, 0.1), 5, 0, 0, 2);
+}
+
+.popup-text-field {
+    /*-fx-background-color: #323332 #e6e6e6;*/
+    -fx-background-color: #000000;
+    -fx-border-color: #4E0585;
+    -fx-border-radius: 8;
+    -fx-padding: 10 15;
+    -fx-font-family: 'Arial';
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.1), 2, 0, 0, 0);
+}
+
+.popup-text-field:focused {
+    -fx-border-color: #FF00FF;
+    -fx-border-width: 2;
+}
+
+.popup-label {
+    -fx-font-family: 'Arial';
+    -fx-font-size: 18px;
+    /*-fx-text-fill:#FF00FF #4E0585;*/
+    -fx-text-fill:#FF00FF;
+    -fx-font-weight: bold;
+}
+.two-player-title {
+    -fx-font-family: 'Jaro';
+    -fx-font-size: 36px;
+    -fx-text-fill: #4E0585;
+    -fx-font-weight: bold;
+}
+
+.player-input-section {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #4E0585;
+    -fx-border-width: 3;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(78, 5, 133, 0.15), 8, 0, 0, 3);
+}
+
+.choose-level-option{
+    -fx-background-color: #f8f9fa;
+    -fx-background-redius: 12;
+    -fx-border-color: #4E0585;
+    -fx-border-width: 5;
+    -fx-border-radius: 150;
+    -fx-text-fill: white;
+    
+}
+.choose-level-ToggleButton{
+    -fx-text-alignment: center;
+    -fx-background-color: black;
+    -fx-text-fill: white;
+    -fx-background-redius: 12;
+    -fx-font-size: 18px; 
+    -fx-font-weight: bold;
+    -fx-border-radius: 0;
+    -fx-border-color: #4E0585;
+    -fx-border-width: 0 1 0 0;
 }
 /* 9. ICON BUTTONS (For Eye Toggle, Edit Icons, etc.) */
 .icon-button {

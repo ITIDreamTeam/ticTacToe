@@ -10,5 +10,15 @@ target/
 **/target/
 *.log
 .idea/
+<<<<<<< HEAD
+.iml
+hs_err_pid
+=======
+<<<<<<< HEAD
+.iml
+hs_err_pid
+=======
 *.iml
 hs_err_pid*
+>>>>>>> 502573d70a6226bdc204e14fbd35a08dec9459e0
+>>>>>>> main
