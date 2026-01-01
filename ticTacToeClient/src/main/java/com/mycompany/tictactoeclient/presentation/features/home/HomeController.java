@@ -14,6 +14,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import javafx.scene.paint.Color;
+import java.io.IOException;
+import javafx.fxml.FXML;
 
 
 /**
@@ -30,11 +32,10 @@ public class HomeController implements Initializable {
     @FXML
     private Button withAFriendButton;
     @FXML
-    private Hyperlink loginButton;
+    private Hyperlink firstHyperlink;
     @FXML
-    private Hyperlink registerButton;
-    @FXML
-    private Hyperlink userNameButton;
+    private Hyperlink secondHyperlink;
+   
     
     private UserSession userSession;
 
@@ -50,38 +51,11 @@ public class HomeController implements Initializable {
     } 
     private void updateLoginUI() {
         if (userSession.isLoggedIn()) {
-            if (userNameButton != null) {
-               // userNameButton.setText("Basmala"+userSession.getUsername());
-               userNameButton.setText("Basmala");
-                userNameButton.setVisible(true);
-                userNameButton.setManaged(true);
-            }
-            
-            if (loginButton != null) {
-                loginButton.setVisible(false);
-                loginButton.setManaged(false);
-            }
-            
-            if (registerButton != null) {
-                registerButton.setVisible(false);
-                registerButton.setManaged(false);
-            }
+            firstHyperlink.setText("Basmala");
+            secondHyperlink.setText("Logout");
         } else {
-            if (userNameButton != null) {
-                userNameButton.setVisible(false);
-                userNameButton.setManaged(false);
-            }
-            
-            // Show login/register buttons
-            if (loginButton != null) {
-                loginButton.setVisible(true);
-                loginButton.setManaged(true);
-            }
-            
-            if (registerButton != null) {
-                registerButton.setVisible(true);
-                registerButton.setManaged(true);
-            }
+            firstHyperlink.setText("Login");
+            secondHyperlink.setText("Register");
         }
     }
 
@@ -91,13 +65,22 @@ public class HomeController implements Initializable {
     }
 
     @FXML
-    private void onLoginButton(ActionEvent event) {
-        System.out.println("Login button clicked");
+    private void onFirstHyperlink(ActionEvent event) {
+        if (firstHyperlink.getText().equals("Login")) {
+            navigateToLogin();
+        } else {
+            navigateToProfile();
+        }
     }
 
     @FXML
-    private void onRegisterButton(ActionEvent event) {
-        System.out.println("Register button clicked");
+    private void onSecondHyperlink(ActionEvent event) {
+        if (secondHyperlink.getText().equals("Register")) {
+            navigateToRegister();
+        } else if (secondHyperlink.getText().equals("Logout")) {
+            userSession.logout();
+            updateLoginUI();
+        }
     }
    
     @FXML
