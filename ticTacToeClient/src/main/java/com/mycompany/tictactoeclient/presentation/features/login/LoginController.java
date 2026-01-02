@@ -4,6 +4,9 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.login;
 
+import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -41,12 +44,16 @@ public class LoginController implements Initializable {
     
     @FXML
     private void onBackClicked(ActionEvent event) {
+        try {
+            App.setRoot("home");
+        } catch (IOException ex) {
+           ex.printStackTrace();
+        }
     }
 
     @FXML
     private void toggalePassword(MouseEvent event) {
         if (passwordVisible) {
-        // Hide password
         passwordField.setText(passwordTextField.getText());
         passwordField.setVisible(true);
         passwordField.setManaged(true);
@@ -70,10 +77,21 @@ public class LoginController implements Initializable {
 
     @FXML
     private void onSignInClicked(ActionEvent event) {
+        try {
+            UserSession.getInstance().login("Basmala");
+            App.setRoot("home");
+        } catch (IOException ex) {
+           ex.printStackTrace();
+        }
     }
 
     @FXML
     private void onSignUpClicked(ActionEvent event) {
+        try {
+            App.setRoot("register");
+        } catch (IOException ex) {
+           ex.printStackTrace();
+        }
     }
 
 }

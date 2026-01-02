@@ -4,7 +4,10 @@
     /* Ensure this path matches exactly where your fonts folder is */
     src: url("../fonts/Jaro-Regular.ttf");
 }
-
+#firstHyperlink, #secondHyperlink {
+    -fx-graphic: none;
+    -fx-border-color: transparent;
+}
 /* Main buttons */
 /* 2. GLOBAL SETTINGS */
 .root {

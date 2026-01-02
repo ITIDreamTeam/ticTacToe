@@ -49,6 +49,7 @@ public class HomeController implements Initializable {
         userSession = UserSession.getInstance();
         setupButtonHoverEffects();
         updateLoginUI();
+        System.out.print("Home again!!");
         
     } 
     private void updateLoginUI() {
@@ -79,7 +80,9 @@ public class HomeController implements Initializable {
     private void onFirstHyperlink(ActionEvent event) {
 
         if(firstHyperlink.getText().equals("Login")){
-            userSession.logout();
+            System.out.println("Login");
+            navigateToLogin();
+            
         }else{
            navigateToProfile();
         }

@@ -5,6 +5,7 @@
 package com.mycompany.tictactoeclient.presentation.features.register;
 
 import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -69,7 +70,7 @@ public class RegisterController implements Initializable {
     private void onBackClicked(ActionEvent event) {
         
         try {
-            App.setRoot("/com/mycompany/tictactoeclient/changePassword.fxml");
+            App.setRoot("home");
         } catch (IOException ex) {
            ex.printStackTrace();
         }
@@ -114,7 +115,8 @@ public class RegisterController implements Initializable {
 
         System.out.println("Register Success");
         try {
-            App.setRoot("/com/mycompany/tictactoeclient/changePassword.fxml");
+            UserSession.getInstance().login("Basmala");
+            App.setRoot("home");
         } catch (IOException ex) {
            ex.printStackTrace();
         }
@@ -122,7 +124,11 @@ public class RegisterController implements Initializable {
 
     @FXML
     private void onSignInClicked(ActionEvent event) {
-        
+        try {
+            App.setRoot("login");
+        } catch (IOException ex) {
+           ex.printStackTrace();
+        }
     }
 
     private void toggleVisibility(

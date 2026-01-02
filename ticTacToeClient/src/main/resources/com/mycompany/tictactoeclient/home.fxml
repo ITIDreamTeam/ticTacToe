@@ -22,13 +22,13 @@
          <children>
             <HBox alignment="TOP_RIGHT" prefHeight="142.0" prefWidth="640.0">
                <children>
-                  <Hyperlink fx:id="firstHyperlink" alignment="TOP_RIGHT" contentDisplay="RIGHT" maxWidth="-Infinity" onAction="#onFirstHyperlink" prefHeight="35.0" prefWidth="55.0" stylesheets="@../../../styles/style.css" text="Login" textFill="WHITE">
+                  <Hyperlink fx:id="firstHyperlink" alignment="TOP_RIGHT" contentDisplay="RIGHT" maxWidth="-Infinity" onAction="#onFirstHyperlink" prefHeight="35.0" prefWidth="416.0" style="-fx-graphic: none;" stylesheets="@../../../styles/style.css" text="Login" textFill="WHITE">
                      <font>
                         <Font name="Jaro Regular" size="18.0" />
                      </font>
                   </Hyperlink>
                   <Label text="/" />
-                  <Hyperlink fx:id="secondHyperlink" onAction="#onSecondHyperlink" stylesheets="@../../../styles/style.css" text="Register" textFill="WHITE">
+                  <Hyperlink fx:id="secondHyperlink" onAction="#onSecondHyperlink" style="-fx-graphic: none;" stylesheets="@../../../styles/style.css" text="Register" textFill="WHITE">
                      <font>
                         <Font name="Jaro Regular" size="18.0" />
                      </font>

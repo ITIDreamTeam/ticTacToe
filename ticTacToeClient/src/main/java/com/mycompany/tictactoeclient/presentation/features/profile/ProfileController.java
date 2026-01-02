@@ -1,5 +1,6 @@
 package com.mycompany.tictactoeclient.presentation.features.profile;
 
+import com.mycompany.tictactoeclient.App;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -117,17 +118,8 @@ public class ProfileController implements Initializable {
 
     @FXML
     private void onBackClicked(ActionEvent event) {
-               try {
-            // 1. Load the ChangePassword FXML
-            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/home.fxml"));
-
-            // 2. Get the Stage
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            // 3. Switch Scenes
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+        try {
+            App.setRoot("home");
 
         } catch (IOException e) {
             System.err.println("Error loading Change Password screen: " + e.getMessage());
