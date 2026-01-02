@@ -4,13 +4,16 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
+import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.dataSource.FakeDataSource;
 import com.mycompany.tictactoeclient.data.models.Player;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,9 +21,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -33,87 +35,48 @@ public class Players_boardController implements Initializable {
     @FXML
     private TextField search_text_field;
     @FXML
-    private VBox playersContainer;
+    private ListView<Player> playersListView;
 
-    private List<Player> allPlayers;
+    private ObservableList<Player> masterData = FXCollections.observableArrayList();
+    private FilteredList<Player> filteredData;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        allPlayers = FakeDataSource.getAllPlayers();
-        loadPlayersList(allPlayers);
+        playersListView.setCellFactory(listView -> new PlayerListCell());
+        List<Player> players = FakeDataSource.getAllPlayers();
+        masterData.addAll(players);
+        filteredData = new FilteredList<>(masterData, p -> true);
+        playersListView.setItems(filteredData);
         search_text_field.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterPlayers(newValue);
+            filteredData.setPredicate(player -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                if (player.getName().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else if (String.valueOf(player.getScore()).contains(lowerCaseFilter)) {
+                    return true;
+                }
+                return false;
+            });
         });
-    }
-
-    private void filterPlayers(String query) {
-        if (query == null || query.isEmpty()) {
-            loadPlayersList(allPlayers);
-            return;
-        }
-        String lowerCaseQuery = query.toLowerCase();
-        List<Player> filteredList = allPlayers.stream()
-                .filter(player
-                        -> player.getName().toLowerCase().contains(lowerCaseQuery)
-                || String.valueOf(player.getScore()).startsWith(lowerCaseQuery)
-                )
-                .collect(Collectors.toList());
-        loadPlayersList(filteredList);
-    }
-
-    private void loadPlayersList(List<Player> players) {
-        playersContainer.getChildren().clear();
-        for (Player player : players) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/player_card.fxml"));
-                HBox cardBox = loader.load();
-
-                Player_cardController cardController = loader.getController();
-                cardController.setPlayerData(player);
-
-                playersContainer.getChildren().add(cardBox);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     @FXML
     private void onTextFieldAction(ActionEvent event) {
     }
 
-    public void loadPlayers(List<Player> players) {
-        playersContainer.getChildren().clear();
-
-        for (Player player : players) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player_card.fxml"));
-                HBox cardBox = loader.load();
-                Player_cardController cardController = loader.getController();
-                cardController.setPlayerData(player);
-                playersContainer.getChildren().add(cardBox);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     @FXML
     private void onClickBack(ActionEvent event) {
-                try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/home.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Error loading Change Password screen: " + e.getMessage());
-            e.printStackTrace();
+        try {
+            App.setRoot("home");
+            System.out.println("Go to home");
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 }

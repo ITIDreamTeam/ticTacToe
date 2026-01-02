@@ -244,7 +244,7 @@
 }
 
 /* Each individual row (cell) */
-.list-cell {
+.list-view,.list-cell {
     -fx-background-color: transparent;
     -fx-text-fill: white;
     -fx-font-family: 'Jaro';
@@ -258,11 +258,6 @@
     -fx-cursor: hand;
 }
 
-/* Selected Item Effect */
-.list-cell:filled:selected {
-    -fx-background-color: #4E0585; /* Purple when clicked */
-    -fx-text-fill: white;
-}
 /* --- RECORDED GAME ROW STYLING --- */
 
 /* --- ROW STYLING --- */

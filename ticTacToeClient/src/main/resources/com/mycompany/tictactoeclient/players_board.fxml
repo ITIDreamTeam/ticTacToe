@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ListView?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" stylesheets="@../../../styles/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.tictactoeclient.presentation.features.playersboard.Players_boardController">
     <children>
@@ -39,15 +40,15 @@
                 </HBox>
             </top>
             <center>
-                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-background: transparent; -fx-background-color: transparent;" BorderPane.alignment="CENTER">
-                    <content>
-                        <VBox fx:id="playersContainer" prefHeight="200.0" prefWidth="100.0" spacing="10.0" style="-fx-background-color: transparent;">
-                            <padding>
-                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                            </padding>
-                        </VBox>
-                    </content>
-                </ScrollPane>
+                <ListView fx:id="playersListView" 
+                          prefHeight="200.0" 
+                          prefWidth="200.0" 
+                          styleClass="list-cell-transparent" 
+                          BorderPane.alignment="CENTER">
+                    <BorderPane.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </BorderPane.margin>
+                </ListView>
             </center>
         </BorderPane>
     </children>

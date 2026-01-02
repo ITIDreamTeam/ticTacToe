@@ -63,16 +63,12 @@ public class HomeController implements Initializable {
 
     @FXML
     private void onWithAFriendButton(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/players_board.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Error loading Change Password screen: " + e.getMessage());
-            e.printStackTrace();
-        }
+                    try {
+                App.setRoot("players_board");
+                System.out.println("Go to players board");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
     }
 
     @FXML
