@@ -1,5 +1,6 @@
 package com.mycompany.tictactoeclient.presentation.features.saved_replays;
 
+import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.models.RecordedGame; // Import your POJO
 import java.io.IOException;
 import java.net.URL;
@@ -67,21 +68,10 @@ public class RecordedGamesController implements Initializable {
 
     @FXML
     private void onBackBtnClicked(ActionEvent event) {
-                        try {
-            // 1. Load the profile screen
-            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/profile.fxml"));
-            
-            // 2. Get the current Window (Stage)
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            
-            // 3. Swap the scene
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-            
-        } catch (IOException e) {
-            System.err.println("Error loading Profile screen: " + e.getMessage());
-            e.printStackTrace();
+        try {
+            App.setRoot("home");
+        } catch (IOException ex) {
+           ex.printStackTrace();
         }
     }
 }

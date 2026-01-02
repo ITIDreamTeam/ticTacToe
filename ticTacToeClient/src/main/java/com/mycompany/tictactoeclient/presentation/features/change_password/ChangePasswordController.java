@@ -1,5 +1,6 @@
 package com.mycompany.tictactoeclient.presentation.features.change_password;
 
+import com.mycompany.tictactoeclient.App;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -124,21 +125,9 @@ public class ChangePasswordController implements Initializable {
     @FXML
     private void onBackBtnClicked(ActionEvent event) {
         try {
-            // 1. Load the Profile FXML
-            // Verify this path! It matches the file tree in your screenshot.
-            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/profile.fxml"));
-
-            // 2. Get the current Stage (Window) from the button that was clicked
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            // 3. Set the new scene
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-
-        } catch (IOException e) {
-            System.err.println("Error loading Profile screen: " + e.getMessage());
-            e.printStackTrace();
+            App.setRoot("home");
+        } catch (IOException ex) {
+           ex.printStackTrace();
         }
     }
 

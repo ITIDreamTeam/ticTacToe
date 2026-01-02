@@ -4,6 +4,7 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.game_board;
 
+import com.mycompany.tictactoeclient.App;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -225,14 +226,9 @@ public class Game_boardController implements Initializable {
     @FXML
     private void onBackClicked(ActionEvent event) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/home.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Error loading Change Password screen: " + e.getMessage());
-            e.printStackTrace();
+            App.setRoot("home");
+        } catch (IOException ex) {
+           ex.printStackTrace();
         }
     }
 }
