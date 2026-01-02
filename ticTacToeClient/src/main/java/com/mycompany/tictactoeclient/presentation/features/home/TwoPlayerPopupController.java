@@ -9,6 +9,7 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  * @author Basmala
  */
 import com.mycompany.tictactoeclient.App;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -45,21 +46,19 @@ public class TwoPlayerPopupController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Set default names if needed
         player1Field.setText("Player1");
         player2Field.setText("Player2");
 
         startButton.setOnAction(e -> {
             startGame();
             try {
-                App.setRoot("players_board");
+                App.setRoot("game_board");
+                System.out.println("Go to game_board");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
 
         });
-        // Add button actions
-        startButton.setOnAction(e -> startGame());
         recordButton.setOnAction(e -> showRecords());
     }
 
@@ -75,15 +74,10 @@ public class TwoPlayerPopupController implements Initializable {
         System.out.println("Starting Two Player Game:");
         System.out.println("Player 1: " + player1);
         System.out.println("Player 2: " + player2);
-        
-        // Close the popup
         stage.close();
-        
-        // TODO: Start your actual game here
     }
 
     private void showRecords() {
         System.out.println("Showing Two Player Records");
-        // TODO: Implement record display
     }
 }
