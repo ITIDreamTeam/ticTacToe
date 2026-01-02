@@ -5,6 +5,7 @@
 package com.mycompany.tictactoeclient.presentation.features.game_board;
 
 import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -44,7 +45,7 @@ public class Game_boardController implements Initializable {
     private Pane linePane;
 
     private Button[][] buttons = new Button[3][3];
-    private GameEngine engine;
+    public GameEngine engine;
     private boolean isVsComputer = true;
     private int xScore = 0;
     private int oScore = 0;
@@ -65,6 +66,7 @@ public class Game_boardController implements Initializable {
                 gameGrid.add(btn, col, row);
             }
         }
+        engine.difficulty = OnePlayerPopupController.difficulty;
         startNewGame();
     }
 
