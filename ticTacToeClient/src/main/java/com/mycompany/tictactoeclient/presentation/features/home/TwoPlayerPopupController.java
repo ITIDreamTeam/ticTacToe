@@ -8,6 +8,8 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  *
  * @author Basmala
  */
+import com.mycompany.tictactoeclient.App;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -44,20 +46,15 @@ public class TwoPlayerPopupController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Set default names if needed
         player1Field.setText("Player1");
         player2Field.setText("Player2");
 
         startButton.setOnAction(e -> {
             startGame();
             try {
-                Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/changePassword.fxml"));
-                Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
-                stage.show();
+                App.setRoot("game_board");
+                System.out.println("Go to game_board");
             } catch (IOException ex) {
-                System.err.println("Error loading Change Password screen: " + ex.getMessage());
                 ex.printStackTrace();
             }
 
@@ -66,7 +63,7 @@ public class TwoPlayerPopupController implements Initializable {
     }
 
     @FXML
-    public void onRecordButton() {
+    public void onRecordButton(){
 
     }
 
@@ -77,15 +74,10 @@ public class TwoPlayerPopupController implements Initializable {
         System.out.println("Starting Two Player Game:");
         System.out.println("Player 1: " + player1);
         System.out.println("Player 2: " + player2);
-        
-        // Close the popup
         stage.close();
-        
-        // TODO: Start your actual game here
     }
 
     private void showRecords() {
         System.out.println("Showing Two Player Records");
-        // TODO: Implement record display
     }
 }

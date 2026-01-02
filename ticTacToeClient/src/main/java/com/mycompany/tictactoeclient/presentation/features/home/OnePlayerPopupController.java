@@ -9,6 +9,8 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  *
  * @author Basmala
  */
+import com.mycompany.tictactoeclient.App;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -48,9 +50,19 @@ public class OnePlayerPopupController implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         easyButton.setStyle("-fx-background-color: #4E0585; -fx-text-fill: white;");
+        startButton.setOnAction(e -> {
+            startGame();
+            try {
+                App.setRoot("game_board");
+                System.out.println("Go to game_board");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
     @FXML
     public void onRecordButton(){
+        
     }
 
     @FXML
@@ -74,20 +86,24 @@ public class OnePlayerPopupController implements Initializable{
     }
 
     private void startGame() {
-        RadioButton selected = (RadioButton) difficultyGroup.getSelectedToggle();
-        String difficulty = selected.getUserData().toString();
-        
+        ToggleButton selected = (ToggleButton) difficultyGroup.getSelectedToggle();
+        String difficulty = "";
+
+        if (selected == easyButton) {
+            difficulty = "easy";
+        } else if (selected == mediumButton) {
+            difficulty = "medium";
+        } else if (selected == hardButton) {
+            difficulty = "hard";
+        }
+
         System.out.println("Starting One Player Game:");
         System.out.println("Difficulty: " + difficulty);
 
-        // Close the popup
         stage.close();
-        
-        // TODO: Start your actual game here
     }
 
     private void showRecords() {
         System.out.println("Showing One Player Records");
-        // TODO: Implement record display
     }
 }

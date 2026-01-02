@@ -4,20 +4,23 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
+import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.dataSource.FakeDataSource;
 import com.mycompany.tictactoeclient.data.models.Player;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 
 /**
  * FXML Controller class
@@ -29,74 +32,64 @@ public class Players_boardController implements Initializable {
     @FXML
     private TextField search_text_field;
     @FXML
-    private VBox playersContainer;
-
-    private List<Player> allPlayers;
+    private ListView<Player> playersListView;
+    @FXML
+    private ProgressIndicator loadingSpinner;
+    private final ObservableList<Player> masterData = FXCollections.observableArrayList();
+    private FilteredList<Player> filteredData;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        allPlayers = FakeDataSource.getAllPlayers();
-        loadPlayersList(allPlayers);
-        search_text_field.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterPlayers(newValue);
+        playersListView.setCellFactory(listView -> new PlayerListCell());
+
+        loadDataInBackground();
+        filteredData = new FilteredList<>(masterData, p -> true);
+        playersListView.setItems(filteredData);
+        search_text_field.textProperty().addListener((obs, oldVal, newVal) -> {
+            filteredData.setPredicate(player -> {
+                if (newVal == null || newVal.isEmpty()) {
+                    return true;
+                }
+                String lower = newVal.toLowerCase();
+                return player.getName().toLowerCase().contains(lower)
+                        || String.valueOf(player.getScore()).contains(lower);
+            });
         });
     }
-
-    private void filterPlayers(String query) {
-        if (query == null || query.isEmpty()) {
-            loadPlayersList(allPlayers);
-            return;
-        }
-        String lowerCaseQuery = query.toLowerCase();
-        List<Player> filteredList = allPlayers.stream()
-                .filter(player
-                        -> player.getName().toLowerCase().contains(lowerCaseQuery)
-                || String.valueOf(player.getScore()).startsWith(lowerCaseQuery)
-                )
-                .collect(Collectors.toList());
-        loadPlayersList(filteredList);
-    }
-
-    private void loadPlayersList(List<Player> players) {
-        playersContainer.getChildren().clear();
-        for (Player player : players) {
-            try {
-                // Load the single card FXML
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/player_card.fxml"));
-                HBox cardBox = loader.load();
-
-                Player_cardController cardController = loader.getController();
-                cardController.setPlayerData(player);
-
-                playersContainer.getChildren().add(cardBox);
-
-            } catch (IOException e) {
-                e.printStackTrace();
+    private void loadDataInBackground() {
+        Task<List<Player>> task = new Task<>() {
+            @Override
+            protected List<Player> call() throws Exception {
+                return FakeDataSource.getAllPlayers();
             }
-        }
+        };
+        task.setOnSucceeded(event -> {
+            List<Player> result = task.getValue();
+            masterData.addAll(result);
+            loadingSpinner.setVisible(false);
+            playersListView.setVisible(true);
+        });
+        task.setOnFailed(event -> {
+            task.getException().printStackTrace();
+            loadingSpinner.setVisible(false);
+        });
+        new Thread(task).start();
     }
 
     @FXML
     private void onTextFieldAction(ActionEvent event) {
     }
 
-    public void loadPlayers(List<Player> players) {
-        playersContainer.getChildren().clear();
-
-        for (Player player : players) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/player_card.fxml"));
-                HBox cardBox = loader.load();
-                Player_cardController cardController = loader.getController();
-                cardController.setPlayerData(player);
-                playersContainer.getChildren().add(cardBox);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    @FXML
+    private void onClickBack(ActionEvent event) {
+        try {
+            App.setRoot("home");
+            System.out.println("Go to home");
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 }

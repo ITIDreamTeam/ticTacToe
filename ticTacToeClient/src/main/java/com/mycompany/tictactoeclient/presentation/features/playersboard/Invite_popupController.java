@@ -4,14 +4,20 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
+import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.models.Player;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -66,37 +72,43 @@ public class Invite_popupController implements Initializable {
         System.out.println("Invitation Cancelled");
         closePopup();
     }
- public void setDisplayData(Player player, Stage stage) {
+ public void setDisplayData(Player player, Stage stage,ActionEvent event) {
         this.opponent = player;
         this.stage = stage;
         playerNameLabel.setText(player.getName());
 
-        startBufferPhase();
+        startBufferPhase( event);
     }
 
-    private void startBufferPhase() {
+    private void startBufferPhase(ActionEvent event) {
         statusLabel.setText("Sending request in...");
         timeProgressBar.setProgress(1.0);
         delayTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(5), e -> sendNetworkRequest())
+                new KeyFrame(Duration.seconds(5), e -> sendNetworkRequest(event))
         );
         delayTimeline.play();
     }
 
-    private void sendNetworkRequest() {
+    private void sendNetworkRequest(ActionEvent event) {
         boolean isRecording = recordCheckBox.isSelected();
         System.out.println("Request Sent to " + opponent.getName() + " | Record: " + isRecording);
         statusLabel.setText("Waiting for response...");
         recordCheckBox.setDisable(true); 
-
-        startTimeoutPhase();
+        startTimeoutPhase(event);
     }
 
-    private void startTimeoutPhase() {
+    private void startTimeoutPhase(ActionEvent event) {
         timeoutTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(30), e -> handleTimeout())
+                new KeyFrame(Duration.seconds(10), e -> handleTimeout())
         );
         timeoutTimeline.play();
+        try {
+            App.setRoot("game_board");
+            closePopup();
+            System.out.println("Go to home");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void handleTimeout() {

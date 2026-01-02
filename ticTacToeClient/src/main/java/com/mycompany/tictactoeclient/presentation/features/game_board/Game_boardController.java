@@ -4,6 +4,7 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.game_board;
 
+import com.mycompany.tictactoeclient.App;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -13,6 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -89,7 +91,7 @@ public class Game_boardController implements Initializable {
         int[] coords = (int[]) clickedButton.getUserData();
         if (engine.makeMove(coords[0], coords[1])) {
             updateButton(clickedButton, engine.getCurrentPlayer());
-            if (checkGameStatus()) {
+            if (checkGameStatus(event)) {
                 return;
             }
             engine.switchTurn();
@@ -97,7 +99,7 @@ public class Game_boardController implements Initializable {
                 setBoardDisabled(true);
                 statusLabel.setText("Computer is thinking...");
                 PauseTransition pause = new PauseTransition(Duration.seconds(0.7));
-                pause.setOnFinished(e -> performComputerMove());
+                pause.setOnFinished(e -> performComputerMove(event));
                 pause.play();
             } else {
                 statusLabel.setText("Player " + engine.getCurrentPlayer() + " Turn");
@@ -105,7 +107,7 @@ public class Game_boardController implements Initializable {
         }
     }
 
-    private void performComputerMove() {
+    private void performComputerMove(ActionEvent event) {
         if (engine.isGameOver()) {
             return;
         }
@@ -114,7 +116,7 @@ public class Game_boardController implements Initializable {
         if (move != null) {
             engine.makeMove(move[0], move[1]);
             updateButton(buttons[move[0]][move[1]], engine.getCurrentPlayer());
-            if (!checkGameStatus()) {
+            if (!checkGameStatus(event)) {
                 engine.switchTurn();
                 statusLabel.setText("Player " + engine.getCurrentPlayer() + " Turn");
                 setBoardDisabled(false);
@@ -127,7 +129,7 @@ public class Game_boardController implements Initializable {
         btn.getStyleClass().add(player == GameEngine.Player.X ? "tile-x" : "tile-o");
     }
 
-    private boolean checkGameStatus() {
+    private boolean checkGameStatus(ActionEvent event) {
         GameEngine.Player winner = engine.getWinner();
         if (winner != GameEngine.Player.NONE) {
             engine.setGameOver(true);
@@ -138,7 +140,7 @@ public class Game_boardController implements Initializable {
             if (coords != null) {
                 drawWinningLine(coords[0], coords[1]);
             }
-            showEndGamePopup("Player " + winner + " Wins!");
+            showEndGamePopup("Player " + winner + " Wins!",event);
 
             return true;
         }
@@ -146,14 +148,14 @@ public class Game_boardController implements Initializable {
         if (engine.isBoardFull()) {
             engine.setGameOver(true);
             statusLabel.setText("It's a Draw!");
-            showEndGamePopup("It's a Draw!");
+            showEndGamePopup("It's a Draw!",event);
 
             return true;
         }
         return false;
     }
 
-    private void showEndGamePopup(String message) {
+    private void showEndGamePopup(String message,ActionEvent event) {
         PauseTransition delay = new PauseTransition(Duration.seconds(1));
         delay.setOnFinished(e -> {
             Platform.runLater(() -> {
@@ -164,14 +166,14 @@ public class Game_boardController implements Initializable {
                     PlayAgainPopupController popupController = loader.getController();
                     popupController.setWinnerName(message);
                     popupController.setOnPlayAgain(() -> startNewGame());
-                    popupController.setOnBack(() -> onBackClicked());
+                    popupController.setOnBack(() -> onBackClicked(event));
                     Stage stage = new Stage();
                     stage.initModality(Modality.APPLICATION_MODAL);
                     stage.initStyle(StageStyle.TRANSPARENT);
                     stage.setScene(new Scene(root, Color.TRANSPARENT));
                     Stage mainStage = (Stage) gameGrid.getScene().getWindow();
                     stage.initOwner(mainStage);
-                    double x = mainStage.getX() + (mainStage.getWidth() / 2) - 175; 
+                    double x = mainStage.getX() + (mainStage.getWidth() / 2) - 175;
                     double y = mainStage.getY() + (mainStage.getHeight() / 2) - 125;
                     stage.setX(x);
                     stage.setY(y);
@@ -222,6 +224,11 @@ public class Game_boardController implements Initializable {
     }
 
     @FXML
-    private void onBackClicked() {
-        /* Nav logic */ }
+    private void onBackClicked(ActionEvent event) {
+        try {
+            App.setRoot("home");
+        } catch (IOException ex) {
+           ex.printStackTrace();
+        }
+    }
 }

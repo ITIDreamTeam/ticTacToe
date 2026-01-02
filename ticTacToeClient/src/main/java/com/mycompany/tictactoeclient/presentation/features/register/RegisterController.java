@@ -4,6 +4,9 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.register;
 
+import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -65,6 +68,12 @@ public class RegisterController implements Initializable {
     
     @FXML
     private void onBackClicked(ActionEvent event) {
+        
+        try {
+            App.setRoot("home");
+        } catch (IOException ex) {
+           ex.printStackTrace();
+        }
     }
 
     @FXML
@@ -105,10 +114,21 @@ public class RegisterController implements Initializable {
         }
 
         System.out.println("Register Success");
+        try {
+            UserSession.getInstance().login("Basmala");
+            App.setRoot("home");
+        } catch (IOException ex) {
+           ex.printStackTrace();
+        }
     }
 
     @FXML
     private void onSignInClicked(ActionEvent event) {
+        try {
+            App.setRoot("login");
+        } catch (IOException ex) {
+           ex.printStackTrace();
+        }
     }
 
     private void toggleVisibility(
