@@ -14,16 +14,13 @@ import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -36,8 +33,9 @@ public class Players_boardController implements Initializable {
     private TextField search_text_field;
     @FXML
     private ListView<Player> playersListView;
-
-    private ObservableList<Player> masterData = FXCollections.observableArrayList();
+    @FXML
+    private ProgressIndicator loadingSpinner;
+    private final ObservableList<Player> masterData = FXCollections.observableArrayList();
     private FilteredList<Player> filteredData;
 
     /**
@@ -46,24 +44,39 @@ public class Players_boardController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         playersListView.setCellFactory(listView -> new PlayerListCell());
-        List<Player> players = FakeDataSource.getAllPlayers();
-        masterData.addAll(players);
+
+        loadDataInBackground();
         filteredData = new FilteredList<>(masterData, p -> true);
         playersListView.setItems(filteredData);
-        search_text_field.textProperty().addListener((observable, oldValue, newValue) -> {
+        search_text_field.textProperty().addListener((obs, oldVal, newVal) -> {
             filteredData.setPredicate(player -> {
-                if (newValue == null || newValue.isEmpty()) {
+                if (newVal == null || newVal.isEmpty()) {
                     return true;
                 }
-                String lowerCaseFilter = newValue.toLowerCase();
-                if (player.getName().toLowerCase().contains(lowerCaseFilter)) {
-                    return true;
-                } else if (String.valueOf(player.getScore()).contains(lowerCaseFilter)) {
-                    return true;
-                }
-                return false;
+                String lower = newVal.toLowerCase();
+                return player.getName().toLowerCase().contains(lower)
+                        || String.valueOf(player.getScore()).contains(lower);
             });
         });
+    }
+    private void loadDataInBackground() {
+        Task<List<Player>> task = new Task<>() {
+            @Override
+            protected List<Player> call() throws Exception {
+                return FakeDataSource.getAllPlayers();
+            }
+        };
+        task.setOnSucceeded(event -> {
+            List<Player> result = task.getValue();
+            masterData.addAll(result);
+            loadingSpinner.setVisible(false);
+            playersListView.setVisible(true);
+        });
+        task.setOnFailed(event -> {
+            task.getException().printStackTrace();
+            loadingSpinner.setVisible(false);
+        });
+        new Thread(task).start();
     }
 
     @FXML

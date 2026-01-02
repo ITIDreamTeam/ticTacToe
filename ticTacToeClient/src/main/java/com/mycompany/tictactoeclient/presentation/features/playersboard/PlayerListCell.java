@@ -13,12 +13,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import java.io.IOException;
+import javafx.geometry.Pos;
 
 public class PlayerListCell extends ListCell<Player> {
     private Node graphic;
     private Player_cardController controller;
 
     public PlayerListCell() {
+        setAlignment(Pos.CENTER);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/player_card.fxml"));
             graphic = loader.load();

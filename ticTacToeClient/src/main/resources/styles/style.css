@@ -345,3 +345,24 @@
     -fx-stroke-linecap: round;
     -fx-effect: dropshadow(three-pass-box, #4E0585, 15, 0.5, 0, 0); 
 }
+
+/* Change the spinning circle color */
+.progress-indicator .indicator {
+    -fx-background-color: #490585; /* Your button color */
+}
+
+/* Change the 'tick' color if it finishes (optional) */
+.progress-indicator .progress {
+    -fx-background-color: #490585;
+}
+
+/* If you want the background ring to be a specific color (optional) */
+.progress-indicator .percentage {
+    -fx-fill: null; /* Hides the % text if you don't want it */
+}
+#loadingSpinner .indicator {
+    -fx-background-color: #490585;
+}
+#loadingSpinner .progress {
+    -fx-background-color: #490585;
+}
