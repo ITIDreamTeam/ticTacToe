@@ -51,7 +51,7 @@
                   <Label prefHeight="26.0" prefWidth="150.0" text="Email" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                      <children>
-                        <TextField fx:id="emailField" editable="false" maxWidth="-Infinity" prefWidth="200.0" styleClass="text-field-readonly" text="Player email">
+                        <TextField fx:id="emailField" editable="false" maxWidth="-Infinity" prefWidth="200.0" styleClass="text-field-readonly" text="email@gmail.com">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
