@@ -14,11 +14,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert;
 import java.io.IOException;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.fxml.FXMLLoader;
 
 public class ChangePasswordController implements Initializable {
 
@@ -50,35 +45,22 @@ public class ChangePasswordController implements Initializable {
     // Image variables
     private Image eyeOpenImage;
     private Image eyeClosedImage;
-    // storing the original password to revert back to when clicking Cancel button
     private String originalPassword = "";
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // 1. Bind the text fields
         passwordTextField.textProperty().bindBidirectional(passwordField.textProperty());
         confirmPasswordTextField.textProperty().bindBidirectional(confirmPasswordField.textProperty());
 
-        // 2. Load the images
         try {
-            // "Open Eye" = Visible Password
             eyeOpenImage = new Image(getClass().getResource("/icons/visibility-on_1.png").toExternalForm());
-            // "Slash Eye" = Hidden Password
             eyeClosedImage = new Image(getClass().getResource("/icons/Visibility-off-02.png").toExternalForm());
         } catch (Exception e) {
             System.err.println("Error loading icons: " + e.getMessage());
         }
-
-        // 3. SIMULATE FETCHING USER DATA
-        // Later, you will replace "12345678" with data from your User object
         originalPassword = "12345678";
-
-        // 4. Set the fields to this original value immediately
         passwordField.setText(originalPassword);
         confirmPasswordField.setText(originalPassword);
-
-        // 3. Set Initial State
-        // Defaults: Text Hidden, Dots Shown, Icon = Slash (Closed)
         setupInitialState(passwordTextField, passwordField, passEyeIcon);
         setupInitialState(confirmPasswordTextField, confirmPasswordField, confirmPassEyeIcon);
     }
@@ -87,11 +69,10 @@ public class ChangePasswordController implements Initializable {
         tf.setVisible(false);
         pf.setVisible(true);
         if (eyeClosedImage != null) {
-            icon.setImage(eyeClosedImage); // Default to Slash
+            icon.setImage(eyeClosedImage);
         }
     }
 
-    // --- TOGGLE ACTIONS ---
     @FXML
     private void onTogglePassClicked(ActionEvent event) {
         toggleVisibility(togglePassBtn, passwordTextField, passwordField, passEyeIcon);
@@ -104,16 +85,12 @@ public class ChangePasswordController implements Initializable {
 
     private void toggleVisibility(ToggleButton btn, TextField tf, PasswordField pf, ImageView icon) {
         if (btn.isSelected()) {
-            // STATE: SHOW PASSWORD
-            // We want the Open Eye here
             tf.setVisible(true);
             pf.setVisible(false);
             if (eyeOpenImage != null) {
                 icon.setImage(eyeOpenImage);
             }
         } else {
-            // STATE: HIDE PASSWORD
-            // We want the Slash Eye here
             tf.setVisible(false);
             pf.setVisible(true);
             if (eyeClosedImage != null) {
@@ -127,7 +104,7 @@ public class ChangePasswordController implements Initializable {
         try {
             App.setRoot("home");
         } catch (IOException ex) {
-           ex.printStackTrace();
+            ex.printStackTrace();
         }
     }
 
@@ -150,19 +127,12 @@ public class ChangePasswordController implements Initializable {
         // 1. REVERT values to the original password
         passwordField.setText(originalPassword);
         confirmPasswordField.setText(originalPassword);
-
-        // 2. Reset visibility to "Hidden" (Safe Mode)
-        // We force the 'dots' to show and the 'plain text' to hide
         passwordTextField.setVisible(false);
         passwordField.setVisible(true);
         confirmPasswordTextField.setVisible(false);
         confirmPasswordField.setVisible(true);
-
-        // 3. Reset Toggle Buttons (Unpress them)
         togglePassBtn.setSelected(false);
         toggleConfirmPassBtn.setSelected(false);
-
-        // 4. Reset Icons to "Slash" (Closed Eye)
         if (eyeClosedImage != null) {
             passEyeIcon.setImage(eyeClosedImage);
             confirmPassEyeIcon.setImage(eyeClosedImage);

@@ -4,6 +4,7 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
+import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.models.Player;
 import java.io.IOException;
 import java.net.URL;
@@ -101,16 +102,12 @@ public class Invite_popupController implements Initializable {
                 new KeyFrame(Duration.seconds(10), e -> handleTimeout())
         );
         timeoutTimeline.play();
-               try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/mycompany/tictactoeclient/game_board.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
+        try {
+            App.setRoot("game_board");
             closePopup();
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Error loading Change Password screen: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Go to home");
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 

@@ -10,9 +10,9 @@ package com.mycompany.tictactoeclient.data.models;
  */
 public class RecordedGame {
 
-    private String playerInfo; // e.g., "WithPlayer1"
-    private String date;       // e.g., "20-12-2025"
-    private String time;       // e.g., "02:22AM"
+    private String playerInfo;
+    private String date;
+    private String time;
 
     public RecordedGame(String playerInfo, String date, String time) {
         this.playerInfo = playerInfo;
@@ -20,7 +20,6 @@ public class RecordedGame {
         this.time = time;
     }
 
-    // Getters
     public String getPlayerInfo() {
         return playerInfo;
     }
