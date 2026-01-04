@@ -1,9 +1,6 @@
 package com.mycompany.tictactoeserver.data.dataSource.dao;
 
 import com.mycompany.tictactoeserver.data.model.Player;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
