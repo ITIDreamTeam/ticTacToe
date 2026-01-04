@@ -10,6 +10,7 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  * @author Basmala
  */
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
+import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -27,7 +28,6 @@ import javafx.stage.Stage;
 public class OnePlayerPopupController implements Initializable {
 
     private RadioButton easyRadio;
-
     @FXML
     private ToggleGroup difficultyGroup;
 
@@ -44,6 +44,8 @@ public class OnePlayerPopupController implements Initializable {
     private ToggleButton mediumButton;
     @FXML
     private ToggleButton hardButton;
+
+    public static GameEngine.gameDifficulty difficulty = GameEngine.gameDifficulty.Easy;
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -116,14 +118,13 @@ public class OnePlayerPopupController implements Initializable {
 
     private void startGame() {
         ToggleButton selected = (ToggleButton) difficultyGroup.getSelectedToggle();
-        String difficulty = "";
 
         if (selected == easyButton) {
-            difficulty = "easy";
+            difficulty = GameEngine.gameDifficulty.Easy;
         } else if (selected == mediumButton) {
-            difficulty = "medium";
+            difficulty = GameEngine.gameDifficulty.Medium;
         } else if (selected == hardButton) {
-            difficulty = "hard";
+            difficulty = GameEngine.gameDifficulty.Hard;
         }
 
         System.out.println("Starting One Player Game:");

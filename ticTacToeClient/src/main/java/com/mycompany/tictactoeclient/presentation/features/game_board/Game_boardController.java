@@ -5,6 +5,7 @@
 package com.mycompany.tictactoeclient.presentation.features.game_board;
 
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine.Player;
+import com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -69,6 +70,7 @@ public class Game_boardController implements Initializable {
                 gameGrid.add(btn, col, row);
             }
         }
+        engine.difficulty = OnePlayerPopupController.difficulty;
         startNewGame();
     }
 
