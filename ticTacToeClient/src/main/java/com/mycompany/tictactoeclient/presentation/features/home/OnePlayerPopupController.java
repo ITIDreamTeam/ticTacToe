@@ -9,22 +9,25 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  *
  * @author Basmala
  */
-import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
-public class OnePlayerPopupController implements Initializable{
+public class OnePlayerPopupController implements Initializable {
 
     private RadioButton easyRadio;
 
-    
     @FXML
     private ToggleGroup difficultyGroup;
 
@@ -42,7 +45,6 @@ public class OnePlayerPopupController implements Initializable{
     @FXML
     private ToggleButton hardButton;
 
-    
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -50,35 +52,62 @@ public class OnePlayerPopupController implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         easyButton.setStyle("-fx-background-color: #4E0585; -fx-text-fill: white;");
-        startButton.setOnAction(e -> {
-            startGame();
-            try {
-                App.setRoot("game_board");
-                System.out.println("Go to game_board");
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        });
+
+        // Move logic to a proper handler method for cleanliness
+        startButton.setOnAction(e -> handleStartButton(e));
     }
-    @FXML
-    public void onRecordButton(){
-        
+
+    private void handleStartButton(javafx.event.ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/game_board.fxml"));
+            Parent root = loader.load();
+            Game_boardController gameController = loader.getController();
+            gameController.setGameMode(true);
+
+            gameController.setPlayersName("Player", "Computer");
+            Stage popupStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Stage mainStage = (Stage) popupStage.getOwner();
+
+            mainStage.setScene(new Scene(root));
+            mainStage.show();
+            popupStage.close();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private String getSelectedDifficulty() {
+        if (difficultyGroup.getSelectedToggle() == mediumButton) {
+            return "medium";
+        }
+        if (difficultyGroup.getSelectedToggle() == hardButton) {
+            return "hard";
+        }
+        return "easy";
     }
 
     @FXML
-    public void onEasyButton(){
+    public void onRecordButton() {
+
+    }
+
+    @FXML
+    public void onEasyButton() {
         easyButton.setStyle("-fx-background-color: #4E0585;");
         mediumButton.setStyle("-fx-background-color: black;");
         hardButton.setStyle("-fx-background-color: black;");
     }
+
     @FXML
-    public void onMediumButton(){
+    public void onMediumButton() {
         easyButton.setStyle("-fx-background-color: black;");
         mediumButton.setStyle("-fx-background-color: #4E0585;");
         hardButton.setStyle("-fx-background-color: black;");
     }
+
     @FXML
-    public void onHardButton(){
+    public void onHardButton() {
         easyButton.setStyle("-fx-background-color: black;");
         mediumButton.setStyle("-fx-background-color: black;");
         hardButton.setStyle("-fx-background-color: #4E0585;");

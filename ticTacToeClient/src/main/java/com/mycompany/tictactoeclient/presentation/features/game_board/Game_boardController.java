@@ -4,7 +4,7 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.game_board;
 
-import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine.Player;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -14,7 +14,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -42,10 +41,15 @@ public class Game_boardController implements Initializable {
     private Line winningLine;
     @FXML
     private Pane linePane;
+    @FXML
+    private Label playerNameX;
+    @FXML
+    private Label playerNameO;
 
+    private GameEngine.Player nextStarter = GameEngine.Player.X;
     private Button[][] buttons = new Button[3][3];
     private GameEngine engine;
-    private boolean isVsComputer = true;
+    private boolean isVsComputer;
     private int xScore = 0;
     private int oScore = 0;
 
@@ -68,9 +72,29 @@ public class Game_boardController implements Initializable {
         startNewGame();
     }
 
+    public void setPlayersName(String playerX, String PlayerO) {
+        playerNameX.setText(playerX);
+        playerNameO.setText(PlayerO);
+        statusLabel.setText(playerNameX.getText() + " Turn");
+    }
+
+    public void setGameMode(boolean isVsComputer) {
+        this.isVsComputer = isVsComputer;
+    }
+
     private void startNewGame() {
-        engine.resetGame();
-        statusLabel.setText("Player X Turn");
+        engine.resetGame(nextStarter);
+        if (isVsComputer) {
+            if (nextStarter == Player.X) {
+                statusLabel.setText(playerNameX.getText() + " Turn");
+            }
+        } else {
+            if (nextStarter == Player.X) {
+                statusLabel.setText(playerNameX.getText() + " Turn");
+            } else {
+                statusLabel.setText(playerNameO.getText() + " Turn");
+            }
+        }
         winningLine.setVisible(false);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -80,6 +104,15 @@ public class Game_boardController implements Initializable {
             }
         }
         setBoardDisabled(false);
+        if (isVsComputer && nextStarter == GameEngine.Player.O) {
+            statusLabel.setText("Computer is thinking...");
+            setBoardDisabled(true);
+
+            PauseTransition pause = new PauseTransition(Duration.seconds(0.7));
+            pause.setOnFinished(e -> performComputerMove(null));
+            pause.play();
+        }
+
     }
 
     private void handlePlayerMove(ActionEvent event) {
@@ -102,7 +135,11 @@ public class Game_boardController implements Initializable {
                 pause.setOnFinished(e -> performComputerMove(event));
                 pause.play();
             } else {
-                statusLabel.setText("Player " + engine.getCurrentPlayer() + " Turn");
+                if (engine.getCurrentPlayer() == Player.X) {
+                    statusLabel.setText(playerNameX.getText() + " Turn");
+                } else {
+                    statusLabel.setText(playerNameO.getText() + " Turn");
+                }
             }
         }
     }
@@ -118,7 +155,7 @@ public class Game_boardController implements Initializable {
             updateButton(buttons[move[0]][move[1]], engine.getCurrentPlayer());
             if (!checkGameStatus(event)) {
                 engine.switchTurn();
-                statusLabel.setText("Player " + engine.getCurrentPlayer() + " Turn");
+                statusLabel.setText(playerNameX.getText() + " Turn");
                 setBoardDisabled(false);
             }
         }
@@ -133,14 +170,21 @@ public class Game_boardController implements Initializable {
         GameEngine.Player winner = engine.getWinner();
         if (winner != GameEngine.Player.NONE) {
             engine.setGameOver(true);
-            statusLabel.setText("Winner: " + winner + "!");
+            nextStarter = winner;
+            String winnerName;
+            if (winner == GameEngine.Player.X) {
+                winnerName = playerNameX.getText();
+            } else {
+                winnerName = playerNameO.getText();
+            }
+            statusLabel.setText("Winner: " + winnerName + "!");
             updateScore(winner);
             setBoardDisabled(true);
             int[] coords = engine.getWinningCoords();
             if (coords != null) {
                 drawWinningLine(coords[0], coords[1]);
             }
-            showEndGamePopup("Player " + winner + " Wins!",event);
+            showEndGamePopup(winnerName + " Wins!", event);
 
             return true;
         }
@@ -148,14 +192,14 @@ public class Game_boardController implements Initializable {
         if (engine.isBoardFull()) {
             engine.setGameOver(true);
             statusLabel.setText("It's a Draw!");
-            showEndGamePopup("It's a Draw!",event);
+            showEndGamePopup("It's a Draw!", event);
 
             return true;
         }
         return false;
     }
 
-    private void showEndGamePopup(String message,ActionEvent event) {
+    private void showEndGamePopup(String message, ActionEvent event) {
         PauseTransition delay = new PauseTransition(Duration.seconds(1));
         delay.setOnFinished(e -> {
             Platform.runLater(() -> {
@@ -164,6 +208,7 @@ public class Game_boardController implements Initializable {
                     Parent root = loader.load();
 
                     PlayAgainPopupController popupController = loader.getController();
+
                     popupController.setWinnerName(message);
                     popupController.setOnPlayAgain(() -> startNewGame());
                     popupController.setOnBack(() -> onBackClicked(event));
@@ -212,10 +257,10 @@ public class Game_boardController implements Initializable {
     private void updateScore(GameEngine.Player winner) {
         if (winner == GameEngine.Player.X) {
             xScore++;
-            scoreXLabel.setText("Player X: " + xScore);
+            scoreXLabel.setText("" + xScore);
         } else {
             oScore++;
-            scoreOLabel.setText("Player O: " + oScore);
+            scoreOLabel.setText("" + oScore);
         }
     }
 
@@ -226,9 +271,15 @@ public class Game_boardController implements Initializable {
     @FXML
     private void onBackClicked(ActionEvent event) {
         try {
-            App.setRoot("home");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/home.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) gameGrid.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
         } catch (IOException ex) {
-           ex.printStackTrace();
+            ex.printStackTrace();
         }
     }
 }
