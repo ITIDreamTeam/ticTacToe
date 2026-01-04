@@ -19,7 +19,7 @@ public class ServerConnection {
     
     public ServerConnection(){
         try{
-            serverSocket = new ServerSocket(5005);
+            serverSocket = new ServerSocket(5006);
             System.out.println("Ready to connect");
             while(true){
                 Socket socket = serverSocket.accept();

@@ -26,7 +26,7 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
-        new ServerConnection();
+        new Thread(() -> new ServerConnection()).start();
     }
 
     static void setRoot(String fxml) throws IOException {
