@@ -110,10 +110,21 @@ public class ChangePasswordController implements Initializable {
 
     @FXML
     private void onSaveBtnClicked(ActionEvent event) {
+        try {
+            App.setRoot("home");
+        } catch (IOException ex) {
+           ex.printStackTrace();
+        }
     }
 
     @FXML
     private void onCancelBtnClicked(ActionEvent event) {
+        try {
+            App.setRoot("home");
+        } catch (IOException ex) {
+           ex.printStackTrace();
+        }
+        // 1. REVERT values to the original password
         passwordField.setText(originalPassword);
         confirmPasswordField.setText(originalPassword);
         passwordTextField.setVisible(false);
