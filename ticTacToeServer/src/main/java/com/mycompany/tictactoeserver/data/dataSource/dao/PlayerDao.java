@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Nadin
  */
-public interface PlayerDAO {
+ interface PlayerDAO {
 
     List<Player> getAllPlayers();
 
