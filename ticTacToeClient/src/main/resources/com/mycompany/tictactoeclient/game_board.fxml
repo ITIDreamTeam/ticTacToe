@@ -47,14 +47,14 @@
                      <children>
                         <VBox alignment="CENTER">
                            <children>
-                              <Label styleClass="label-title" text="Player X" />
+                              <Label fx:id="playerNameX" styleClass="label-title" text="Player X" />
                               <Label fx:id="scoreXLabel" styleClass="label" text="0" textFill="#ff00ff" />
                            </children>
                         </VBox>
                         <Label styleClass="label" text="VS" />
                         <VBox alignment="CENTER">
                            <children>
-                              <Label styleClass="label-title" text="Player O" />
+                              <Label fx:id="playerNameO" styleClass="label-title" text="Player O" />
                               <Label fx:id="scoreOLabel" styleClass="label" text="0" textFill="#00ffff" />
                            </children>
                         </VBox>
