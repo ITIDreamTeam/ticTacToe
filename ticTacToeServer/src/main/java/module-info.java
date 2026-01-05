@@ -4,7 +4,7 @@ module com.mycompany.tictactoeserver {
     requires java.base;
     requires java.sql;
     requires com.google.gson;
-
+    requires derbyclient;
     opens com.mycompany.tictactoeserver to javafx.fxml;
     opens com.mycompany.tictactoeserver.presentation.features.home to javafx.fxml;
     opens com.mycompany.tictactoeserver.presentation.features.playersDetails to javafx.fxml;

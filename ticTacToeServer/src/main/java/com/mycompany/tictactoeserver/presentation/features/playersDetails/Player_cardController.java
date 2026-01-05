@@ -81,7 +81,7 @@ public class Player_cardController implements Initializable {
         player_name.setText(player.getName());
         player_score.setText("" + player.getScore());
 
-        switch (player.getStatus()) {
+        switch (player.getPlayerState()) {
             case ONLINE:
                 player_state.setStyle("-fx-text-fill: #2ecc71;");
                 player_state.setText("ONLINE");
