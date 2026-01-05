@@ -8,7 +8,7 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  *
  * @author Basmala
  */
-import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 
 import java.io.IOException;
 import java.net.URL;
@@ -17,7 +17,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -37,7 +36,6 @@ public class TwoPlayerPopupController implements Initializable {
 
     @FXML
     private Button startButton;
-
     private Stage stage;
 
     public void setStage(Stage stage) {
@@ -48,33 +46,36 @@ public class TwoPlayerPopupController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         player1Field.setText("Player1");
         player2Field.setText("Player2");
-
         startButton.setOnAction(e -> {
-            startGame();
-            try {
-                App.setRoot("game_board");
-                System.out.println("Go to game_board");
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-
+            handleStartButton(e);
         });
         recordButton.setOnAction(e -> showRecords());
     }
 
     @FXML
-    public void onRecordButton(){
+    public void onRecordButton() {
 
     }
 
-    private void startGame() {
-        String player1 = player1Field.getText().isEmpty() ? "Player1" : player1Field.getText();
-        String player2 = player2Field.getText().isEmpty() ? "Player2" : player2Field.getText();
+    private void handleStartButton(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/game_board.fxml"));
+            Parent root = loader.load();
+            Game_boardController gameController = loader.getController();
+            String p1 = player1Field.getText().isEmpty() ? "Player 1" : player1Field.getText();
+            String p2 = player2Field.getText().isEmpty() ? "Player 2" : player2Field.getText();
+            gameController.setPlayersName(p1, p2);
+            gameController.setGameMode(false);
 
-        System.out.println("Starting Two Player Game:");
-        System.out.println("Player 1: " + player1);
-        System.out.println("Player 2: " + player2);
-        stage.close();
+            Stage mainStage = (Stage) this.stage.getOwner();
+            Scene scene = new Scene(root);
+            mainStage.setScene(scene);
+            mainStage.show();
+            this.stage.close();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void showRecords() {

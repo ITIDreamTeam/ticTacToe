@@ -9,33 +9,72 @@ package com.mycompany.tictactoeserver.data.model;
  * @author Nadin
  */
 public class Player {
+
+    private int id;
     private String name;
+    private String email;
+    private String password;
     private int score;
-    private PlayerStatus status;
-    private String avatarUrl;
-    private int numOfWins;
-    private int numOfLosses;
-    private int numOfDraws;
+    private PlayerState playerState;
 
-    public enum PlayerStatus {
-        ONLINE, OFFLINE, IN_GAME
+    public enum PlayerState {
+        OFFLINE(0),
+        ONLINE(1),
+        IN_GAME(2);
+
+        private final int value;
+
+        PlayerState(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static PlayerState fromValue(int value) {
+            for (PlayerState state : values()) {
+                if (state.value == value) {
+                    return state;
+                }
+            }
+            return OFFLINE;
+        }
     }
 
-    public Player(String name, int score, PlayerStatus status) {
+    public Player() {
+    }
+
+    public Player(int id, String name, String email, String password, PlayerState playerState, int score) {
+        this.id = id;
         this.name = name;
+        this.email = email;
+        this.password = password;
+        this.playerState = playerState;
         this.score = score;
-        this.status = status;
-        this.avatarUrl = "..\\..\\..\\avatar.png";
-        this.numOfWins = 0;
-        this.numOfLosses = 0;
-        this.numOfDraws = 0;
     }
 
-    public String getName() { return name; }
-    public int getScore() { return score; }
-    public PlayerStatus getStatus() { return status; }
-    public String getAvatarUrl() { return avatarUrl; }
-    public int getNumOfWins() {return numOfWins;}
-    public int getNumOfLosses() {return numOfLosses;}
-    public int getNumOfDraws() {return numOfDraws;}
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public PlayerState getPlayerState() {
+        return playerState;
+    }
 }

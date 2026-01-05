@@ -3,6 +3,7 @@ module com.mycompany.tictactoeserver {
     requires javafx.fxml;
     requires java.base;
     requires java.sql;
+    requires derbyclient;
 
     opens com.mycompany.tictactoeserver to javafx.fxml;
     opens com.mycompany.tictactoeserver.presentation.features.home to javafx.fxml;
