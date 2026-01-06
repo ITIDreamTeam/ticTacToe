@@ -4,6 +4,10 @@
  */
 package com.mycompany.tictactoeserver.presentation.features.home;
 
+import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
+import com.mycompany.tictactoeserver.network.AuthService;
+import com.mycompany.tictactoeserver.network.GameServer;
+import com.mycompany.tictactoeserver.network.MessageRouter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -18,6 +22,7 @@ import javafx.scene.Scene;
 
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
 /**
@@ -32,12 +37,17 @@ public class HomeController implements Initializable {
     private BarChart<String, Number> barChart;
     @FXML
     private ToggleButton startToggleBtn;
-    
+    @FXML
+    private ListView<String> logList;
+     private GameServer server;
+     private boolean isServerRunning = false;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        server = new GameServer();
+        
         barChart.setLegendVisible(false); 
-
+        
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
         /*Dummy Data*/
@@ -61,8 +71,23 @@ public class HomeController implements Initializable {
         });
     }    
     
-    @FXML
+@FXML
     private void onToggaleBtnClicked(ActionEvent event) {
+        if (startToggleBtn.isSelected()) {
+            startToggleBtn.setText("Stop");
+
+            try {
+                server.start();
+                uiLog("Server start");
+            } catch (Exception ex) {
+                uiLog("Server cant start");
+            }
+
+        } else {
+            startToggleBtn.setText("Start");
+            server.stop();
+            uiLog("Server stopped");
+        }
     }
 
     @FXML
@@ -81,4 +106,7 @@ public class HomeController implements Initializable {
                 System.out.println("Failed to load Players Screen FXML");
             }
         }
+    private void uiLog(String s) {
+        Platform.runLater(() -> logList.getItems().add(s));
+    }
 }
