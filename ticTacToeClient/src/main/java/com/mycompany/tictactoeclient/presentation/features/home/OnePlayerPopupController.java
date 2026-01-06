@@ -67,6 +67,10 @@ public class OnePlayerPopupController implements Initializable {
             gameController.setGameMode(true);
 
             gameController.setPlayersName("Player", "Computer");
+            
+            boolean isChecked = recordButton.isSelected();
+            gameController.setIsRecorded(isChecked);
+            
             Stage popupStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Stage mainStage = (Stage) popupStage.getOwner();
 

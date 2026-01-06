@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
@@ -32,6 +33,22 @@
                <children>
                   <Button mnemonicParsing="false" onAction="#onBackClicked" styleClass="back-button" text="&lt; Back" />
                   <Label styleClass="label-title" text="Tic Tac Toe Arena" />
+                  <HBox fx:id="recordingBox" alignment="CENTER" prefHeight="58.0" prefWidth="118.0" spacing="8.0">
+                     <children>
+                        <Circle fx:id="recordingDot" fill="DODGERBLUE" radius="5.0" stroke="BLACK" strokeType="INSIDE" styleClass="recording-dot" />
+                        <Label prefHeight="30.0" prefWidth="202.0" styleClass="label-title" stylesheets="@../../../styles/style.css" text="Recording">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
+                     </children>
+                     <HBox.margin>
+                        <Insets left="200.0" />
+                     </HBox.margin>
+                  </HBox>
                </children>
                <padding>
                   <Insets left="10.0" />

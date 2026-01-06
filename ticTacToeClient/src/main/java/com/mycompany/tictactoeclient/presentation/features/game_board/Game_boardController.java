@@ -9,7 +9,9 @@ import com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupCo
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,8 +22,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -46,6 +50,11 @@ public class Game_boardController implements Initializable {
     private Label playerNameX;
     @FXML
     private Label playerNameO;
+    @FXML
+    private Circle recordingDot;
+    @FXML
+    private HBox recordingBox;
+    private boolean isRecorded;
 
     private GameEngine.Player nextStarter = GameEngine.Player.X;
     private Button[][] buttons = new Button[3][3];
@@ -53,6 +62,7 @@ public class Game_boardController implements Initializable {
     private boolean isVsComputer;
     private int xScore = 0;
     private int oScore = 0;
+    private Timeline blinkingTimeline;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -82,6 +92,39 @@ public class Game_boardController implements Initializable {
 
     public void setGameMode(boolean isVsComputer) {
         this.isVsComputer = isVsComputer;
+    }
+
+    public void setIsRecorded(boolean isRecorded) {
+        this.isRecorded = isRecorded;
+        System.out.println("is Recorded = " + isRecorded);
+        
+        if (isRecorded) {
+            startRecordingUI();
+
+        } else {
+            stopRecordingUI();
+        }
+    }
+
+    private void startRecordingUI() {
+        recordingBox.setVisible(true);
+        recordingBox.setManaged(true);
+
+        blinkingTimeline = new Timeline(
+                new KeyFrame(Duration.seconds(0.5),
+                        e -> recordingDot.setVisible(!recordingDot.isVisible()))
+        );
+        blinkingTimeline.setCycleCount(Timeline.INDEFINITE);
+        blinkingTimeline.play();
+    }
+
+    private void stopRecordingUI() {
+        if (blinkingTimeline != null) {
+            blinkingTimeline.stop();
+        }
+
+        recordingBox.setVisible(false);
+        recordingBox.setManaged(false);
     }
 
     private void startNewGame() {

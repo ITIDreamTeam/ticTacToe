@@ -6,6 +6,7 @@ package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.models.Player;
+import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -59,6 +60,16 @@ public class Invite_popupController implements Initializable {
 
     @FXML
     private void onClickCheckBox(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/game_board.fxml"));
+            Parent root = loader.load();
+            Game_boardController gameController = loader.getController();
+
+            boolean isChecked = recordCheckBox.isSelected();
+            gameController.setIsRecorded(isChecked);
+        } catch (IOException ex) {
+            System.getLogger(Invite_popupController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 
     @FXML
@@ -93,7 +104,7 @@ public class Invite_popupController implements Initializable {
         boolean isRecording = recordCheckBox.isSelected();
         System.out.println("Request Sent to " + opponent.getName() + " | Record: " + isRecording);
         statusLabel.setText("Waiting for response...");
-        recordCheckBox.setDisable(true); 
+        recordCheckBox.setDisable(true);
         startTimeoutPhase(event);
     }
 
