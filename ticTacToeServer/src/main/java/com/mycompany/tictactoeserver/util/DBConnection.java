@@ -7,6 +7,7 @@ package com.mycompany.tictactoeserver.util;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import org.apache.derby.jdbc.ClientDriver;
 
 /**
  *
@@ -14,14 +15,14 @@ import java.sql.SQLException;
  */
 public class DBConnection {
     private static final String URL = "jdbc:derby://localhost:1527/ticTacToe";
-    private static final String USER = "yassen";
-    private static final String PASSWORD = "yassen";
+    private static final String USER = "app";
+    private static final String PASSWORD = "app";
 
     private DBConnection() {
-        // prevent instantiation
+        
     }
-
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+            DriverManager.registerDriver(new ClientDriver());
+            return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }

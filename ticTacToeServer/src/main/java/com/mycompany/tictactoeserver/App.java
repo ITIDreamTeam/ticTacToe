@@ -1,5 +1,6 @@
 package com.mycompany.tictactoeserver;
 
+import com.mycompany.tictactoeserver.network.GameServer;
 import com.mycompany.tictactoeserver.util.DBConnection;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -14,10 +15,12 @@ import java.sql.SQLException;
 /**
  * JavaFX App
  */
+
 public class App extends Application {
 
     private static Scene scene;
-
+    private GameServer server;
+ 
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("home"), 640, 480);
@@ -34,6 +37,11 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+    }
+    @Override
+    public void stop(){
+    server = GameServer.getInstance(); 
+    server.stop();
     }
 
     static void setRoot(String fxml) throws IOException {

@@ -44,7 +44,7 @@ public class HomeController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        server = new GameServer();
+        server = GameServer.getInstance();
         
         barChart.setLegendVisible(false); 
         

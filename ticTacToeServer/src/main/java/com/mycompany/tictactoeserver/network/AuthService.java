@@ -30,7 +30,7 @@ public final class AuthService {
         if (userName.isEmpty() || password.length() < 4) {
             return new ResultPayload(false, "INVALID_INPUT", "Username required, password min 4 chars.");
         }
-        
+        System.out.print(userName+email);
         if (playerDao.isUsernameExist(userName)) {
             return new ResultPayload(false, "DUPLICATE_USERNAME", "Username already exists.");
         }

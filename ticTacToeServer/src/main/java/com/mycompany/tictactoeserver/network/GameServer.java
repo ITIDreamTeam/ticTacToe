@@ -23,9 +23,15 @@ public final class GameServer {
      PlayerDaoImpl playerDao = new PlayerDaoImpl();
     private volatile boolean running;
     private ServerSocket serverSocket;
-
-       public GameServer() {
-
+    private static GameServer instance;
+    
+       private GameServer() {
+    }
+    public static synchronized GameServer getInstance() {
+        if (instance == null) {
+            instance = new GameServer();
+        }
+        return instance;
     }
         ClientRegistry registry = new ClientRegistry();
         AuthService auth = new AuthService(playerDao);
