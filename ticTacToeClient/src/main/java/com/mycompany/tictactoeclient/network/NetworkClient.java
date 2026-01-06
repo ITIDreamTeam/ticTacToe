@@ -5,7 +5,7 @@
 package com.mycompany.tictactoeclient.network;
 
 import com.google.gson.Gson;
-import com.mycompany.tictactoeserver.network.dtos.ErrorPayload;
+import com.mycompany.tictactoeclient.network.dtos.ErrorPayload;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;

@@ -9,20 +9,27 @@ package com.mycompany.tictactoeclient.network;
  * @author yasse
  */
 public enum MessageType {
-    LOGIN,
+  // Auth
     REGISTER,
-    GET_ONLINE_PLAYERS,
-
-    SEND_REQUEST,     
-    REQUEST_RESPONSE,   
-    GAME_MOVE,
-    GAME_END,
-
-    DISCONNECT,
-
-    // server -> client events
-    ERROR,
     REGISTER_RESULT,
+    LOGIN,
     LOGIN_RESULT,
-    ONLINE_PLAYERS_UPDATE
+    DISCONNECT,
+    
+    // Players
+    GET_ONLINE_PLAYERS,
+    ONLINE_PLAYERS_UPDATE,
+    
+    // Game Invites
+    SEND_REQUEST,
+    ACCEPT_REQUEST,
+    DECLINE_REQUEST,
+    
+    // Game
+    GAME_MOVE,
+    GAME_STATE_UPDATE,
+    GAME_END,
+    
+    // General
+    ERROR
 }

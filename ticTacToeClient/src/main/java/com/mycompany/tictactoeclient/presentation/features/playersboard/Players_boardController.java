@@ -7,10 +7,14 @@ package com.mycompany.tictactoeclient.presentation.features.playersboard;
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.dataSource.FakeDataSource;
 import com.mycompany.tictactoeclient.data.models.Player;
+import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
+import com.mycompany.tictactoeclient.network.NetworkClient;
+import com.mycompany.tictactoeclient.network.NetworkMessage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -37,7 +41,7 @@ public class Players_boardController implements Initializable {
     private ProgressIndicator loadingSpinner;
     private final ObservableList<Player> masterData = FXCollections.observableArrayList();
     private FilteredList<Player> filteredData;
-
+      
     /**
      * Initializes the controller class.
      */

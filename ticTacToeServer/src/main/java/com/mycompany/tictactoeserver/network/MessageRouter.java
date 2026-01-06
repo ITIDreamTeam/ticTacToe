@@ -73,9 +73,10 @@ public final class MessageRouter {
     }
 
     private void handleRegister(ClientSession session, NetworkMessage msg) {
-RegisterRequest request = gson.fromJson(msg.getPayload(), RegisterRequest.class);
+    RegisterRequest request = gson.fromJson(msg.getPayload(), RegisterRequest.class);
+    
     ResultPayload result = auth.register(request);
-
+    
     if (result.isSuccess()) {
         String username = request.getUsername();
         if (registry.isOnline(username)) {
