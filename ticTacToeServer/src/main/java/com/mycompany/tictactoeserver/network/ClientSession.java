@@ -52,6 +52,7 @@ public final class ClientSession implements Runnable {
             while (running && (line = in.readLine()) != null) {
                 NetworkMessage msg = gson.fromJson(line, NetworkMessage.class);
                 onMessage.accept(this, msg);
+                System.out.print(msg);
             }
         } catch (Exception ignored) {
         } finally {

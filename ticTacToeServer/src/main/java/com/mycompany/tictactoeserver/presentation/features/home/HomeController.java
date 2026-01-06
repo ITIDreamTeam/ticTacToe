@@ -73,21 +73,26 @@ public class HomeController implements Initializable {
     
 @FXML
     private void onToggaleBtnClicked(ActionEvent event) {
-        if (startToggleBtn.isSelected()) {
-            startToggleBtn.setText("Stop");
-
+       if (startToggleBtn.isSelected()) {
+        startToggleBtn.setText("Stop");
+        new Thread(() -> {
             try {
-                server.start();
-                uiLog("Server start");
+                uiLog("Server starting...");
+                server.start(); 
             } catch (Exception ex) {
-                uiLog("Server cant start");
+                ex.printStackTrace();
+                uiLog("Server crashed: " + ex.getMessage());
+                Platform.runLater(() -> {
+                    startToggleBtn.setSelected(false);
+                    startToggleBtn.setText("Start");
+                });
             }
-
-        } else {
-            startToggleBtn.setText("Start");
-            server.stop();
-            uiLog("Server stopped");
-        }
+        }).start();
+    } else {
+        startToggleBtn.setText("Start");
+        server.stop();
+        uiLog("Server stopped");
+    }
     }
 
     @FXML

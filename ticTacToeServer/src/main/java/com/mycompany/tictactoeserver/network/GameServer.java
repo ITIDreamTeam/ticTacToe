@@ -9,10 +9,8 @@ import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 /**
  *
@@ -34,23 +32,31 @@ public final class GameServer {
         MessageRouter router = new MessageRouter(gson, registry, auth);
 
     public void start() throws Exception {
-        try {
-            serverSocket = new ServerSocket(port);
-            System.out.println("Server listening on port " + port);
-            while (running) {
-                Socket socket = serverSocket.accept();
-                                ClientSession session = new ClientSession(
-                        socket,
-                        gson,
-                        router::handle,
-                        router::onDisconnect
-                );
-                new Thread(session, "client-session").start();
-            }
-        }catch(IOException ex ){
+try {
+        serverSocket = new ServerSocket(port);
+        System.out.println("Server listening on port " + port);
+        running = true; 
+
+        while (running) {
+            Socket socket = serverSocket.accept();
+            System.out.println("Accepted new client");
+            
+            ClientSession session = new ClientSession(
+                    socket,
+                    gson,
+                    router::handle,
+                    router::onDisconnect
+            );
+            new Thread(session, "client-session").start();
+        }
+    } catch(IOException ex) {
+        if (!running) {
+            System.out.println("Server stopped successfully.");
+        } else {
             ex.printStackTrace();
         }
     }
+}
 
     public void stop() {
         running = false;

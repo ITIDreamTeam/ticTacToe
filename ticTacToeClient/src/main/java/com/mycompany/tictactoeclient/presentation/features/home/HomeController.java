@@ -15,8 +15,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.App;
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
+import com.mycompany.tictactoeclient.network.NetworkClient;
+
 
 /**
  * FXML Controller class
@@ -24,117 +24,99 @@ import javafx.scene.paint.Color;
  * @author Basmala
  */
 public class HomeController implements Initializable {
+ @FXML private Button onePlayerButton;
+    @FXML private Button twoPlayerButton;
+    @FXML private Button withAFriendButton;
+    @FXML private Hyperlink firstHyperlink;
+    @FXML private Hyperlink secondHyperlink;
 
-    @FXML
-    private Button onePlayerButton;
-    @FXML
-    private Button twoPlayerButton;
-    @FXML
-    private Button withAFriendButton;
-    @FXML
-    private Hyperlink firstHyperlink;
-
-    @FXML
-    private Hyperlink secondHyperlink;
-
-    private UserSession userSession;
-
-    /**
-     * Initializes the controller class.
-     */
+    private final UserSession session = UserSession.getInstance();
+    private final NetworkClient client = NetworkClient.getInstance();
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        userSession = UserSession.getInstance();
         setupButtonHoverEffects();
-        updateLoginUI();
-        System.out.print("Home again!!");
-
+        updateUI();
     }
 
-    private void updateLoginUI() {
-        if (userSession.isLoggedIn()) {
-            firstHyperlink.setText("Basmala");
+    private void updateUI() {
+        if (session.isLoggedIn()) {
+            firstHyperlink.setText(session.getUsername());
             secondHyperlink.setText("Logout");
+            if (session.isOnline()) {
+                withAFriendButton.setDisable(false);
+            } else {
+                withAFriendButton.setDisable(true);
+            }
         } else {
             firstHyperlink.setText("Login");
             secondHyperlink.setText("Register");
+            withAFriendButton.setDisable(true);
         }
     }
 
     @FXML
     private void onWithAFriendButton(ActionEvent event) {
-        try {
-            App.setRoot("players_board");
-            System.out.println("Go to players board");
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        if (!session.isLoggedIn() || !session.isOnline()) {
+            App.showWarning("Login Required", 
+                "You must be logged in and connected to play online.");
+            navigateToLogin();
+            return;
         }
+        
+        navigateToPlayboard();
     }
 
     @FXML
     private void onFirstHyperlink(ActionEvent event) {
-
-        if (firstHyperlink.getText().equals("Login")) {
-            System.out.println("Login");
-            navigateToLogin();
-
-        } else {
+        if (session.isLoggedIn()) {
             navigateToProfile();
+        } else {
+            navigateToLogin();
         }
-
     }
 
     @FXML
     private void onSecondHyperlink(ActionEvent event) {
-
-        if (secondHyperlink.getText().equals("Register")) {
-            System.out.println("navigateToRegister");
-            navigateToRegister();
-        } else if (secondHyperlink.getText().equals("Logout")) {
-            System.out.println("Logout");
-            userSession.logout();
-            updateLoginUI();
+        if (session.isLoggedIn()) {
+            handleLogout();
         } else {
-            System.out.println("non");
+            navigateToRegister();
         }
-
     }
 
     @FXML
-    public void onTwoPlayerButton() {
+    public void onTwoPlayerButton(ActionEvent event) {
         showPopup("two-player-popup.fxml", "Two Player Game Setup");
     }
 
     @FXML
-    public void onOnePlayerButton() {
+    public void onOnePlayerButton(ActionEvent event) {
         showPopup("one-player-popup.fxml", "One Player Game Setup");
     }
 
-    @FXML
-    public void onUserNameButton() {
-        showPopup("one-player-popup.fxml", "One Player Game Setup");
+    private void handleLogout() {
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("Logout");
+        confirmation.setHeaderText(null);
+        confirmation.setContentText("Are you sure you want to logout?");
+        
+        confirmation.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                session.logout();
+                App.showInfo("Logged Out", "You have been logged out successfully.");
+                updateUI();
+            }
+        });
     }
 
     private void showPopup(String fxmlFile, String title) {
         try {
-            System.out.println("Loading popup: " + fxmlFile);
-            String relativePath = "../../../../" + fxmlFile;
-            System.out.println("Trying relative path: " + relativePath);
-
-            URL fxmlUrl = getClass().getResource(relativePath);
+            URL fxmlUrl = findFXMLResource(fxmlFile);
+            
             if (fxmlUrl == null) {
-                String absolutePath = "/com/mycompany/tictactoeclient/" + fxmlFile;
-                System.out.println("Trying absolute path: " + absolutePath);
-                fxmlUrl = getClass().getResource(absolutePath);
+                throw new IOException("Cannot find FXML file: " + fxmlFile);
             }
-
-            if (fxmlUrl == null) {
-                throw new IOException("Cannot find FXML file: " + fxmlFile
-                        + "\nTried: " + relativePath + " and "
-                        + "/com/mycompany/tictactoeclient/" + fxmlFile);
-            }
-
-            System.out.println("Success! Found at: " + fxmlUrl);
 
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             Parent root = loader.load();
@@ -142,53 +124,60 @@ public class HomeController implements Initializable {
             Stage popupStage = new Stage();
             popupStage.setTitle(title);
             popupStage.initModality(Modality.APPLICATION_MODAL);
-            if (onePlayerButton != null && onePlayerButton.getScene() != null) {
-                popupStage.initOwner(onePlayerButton.getScene().getWindow());
-            }
-
+            popupStage.initOwner(App.getPrimaryStage());
             popupStage.setResizable(false);
 
-            Scene scene = new Scene(root, Color.TRANSPARENT);
-
-            try {
-                URL cssUrl = getClass().getResource("../../../../styles/style.css");
-                if (cssUrl != null) {
-                    scene.getStylesheets().add(cssUrl.toExternalForm());
-                    System.out.println("CSS loaded from: " + cssUrl);
-                } else {
-                    System.out.println("CSS file not found");
-                }
-            } catch (Exception e) {
-                System.err.println("Could not load CSS: " + e.getMessage());
-            }
-
+            Scene scene = new Scene(root);
+            loadCSS(scene);
             Object controller = loader.getController();
-            if (controller != null) {
-                if (controller instanceof TwoPlayerPopupController) {
-                    ((TwoPlayerPopupController) controller).setStage(popupStage);
-                } else if (controller instanceof OnePlayerPopupController) {
-                    ((OnePlayerPopupController) controller).setStage(popupStage);
-                }
-            }
+            setStageInController(controller, popupStage);
 
             popupStage.setScene(scene);
             popupStage.showAndWait();
 
         } catch (Exception e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Cannot load popup");
-            alert.setContentText("Error loading " + fxmlFile + ":\n" + e.getMessage());
-            alert.showAndWait();
+            App.showError("Error", "Cannot load popup: " + e.getMessage());
+        }
+    }
+    
+    private URL findFXMLResource(String fxmlFile) {
+        URL url = getClass().getResource("../../../../" + fxmlFile);
+        if (url != null) return url;
+        url = getClass().getResource("/com/mycompany/tictactoeclient/" + fxmlFile);
+        if (url != null) return url;
+        return getClass().getResource("/" + fxmlFile);
+    }
+    
+    private void loadCSS(Scene scene) {
+        try {
+            URL cssUrl = getClass().getResource("../../../../styles/style.css");
+            if (cssUrl == null) {
+                cssUrl = getClass().getResource("/styles/style.css");
+            }
+            if (cssUrl != null) {
+                scene.getStylesheets().add(cssUrl.toExternalForm());
+            }
+        } catch (Exception e) {
+            System.err.println("Could not load CSS: " + e.getMessage());
+        }
+    }
+    
+    private void setStageInController(Object controller, Stage stage) {
+        if (controller instanceof TwoPlayerPopupController) {
+            ((TwoPlayerPopupController) controller).setStage(stage);
+        } else if (controller instanceof OnePlayerPopupController) {
+            ((OnePlayerPopupController) controller).setStage(stage);
         }
     }
 
     private void setupButtonHoverEffects() {
         Button[] buttons = {onePlayerButton, twoPlayerButton, withAFriendButton};
         for (Button btn : buttons) {
-            btn.setOnMouseEntered(e -> btn.setStyle("-fx-background-color: #FF00FF; -fx-text-fill: white;"));
-            btn.setOnMouseExited(e -> btn.setStyle("-fx-background-color: #4E0585; -fx-text-fill: white;"));
+            btn.setOnMouseEntered(e -> 
+                btn.setStyle("-fx-background-color: #FF00FF; -fx-text-fill: white;"));
+            btn.setOnMouseExited(e -> 
+                btn.setStyle("-fx-background-color: #4E0585; -fx-text-fill: white;"));
         }
     }
 
@@ -197,6 +186,7 @@ public class HomeController implements Initializable {
             App.setRoot("register");
         } catch (IOException e) {
             e.printStackTrace();
+            App.showError("Navigation Error", "Cannot navigate to register page.");
         }
     }
 
@@ -205,16 +195,25 @@ public class HomeController implements Initializable {
             App.setRoot("login");
         } catch (IOException e) {
             e.printStackTrace();
+            App.showError("Navigation Error", "Cannot navigate to login page.");
         }
     }
 
     private void navigateToProfile() {
         try {
-
             App.setRoot("profile");
-
         } catch (IOException e) {
             e.printStackTrace();
+            App.showError("Navigation Error", "Cannot navigate to profile page.");
+        }
+    }
+    
+    private void navigateToPlayboard() {
+        try {
+            App.setRoot("playboard");
+        } catch (IOException e) {
+            e.printStackTrace();
+            App.showError("Navigation Error", "Cannot navigate to playboard.");
         }
     }
 }

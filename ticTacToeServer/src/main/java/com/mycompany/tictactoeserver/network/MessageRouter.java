@@ -79,6 +79,7 @@ public void handle(ClientSession session, NetworkMessage msg) {
     }
 
     private void onLogin(ClientSession session, NetworkMessage msg) {
+       System.out.print(msg);
         RegisterRequest cmd = gson.fromJson(msg.getPayload(), RegisterRequest.class);
         String username = normalize(cmd.getUsername());
 
