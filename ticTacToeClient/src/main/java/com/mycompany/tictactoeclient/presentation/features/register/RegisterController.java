@@ -118,8 +118,6 @@ public class RegisterController implements Initializable {
 
         isProcessing = true;
         disableForm(true);
-        
-        // Connect and register
         new Thread(() -> {
             try {
                 client.configure("127.0.0.1", 5005);

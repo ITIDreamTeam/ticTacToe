@@ -9,70 +9,82 @@ import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 
 /**
  *
  * @author yasse
  */
 public final class GameServer {
-    private final ExecutorService clientPool = Executors.newCachedThreadPool();
-    int port = 5005;
-     Gson gson = new Gson();
-     PlayerDaoImpl playerDao = new PlayerDaoImpl();
-    private volatile boolean running;
-    private ServerSocket serverSocket;
     private static GameServer instance;
     
-       private GameServer() {
-    }
+    private final int port = 5005;
+    private final Gson gson = new Gson();
+    private final PlayerDaoImpl playerDao = new PlayerDaoImpl();
+    
+    private ServerSocket serverSocket;
+    private volatile boolean running;
+    
+    private final ClientRegistry registry = new ClientRegistry();
+    private final AuthService auth = new AuthService(playerDao);
+    private final MessageRouter router = new MessageRouter(gson, registry, auth);
+    
+    private GameServer() {}
+    
     public static synchronized GameServer getInstance() {
         if (instance == null) {
             instance = new GameServer();
         }
         return instance;
     }
-        ClientRegistry registry = new ClientRegistry();
-        AuthService auth = new AuthService(playerDao);
-        MessageRouter router = new MessageRouter(gson, registry, auth);
 
     public void start() throws Exception {
-try {
-        serverSocket = new ServerSocket(port);
-        System.out.println("Server listening on port " + port);
-        running = true; 
-
-        while (running) {
-            Socket socket = serverSocket.accept();
-            System.out.println("Accepted new client");
-            
-            ClientSession session = new ClientSession(
-                    socket,
-                    gson,
-                    router::handle,
-                    router::onDisconnect
-            );
-            new Thread(session, "client-session").start();
+        if (running) {
+            System.out.println("Server is already running");
+            return;
         }
-    } catch(IOException ex) {
-        if (!running) {
-            System.out.println("Server stopped successfully.");
-        } else {
-            ex.printStackTrace();
+        
+        try {
+            serverSocket = new ServerSocket(port);
+            running = true;
+            System.out.println("Server listening on port " + port);
+
+            while (running) {
+                Socket socket = serverSocket.accept();
+                System.out.println("New client connected: " + socket.getInetAddress());
+                
+                ClientSession session = new ClientSession(socket, gson, router);
+                new Thread(session, "client-" + socket.getPort()).start();
+            }
+        } catch (IOException ex) {
+            if (running) {
+                System.err.println("Server error: " + ex.getMessage());
+                throw ex;
+            } else {
+                System.out.println("Server stopped successfully");
+            }
         }
     }
-}
 
     public void stop() {
-        running = false;
+        if (!running) return;
+        running = false;    
+        registry.disconnectAll();     
         try {
-            if (serverSocket != null) serverSocket.close();
-        } catch (IOException ignored) { }
-        clientPool.shutdownNow();
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close();
+            }
+        } catch (IOException e) {
+            System.err.println("Error closing server socket: " + e.getMessage());
+        }
+        System.out.println("Server stopped");
     }
 
     public boolean isRunning() {
         return running;
+    }
+    
+    public ClientRegistry getRegistry() {
+        return registry;
     }
 }
