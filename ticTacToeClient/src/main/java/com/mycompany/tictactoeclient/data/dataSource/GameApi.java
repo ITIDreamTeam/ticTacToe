@@ -8,6 +8,7 @@ import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
+import com.mycompany.tictactoeclient.network.dtos.GameMoveDto;
 
 /**
  *
@@ -20,12 +21,12 @@ public class GameApi {
         this.client = client;
     }
     
-    public void requestOnlinePlayers() throws Exception {
+    public void requestOnlinePlayers() throws Exception  {
         NetworkMessage msg = new NetworkMessage(
             MessageType.GET_ONLINE_PLAYERS,
                 UserSession.getInstance().getUsername(),
                 "server",
-            client.getGson().toJsonTree(null)
+            null
         );
         client.send(msg);
     }

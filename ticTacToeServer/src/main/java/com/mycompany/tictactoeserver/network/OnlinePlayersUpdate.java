@@ -4,6 +4,7 @@
  */
 package com.mycompany.tictactoeserver.network;
 
+import com.mycompany.tictactoeserver.data.model.Player;
 import java.util.List;
 
 /**
@@ -11,13 +12,13 @@ import java.util.List;
  * @author yasse
  */
 public final class OnlinePlayersUpdate {
-    private List<String> usernames;
+    private List<Player> players;
 
     public OnlinePlayersUpdate() {}
 
-    public OnlinePlayersUpdate(List<String> usernames) {
-        this.usernames = usernames;
+    public OnlinePlayersUpdate(List<Player> players) {
+        this.players = players;
     }
 
-    public List<String> getUsernames() { return usernames; }
+    public List<Player> getUsernames() { return players; }
 }

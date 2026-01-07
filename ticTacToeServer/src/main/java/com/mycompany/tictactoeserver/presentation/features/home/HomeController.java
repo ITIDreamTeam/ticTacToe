@@ -5,7 +5,7 @@
 package com.mycompany.tictactoeserver.presentation.features.home;
 
 import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
-import com.mycompany.tictactoeserver.network.AuthService;
+import com.mycompany.tictactoeserver.network.GameService;
 import com.mycompany.tictactoeserver.network.GameServer;
 import com.mycompany.tictactoeserver.network.MessageRouter;
 import java.io.IOException;

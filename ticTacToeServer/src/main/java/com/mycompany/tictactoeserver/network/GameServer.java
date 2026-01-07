@@ -26,7 +26,7 @@ public final class GameServer {
     private volatile boolean running;
     
     private final ClientRegistry registry = new ClientRegistry();
-    private final AuthService auth = new AuthService(playerDao);
+    private final GameService auth = new GameService(playerDao);
     private final MessageRouter router = new MessageRouter(gson, registry, auth);
     
     private GameServer() {}

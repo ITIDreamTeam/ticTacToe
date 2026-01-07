@@ -16,6 +16,9 @@ public class Player {
     private String password;
     private int score;
     private PlayerState playerState;
+     private String avatarUrl;
+    private int wins;
+    private int losses;
 
     public static enum PlayerState {
         OFFLINE(0),

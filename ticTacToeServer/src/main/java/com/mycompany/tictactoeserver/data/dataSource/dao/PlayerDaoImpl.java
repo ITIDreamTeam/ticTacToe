@@ -5,6 +5,7 @@
 package com.mycompany.tictactoeserver.data.dataSource.dao;
 
 import com.mycompany.tictactoeserver.data.model.Player;
+import com.mycompany.tictactoeserver.data.model.Player.PlayerState;
 import com.mycompany.tictactoeserver.util.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -98,27 +99,35 @@ public boolean register(Player player) throws SQLException {
         return false;
     }
 
-    public List<Player> getLeaderboardPlayers(int playerId
+    public List<Player> getLeaderboardPlayers(String userName
     ) {
-        List<Player> leaderboard = new ArrayList<>();
-        String sql = "SELECT * FROM PLAYER"
-                + "WHERE ID <> ?"
-                + "ORDER BY SCORE DESC";
+        List<Player> players = new ArrayList<>();
+        String sql = "SELECT ID, NAME, EMAIL, SCORE, PLAYER_STATE " +
+                     "FROM PLAYER " +
+                     "WHERE PLAYER_STATE IN (1, 3) " + // 1=ONLINE, 3=IN_GAME
+                     "ORDER BY SCORE DESC";
 
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, playerId);
-            ResultSet rs = ps.executeQuery();
+        try (Connection con = DBConnection.getConnection(); 
+             PreparedStatement ps = con.prepareStatement(sql); 
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                leaderboard.add(Helper.PlayerMapper(rs));
+                Player player = new Player(
+                    rs.getInt("ID"),
+                    rs.getString("NAME"),
+                    rs.getString("EMAIL"),
+                     rs.getString("PASSWORD"),
+                    PlayerState.fromValue( rs.getInt("SCORE")),
+                    rs.getInt("PLAYER_STATE")
+                );
+                players.add(player);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return leaderboard;
+        return players;
     }
 
     public boolean isUsernameExist(String name) {

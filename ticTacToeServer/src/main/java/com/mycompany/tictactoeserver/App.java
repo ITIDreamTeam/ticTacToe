@@ -1,7 +1,5 @@
 package com.mycompany.tictactoeserver;
 
-import com.mycompany.tictactoeserver.data.dataSource.connection.ServerConnection;
-import com.mycompany.tictactoeserver.data.dataSource.connection.ServerHandler;
 import com.mycompany.tictactoeserver.network.GameServer;
 import com.mycompany.tictactoeserver.util.DBConnection;
 import javafx.application.Application;
@@ -10,8 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -41,7 +37,6 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
-        new Thread(() -> new ServerConnection()).start();
     }
     @Override
     public void stop(){

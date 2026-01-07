@@ -5,9 +5,11 @@
 package com.mycompany.tictactoeserver.network;
 
 import com.google.gson.Gson;
+import com.mycompany.tictactoeserver.data.model.Player;
 import com.mycompany.tictactoeserver.network.dtos.ErrorPayload;
 import com.mycompany.tictactoeserver.network.request.RegisterRequest;
 import com.mycompany.tictactoeserver.network.response.ResultPayload;
+import java.util.List;
 
 /**
  *
@@ -16,9 +18,9 @@ import com.mycompany.tictactoeserver.network.response.ResultPayload;
 public final class MessageRouter {
   private final Gson gson;
     private final ClientRegistry registry;
-    private final AuthService auth;
+    private final GameService auth;
 
-    public MessageRouter(Gson gson, ClientRegistry registry, AuthService auth) {
+    public MessageRouter(Gson gson, ClientRegistry registry, GameService auth) {
         this.gson = gson;
         this.registry = registry;
         this.auth = auth;
@@ -152,12 +154,14 @@ public final class MessageRouter {
 
     private void handleGetOnlinePlayers(ClientSession session) {
         if (!isAuthenticated(session)) return;
-        
-        OnlinePlayersUpdate update = new OnlinePlayersUpdate(registry.onlineUsernames());
+        System.out.print("get online players");
+        String userName = session.getUsername();
+        List<Player> players = auth.getOnlineAndInGamePlayers(userName);
+        OnlinePlayersUpdate update = new OnlinePlayersUpdate(players);
         session.send(new NetworkMessage(
             MessageType.ONLINE_PLAYERS_UPDATE,
             "Server",
-            session.getUsername(),
+            userName,
             gson.toJsonTree(update)
         ));
     }
@@ -211,7 +215,7 @@ public final class MessageRouter {
     }
 
     private void broadcastOnlinePlayers() {
-        OnlinePlayersUpdate update = new OnlinePlayersUpdate(registry.onlineUsernames());
+        List<String> update = registry.onlineUsernames();
         NetworkMessage message = new NetworkMessage(
             MessageType.ONLINE_PLAYERS_UPDATE,
             "Server",
