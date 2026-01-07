@@ -6,6 +6,7 @@ package com.mycompany.tictactoeserver.network;
 
 import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
 import com.mycompany.tictactoeserver.data.model.Player;
+import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import com.mycompany.tictactoeserver.network.request.RegisterRequest;
 import com.mycompany.tictactoeserver.network.response.ResultPayload;
 import java.sql.SQLException;
@@ -63,8 +64,8 @@ public final class GameService {
            return new ResultPayload(false, "INVALID_INPUT", "Un expected behavior");
         } 
     }
-    public List<Player> getOnlineAndInGamePlayers(String userName) {
-        return playerDao.getLeaderboardPlayers(userName);
+    public List<PlayerStatsDto> getOnlineAndInGamePlayers(String userName) {
+        return playerDao.getLeaderBoardPlayers(userName);
     }
     private String clean(String s) {
         return s == null ? "" : s.trim().toLowerCase();

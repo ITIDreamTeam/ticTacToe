@@ -12,5 +12,6 @@ module com.mycompany.tictactoeserver {
     opens com.mycompany.tictactoeserver.network.response to com.google.gson;
     opens com.mycompany.tictactoeserver.network.dtos to com.google.gson;
     opens com.mycompany.tictactoeserver.network to com.google.gson;
+    opens com.mycompany.tictactoeserver.data.model to com.google.gson;
     exports com.mycompany.tictactoeserver;
 }

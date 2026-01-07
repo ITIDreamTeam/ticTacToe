@@ -1,3 +1,8 @@
+-- Drop tables if they exist
+DROP TABLE GAME;
+DROP TABLE PLAYER;
+
+-- Create tables
 CREATE TABLE PLAYER (
     ID INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
     NAME VARCHAR(150) NOT NULL,
@@ -6,6 +11,7 @@ CREATE TABLE PLAYER (
     PLAYER_STATE SMALLINT NOT NULL,
     SCORE INT NOT NULL
 );
+
 CREATE TABLE GAME (
     PLAYER_ONE_ID INT NOT NULL,
     PLAYER_TWO_ID INT NOT NULL,
@@ -17,3 +23,51 @@ CREATE TABLE GAME (
     CONSTRAINT FK_PLAYER_TWO FOREIGN KEY (PLAYER_TWO_ID)
         REFERENCES PLAYER (ID)
 );
+
+-- Insert players
+INSERT INTO PLAYER (NAME, EMAIL, PASSWORD, PLAYER_STATE, SCORE) VALUES
+('Alice', 'alice@email.com', 'pass1', 1, 1000),
+('Bob', 'bob@email.com', 'pass2', 1, 950),
+('Charlie', 'charlie@email.com', 'pass3', 0, 800),
+('David', 'david@email.com', 'pass4', 1, 1200),
+('Eve', 'eve@email.com', 'pass5', 1, 750),
+('Frank', 'frank@email.com', 'pass6', 0, 600),
+('Grace', 'grace@email.com', 'pass7', 1, 1100);
+
+-- Insert games with GAME_STATE as winner ID
+-- Format: (player1_id, player2_id, date, winner_id)
+INSERT INTO GAME (PLAYER_ONE_ID, PLAYER_TWO_ID, GAME_DATE, GAME_STATE) VALUES
+(1, 2, '2024-01-10 10:00:00', 1),  -- Alice won
+(1, 2, '2024-01-11 14:30:00', 2),  -- Bob won
+(1, 2, '2024-01-12 16:45:00', 1),  -- Alice won
+(1, 4, '2024-01-13 11:00:00', 4),  -- David won
+(1, 4, '2024-01-14 15:30:00', 4),  -- David won
+(1, 4, '2024-01-15 09:15:00', 1),  -- Alice won
+(1, 5, '2024-01-16 13:20:00', 1),  -- Alice won
+(1, 7, '2024-01-17 10:45:00', 7),  -- Grace won
+(1, 7, '2024-01-18 14:10:00', 0),  -- Draw (0 means draw)
+(1, 3, '2024-01-19 16:30:00', 1),  -- Alice won (vs Charlie offline)
+(1, 6, '2024-01-20 11:45:00', 6),  -- Frank won (vs Frank offline)
+(2, 4, '2024-01-21 12:00:00', 2),  -- Bob won
+(2, 5, '2024-01-22 13:15:00', 5),  -- Eve won
+(4, 5, '2024-01-23 15:30:00', 4);  -- David won
+
+-- Query: Get online players that I played with and win/loss count
+-- For player ID 1 (Alice)
+SELECT 
+    p.ID as opponent_id,
+    p.NAME as opponent_name,
+    p.SCORE as opponent_score,
+    COUNT(*) as total_games,
+    SUM(CASE WHEN g.GAME_STATE = 1 THEN 1 ELSE 0 END) as my_wins,
+    SUM(CASE WHEN g.GAME_STATE = p.ID THEN 1 ELSE 0 END) as opponent_wins,
+    SUM(CASE WHEN g.GAME_STATE = 0 THEN 1 ELSE 0 END) as draws
+FROM GAME g
+JOIN PLAYER p ON (
+    (g.PLAYER_ONE_ID = 1 AND p.ID = g.PLAYER_TWO_ID) OR
+    (g.PLAYER_TWO_ID = 1 AND p.ID = g.PLAYER_ONE_ID)
+)
+WHERE p.PLAYER_STATE = 1  -- Only online players
+  AND (g.PLAYER_ONE_ID = 1 OR g.PLAYER_TWO_ID = 1)  -- Games involving player 1
+GROUP BY p.ID, p.NAME, p.SCORE
+ORDER BY total_games DESC;

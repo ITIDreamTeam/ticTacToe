@@ -56,6 +56,14 @@ public class Player {
         this.playerState = playerState;
         this.score = score;
     }
+    public Player(int id, String name, String email, PlayerState playerState, int score) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.playerState = playerState;
+        this.score = score;
+    }
+
         public Player( String name, String email, String password, PlayerState playerState, int score) {
         this.name = name;
         this.email = email;

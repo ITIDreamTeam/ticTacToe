@@ -6,6 +6,7 @@ package com.mycompany.tictactoeserver.network;
 
 import com.google.gson.Gson;
 import com.mycompany.tictactoeserver.data.model.Player;
+import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import com.mycompany.tictactoeserver.network.dtos.ErrorPayload;
 import com.mycompany.tictactoeserver.network.request.RegisterRequest;
 import com.mycompany.tictactoeserver.network.response.ResultPayload;
@@ -156,7 +157,7 @@ public final class MessageRouter {
         if (!isAuthenticated(session)) return;
         System.out.print("get online players");
         String userName = session.getUsername();
-        List<Player> players = auth.getOnlineAndInGamePlayers(userName);
+        List<PlayerStatsDto> players = auth.getOnlineAndInGamePlayers(userName);
         OnlinePlayersUpdate update = new OnlinePlayersUpdate(players);
         session.send(new NetworkMessage(
             MessageType.ONLINE_PLAYERS_UPDATE,

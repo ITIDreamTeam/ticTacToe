@@ -5,7 +5,6 @@
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
 import com.mycompany.tictactoeclient.App;
-import com.mycompany.tictactoeclient.data.dataSource.FakeDataSource;
 import com.mycompany.tictactoeclient.data.dataSource.GameApi;
 import com.mycompany.tictactoeclient.data.models.Player;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
@@ -13,7 +12,7 @@ import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.dtos.OnlinePlayersUpdate;
-import com.mycompany.tictactoeclient.shared.Navigation;
+import com.mycompany.tictactoeclient.network.dtos.PlayerStatsDto;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -119,7 +117,13 @@ public class Players_boardController implements Initializable {
             msg.getPayload(), 
             OnlinePlayersUpdate.class
         );
-        List<Player> players = update.getPlayers();
+        List<PlayerStatsDto> playersDto = update.getPlayers();
+        List<Player> players = new ArrayList();
+        
+        for (PlayerStatsDto dto : update.getPlayers()) {
+                Player player = dto.getPlayer();
+                players.add(player);
+            }
         Platform.runLater(() -> {
             masterData.clear();
             masterData.addAll(players);

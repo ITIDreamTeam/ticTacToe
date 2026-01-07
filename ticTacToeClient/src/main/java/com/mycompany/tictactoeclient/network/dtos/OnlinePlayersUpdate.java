@@ -4,7 +4,6 @@
  */
 package com.mycompany.tictactoeclient.network.dtos;
 
-import com.mycompany.tictactoeclient.data.models.Player;
 import java.util.List;
 
 /**
@@ -13,19 +12,19 @@ import java.util.List;
  */
 public class OnlinePlayersUpdate {
    
-    private List<Player> players;
+    private List<PlayerStatsDto> players;
     
     public OnlinePlayersUpdate() {}
     
-    public OnlinePlayersUpdate(List<Player> players) {
+    public OnlinePlayersUpdate(List<PlayerStatsDto> players) {
         this.players = players;
     }
     
-    public List<Player> getPlayers() {
+    public List<PlayerStatsDto> getPlayers() {
         return players;
     }
     
-    public void setPlayers(List<Player> players) {
+    public void setPlayers(List<PlayerStatsDto> players) {
         this.players = players;
     }
 }
