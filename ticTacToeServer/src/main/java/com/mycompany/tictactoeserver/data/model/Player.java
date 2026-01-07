@@ -17,7 +17,7 @@ public class Player {
     private int score;
     private PlayerState playerState;
 
-    public enum PlayerState {
+    public static enum PlayerState {
         OFFLINE(0),
         ONLINE(1),
         IN_GAME(2);

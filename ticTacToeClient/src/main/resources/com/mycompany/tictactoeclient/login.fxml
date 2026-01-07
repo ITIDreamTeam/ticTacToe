@@ -77,12 +77,12 @@
                   </ToggleButton>
                </children>
             </AnchorPane>
-            <Button fx:id="signInButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onSignInClicked" prefHeight="40.0" prefWidth="240.0" stylesheets="@../../../styles/style.css" text="Sign In" textAlignment="CENTER">
+            <Button fx:id="loginButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onLoginClicked" prefHeight="40.0" prefWidth="240.0" stylesheets="@../../../styles/style.css" text="Login" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="12.0" top="40.0" />
                </VBox.margin>
             </Button>
-            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onSignUpClicked" prefHeight="40.0" prefWidth="240.0" styleClass="outline-button" stylesheets="@../../../styles/style.css" text="Sign Up" />
+            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRegisterClicked" prefHeight="40.0" prefWidth="240.0" styleClass="outline-button" stylesheets="@../../../styles/style.css" text="Register" />
          </children>
       </VBox>
    </children>

@@ -2,6 +2,7 @@ package com.mycompany.tictactoeclient.presentation.features.saved_replays;
 
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.models.RecordedGame; // Import your POJO
+import com.mycompany.tictactoeclient.shared.Navigation;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -55,10 +56,6 @@ public class RecordedGamesController implements Initializable {
 
     @FXML
     private void onBackBtnClicked(ActionEvent event) {
-        try {
-            App.setRoot("home");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        Navigation.navigateTo(Navigation.profilePage);
     }
 }

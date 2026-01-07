@@ -11,6 +11,7 @@ import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.request.RegisterRequest;
 import com.mycompany.tictactoeclient.network.response.ResultPayload;
+import com.mycompany.tictactoeclient.shared.Navigation;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -45,7 +46,7 @@ public class RegisterController implements Initializable {
     @FXML private ImageView eyeIconConfirmPass;
     @FXML private ToggleButton togglePassButton;
     @FXML private ToggleButton toggleConfirmPassButton;
-    @FXML private Button signUpButton;
+    @FXML private Button registerButton;
 
     private Image eyeOpenImage;
     private Image eyeClosedImage;
@@ -90,19 +91,12 @@ public class RegisterController implements Initializable {
 
     @FXML
     private void onBackClicked(ActionEvent event) {
-        navigateToHome();
-    }
-
-    private void togglePassword(ActionEvent event) {
-        toggleVisibility(togglePassButton, passwordField, passwordTextField, eyeIconPassword);
-    }
-
-    private void toggleConfirmPassword(ActionEvent event) {
-        toggleVisibility(toggleConfirmPassButton, confirmPasswordField, confirmPasswordTextField, eyeIconConfirmPass);
+        cleanup();
+        Navigation.navigateTo(Navigation.homePage);
     }
 
     @FXML
-    private void onSignUpClicked(ActionEvent event) {
+    private void onRegisterClicked(ActionEvent event) {
         if (isProcessing) {
             return; 
         }
@@ -173,8 +167,9 @@ public class RegisterController implements Initializable {
     }
 
     @FXML
-    private void onSignInClicked(ActionEvent event) {
-        navigateToLogin();
+    private void onLoginClicked(ActionEvent event) {
+        cleanup();
+        Navigation.navigateTo(Navigation.loginPage);
     }
 
     private void handleRegisterResult(NetworkMessage msg) {
@@ -194,7 +189,8 @@ public class RegisterController implements Initializable {
             
             App.showInfo("Registration Successful", 
                 "Welcome " + username + "! You have been registered and logged in.");
-            navigateToHome();
+            cleanup();
+            Navigation.navigateTo(Navigation.homePage);
             
         } else {
             App.showError("Registration Failed", result.getMessage());
@@ -228,40 +224,17 @@ public class RegisterController implements Initializable {
         passwordTextField.setDisable(disable);
         confirmPasswordField.setDisable(disable);
         confirmPasswordTextField.setDisable(disable);
-        signUpButton.setDisable(disable);
-    }
-    
-    private void navigateToHome() {
-        try {
-            cleanup();
-            App.setRoot("home");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    private void navigateToLogin() {
-        try {
-            cleanup();
-            App.setRoot("login");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void toggalePassword(MouseEvent event) {
+        registerButton.setDisable(disable);
     }
 
     @FXML
     private void toggalePassword(ActionEvent event) {
-    }
-
-    @FXML
-    private void toggaleConfirmPassword(MouseEvent event) {
+        toggleVisibility(togglePassButton, passwordField, passwordTextField, eyeIconPassword);
     }
 
     @FXML
     private void toggaleConfirmPassword(ActionEvent event) {
+        toggleVisibility(toggleConfirmPassButton, confirmPasswordField, confirmPasswordTextField, eyeIconConfirmPass);
     }
+
 }

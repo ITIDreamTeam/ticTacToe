@@ -15,8 +15,8 @@ import org.apache.derby.jdbc.ClientDriver;
  */
 public class DBConnection {
     private static final String URL = "jdbc:derby://localhost:1527/ticTacToe";
-    private static final String USER = "app";
-    private static final String PASSWORD = "app";
+    private static final String USER = "basmala";
+    private static final String PASSWORD = "basmala";
 
     private DBConnection() {
         

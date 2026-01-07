@@ -11,7 +11,7 @@ import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.request.RegisterRequest;
 import com.mycompany.tictactoeclient.network.response.ResultPayload;
-import java.io.IOException;
+import com.mycompany.tictactoeclient.shared.Navigation;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
@@ -52,7 +52,7 @@ public class LoginController implements Initializable {
     @FXML
     private ToggleButton togglePassButton;
     @FXML
-    private Button signInButton;
+    private Button loginButton;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -87,31 +87,12 @@ public class LoginController implements Initializable {
 
     @FXML
     private void onBackClicked(ActionEvent event) {
-        navigateToHome();
-    }
-
-    private void togglePassword(ActionEvent event) {
-        if (togglePassButton.isSelected()) {
-            // Show password
-            passwordTextField.setText(passwordField.getText());
-            passwordTextField.setVisible(true);
-            passwordTextField.setManaged(true);
-            passwordField.setVisible(false);
-            passwordField.setManaged(false);
-            eyeIcon.setImage(eyeOpenImage);
-        } else {
-            // Hide password
-            passwordField.setText(passwordTextField.getText());
-            passwordField.setVisible(true);
-            passwordField.setManaged(true);
-            passwordTextField.setVisible(false);
-            passwordTextField.setManaged(false);
-            eyeIcon.setImage(eyeClosedImage);
-        }
+        cleanup();
+        Navigation.navigateTo(Navigation.homePage);
     }
 
     @FXML
-    private void onSignInClicked(ActionEvent event) {
+    private void onLoginClicked(ActionEvent event) {
         if (isProcessing) {
             return; // Prevent double submission
         }
@@ -142,7 +123,7 @@ public class LoginController implements Initializable {
                     client.getGson().toJsonTree(req)
                 );
                 client.send(msg);
-                
+                /// recive  userdata
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     App.showError("Connection Error", "Failed to connect to server: " + e.getMessage());
@@ -174,8 +155,9 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    private void onSignUpClicked(ActionEvent event) {
-        navigateToRegister();
+    private void onRegisterClicked(ActionEvent event) {
+        cleanup();
+        Navigation.navigateTo(Navigation.registerPage);
     }
 
     private void handleLoginResult(NetworkMessage msg) {
@@ -187,6 +169,8 @@ public class LoginController implements Initializable {
         ResultPayload result = client.getGson().fromJson(msg.getPayload(), ResultPayload.class);
         
         if (result.isSuccess()) {
+            System.out.println(msg.getReceiver());
+            System.out.println(msg.getPayload());
             // Login successful - establish session
             String username = nameTextField.getText().trim();
             
@@ -196,7 +180,8 @@ public class LoginController implements Initializable {
             App.showInfo("Login Successful", "Welcome back, " + username + "!");
             
             // Navigate to home (user is now logged in)
-            navigateToHome();
+            cleanup();
+            Navigation.navigateTo(Navigation.homePage);
             
         } else {
             // Login failed - disconnect
@@ -210,31 +195,26 @@ public class LoginController implements Initializable {
         passwordField.setDisable(disable);
         passwordTextField.setDisable(disable);
         togglePassButton.setDisable(disable);
-        signInButton.setDisable(disable);
+        loginButton.setDisable(disable);
     }
     
-    private void navigateToHome() {
-        try {
-            cleanup();
-            App.setRoot("home");
-        } catch (IOException e) {
-            e.printStackTrace();
-            App.showError("Navigation Error", "Cannot navigate to home page.");
-        }
-    }
-    
-    private void navigateToRegister() {
-        try {
-            cleanup();
-            App.setRoot("register");
-        } catch (IOException e) {
-            e.printStackTrace();
-            App.showError("Navigation Error", "Cannot navigate to register page.");
-        }
-    }
-
     @FXML
     private void toggalePassword(MouseEvent event) {
+        if (togglePassButton.isSelected()) {
+            passwordTextField.setText(passwordField.getText());
+            passwordTextField.setVisible(true);
+            passwordTextField.setManaged(true);
+            passwordField.setVisible(false);
+            passwordField.setManaged(false);
+            eyeIcon.setImage(eyeOpenImage);
+        } else {
+            passwordField.setText(passwordTextField.getText());
+            passwordField.setVisible(true);
+            passwordField.setManaged(true);
+            passwordTextField.setVisible(false);
+            passwordTextField.setManaged(false);
+            eyeIcon.setImage(eyeClosedImage);
+        }
     }
 }
 

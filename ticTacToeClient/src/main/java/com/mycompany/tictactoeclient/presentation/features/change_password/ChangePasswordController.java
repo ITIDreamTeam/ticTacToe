@@ -1,6 +1,7 @@
 package com.mycompany.tictactoeclient.presentation.features.change_password;
 
 import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.shared.Navigation;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -101,29 +102,17 @@ public class ChangePasswordController implements Initializable {
 
     @FXML
     private void onBackBtnClicked(ActionEvent event) {
-        try {
-            App.setRoot("home");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        Navigation.navigateTo(Navigation.profilePage);
     }
 
     @FXML
     private void onSaveBtnClicked(ActionEvent event) {
-        try {
-            App.setRoot("home");
-        } catch (IOException ex) {
-           ex.printStackTrace();
-        }
+        Navigation.navigateTo(Navigation.profilePage);
     }
 
     @FXML
     private void onCancelBtnClicked(ActionEvent event) {
-        try {
-            App.setRoot("home");
-        } catch (IOException ex) {
-           ex.printStackTrace();
-        }
+        Navigation.navigateTo(Navigation.profilePage);
         // 1. REVERT values to the original password
         passwordField.setText(originalPassword);
         confirmPasswordField.setText(originalPassword);

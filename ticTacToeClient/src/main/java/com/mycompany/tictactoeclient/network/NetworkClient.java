@@ -23,7 +23,7 @@ import javafx.application.Platform;
  * @author yasse
  */
 public class NetworkClient {
-       private static final NetworkClient INSTANCE = new NetworkClient();
+    private static final NetworkClient INSTANCE = new NetworkClient();
     private final Gson gson = new Gson();
     private final Map<MessageType, List<Consumer<NetworkMessage>>> listeners = new ConcurrentHashMap<>();
     

@@ -16,7 +16,8 @@ public class UserSession {
      private static final UserSession INSTANCE = new UserSession();
     
     private volatile String username;
-    private volatile String email;
+    private volatile String email="NotFound";
+    private volatile String score="000";
     private volatile boolean isOnline;
     
     private UserSession() {}
@@ -35,6 +36,22 @@ public class UserSession {
     
     public String getEmail() {
         return email;
+    }
+    
+    public String getScore() {
+        return score;
+    }
+    
+    public void setUsername(String username) { 
+        this.username = username; 
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public void setScore(String score) {
+        this.score=score;
     }
     
     public boolean isOnline() {
