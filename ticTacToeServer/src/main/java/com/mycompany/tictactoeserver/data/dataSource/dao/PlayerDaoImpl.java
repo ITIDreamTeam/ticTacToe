@@ -299,4 +299,43 @@ public boolean register(Player player) throws SQLException {
         }
         return false;
     }
+    
+    public int getPlayersCountBasedOnState(int state) {
+        String sql = "SELECT COUNT(ID) AS count FROM PLAYER WHERE PLAYER_STATE = ?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, state);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) { 
+                return rs.getInt("count");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getPlayersState(String playerName) {
+        String sql = "SELECT PLAYER_STATE FROM PLAYER WHERE NAME = ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, playerName);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("PLAYER_STATE");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+
 }

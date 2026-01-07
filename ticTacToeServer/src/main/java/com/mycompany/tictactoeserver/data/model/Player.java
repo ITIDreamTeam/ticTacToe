@@ -20,7 +20,8 @@ public class Player {
     public static enum PlayerState {
         OFFLINE(0),
         ONLINE(1),
-        IN_GAME(2);
+        IN_GAME(2),
+        WAITING(3);
 
         private final int value;
 
