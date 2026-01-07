@@ -5,6 +5,7 @@
 package com.mycompany.tictactoeserver.data.dataSource.dao;
 
 import com.mycompany.tictactoeserver.data.model.Player;
+import com.mycompany.tictactoeserver.data.model.PlayerStatsDto;
 import com.mycompany.tictactoeserver.util.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -98,28 +99,87 @@ public boolean register(Player player) throws SQLException {
         return false;
     }
 
-    public List<Player> getLeaderboardPlayers(int playerId
-    ) {
-        List<Player> leaderboard = new ArrayList<>();
-        String sql = "SELECT * FROM PLAYER"
-                + "WHERE ID <> ?"
-                + "ORDER BY SCORE DESC";
+//    public List<Player> getLeaderboardPlayers(int playerId
+//    ) {
+//        List<Player> leaderboard = new ArrayList<>();
+//        String sql = "SELECT * FROM PLAYER"
+//                + "WHERE ID <> ?"
+//                + "ORDER BY SCORE DESC";
+//
+//        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+//
+//            ps.setInt(1, playerId);
+//            ResultSet rs = ps.executeQuery();
+//
+//            while (rs.next()) {
+//                leaderboard.add(Helper.PlayerMapper(rs));
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return leaderboard;
+//    }
+    public List<PlayerStatsDto> getLeaderBoardPlayers(String playerName) {
+         List<PlayerStatsDto> result = new ArrayList<>();
 
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        String sqlGetPlayerId = "SELECT ID FROM PLAYER WHERE NAME = ?";
 
-            ps.setInt(1, playerId);
+        String sql = "SELECT p.ID, p.NAME, p.EMAIL, p.SCORE, p.PLAYER_STATE, " +
+                     "COUNT(*) as TOTAL_GAMES, " +
+                     "SUM(CASE " +
+                     "    WHEN g.GAME_STATE = ? THEN 1 " +
+                     "    ELSE 0 " +
+                     "END) AS WINS, " +
+                     "SUM(CASE " +
+                     "    WHEN g.GAME_STATE = p.ID THEN 1 " +
+                     "    ELSE 0 " +
+                     "END) AS LOSSES, " +
+                     "FROM GAME g " +
+                     "JOIN PLAYER p ON ( " +
+                     "    (g.PLAYER_ONE_ID = ? AND p.ID = g.PLAYER_TWO_ID) OR " +
+                     "    (g.PLAYER_TWO_ID = ? AND p.ID = g.PLAYER_ONE_ID) " +
+                     ") " +
+                     "WHERE (g.PLAYER_ONE_ID = ? OR g.PLAYER_TWO_ID = ?) " +
+                     "AND p.PLAYER_STATE = 1 " +  
+                     "GROUP BY p.ID, p.NAME, p.EMAIL, p.SCORE, p.PLAYER_STATE " +
+                     "ORDER BY WINS DESC";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps1 = con.prepareStatement(sqlGetPlayerId);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps1.setString(1, playerName); 
+            ResultSet rs1 = ps1.executeQuery();
+
+            if (!rs1.next()) {
+                return result;
+            }
+
+            int playerId = rs1.getInt("ID");
+
+            // Set parameters for the main query
+            ps.setInt(1, playerId);   // For wins calculation
+            ps.setInt(2, playerId);   // First parameter in JOIN
+            ps.setInt(3, playerId);   // Second parameter in JOIN
+            ps.setInt(4, playerId);   // First WHERE condition
+            ps.setInt(5, playerId);   // Second WHERE condition
+
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                leaderboard.add(Helper.PlayerMapper(rs));
+                PlayerStatsDto player = Helper.PlayerStatsDtoMapper(rs);
+                result.add(player);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return leaderboard;
+        return result;
     }
+
 
     public boolean isUsernameExist(String name) {
         String sql = "SELECT 1 FROM PLAYER WHERE NAME = ?";

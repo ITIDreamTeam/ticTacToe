@@ -37,8 +37,6 @@ public class OnePlayerPopupController implements Initializable {
 
     @FXML
     private Button startButton;
-
-    private Stage stage;
     @FXML
     private ToggleButton easyButton;
     @FXML
@@ -51,6 +49,7 @@ public class OnePlayerPopupController implements Initializable {
     FXMLLoader loader;
     Game_boardController gameController;
     private final UserSession session = UserSession.getInstance();
+    private Stage stage;
     public void setStage(Stage stage) {
         this.stage = stage;
     }
