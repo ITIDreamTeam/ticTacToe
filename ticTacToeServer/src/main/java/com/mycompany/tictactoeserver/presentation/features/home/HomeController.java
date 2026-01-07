@@ -5,11 +5,10 @@
 package com.mycompany.tictactoeserver.presentation.features.home;
 
 import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
-import com.mycompany.tictactoeserver.network.GameService;
 import com.mycompany.tictactoeserver.network.GameServer;
-import com.mycompany.tictactoeserver.network.MessageRouter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -98,6 +97,7 @@ public class HomeController implements Initializable {
     @FXML
     private void onSeeDetailsClicked(ActionEvent event) {
          try {
+             
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeserver/players_board.fxml"));
             Parent root = loader.load();
 

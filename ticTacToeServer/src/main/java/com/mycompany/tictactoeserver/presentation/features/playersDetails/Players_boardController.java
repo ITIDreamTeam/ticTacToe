@@ -4,8 +4,8 @@
  */
 package com.mycompany.tictactoeserver.presentation.features.playersDetails;
 
-import com.mycompany.tictactoeserver.data.dataSource.FakeDataSource;
-import com.mycompany.tictactoeserver.data.model.Player;
+import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
+import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -35,14 +35,14 @@ public class Players_boardController implements Initializable {
     @FXML
     private VBox playersContainer;
 
-    private List<Player> allPlayers;
+    private List<PlayerStatsDto> allPlayers;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        allPlayers = FakeDataSource.getAllPlayers();
+        allPlayers = new PlayerDaoImpl().getAllPlayers();
         loadPlayersList(allPlayers);
         search_text_field.textProperty().addListener((observable, oldValue, newValue) -> {
             filterPlayers(newValue);
@@ -55,18 +55,18 @@ public class Players_boardController implements Initializable {
             return;
         }
         String lowerCaseQuery = query.toLowerCase();
-        List<Player> filteredList = allPlayers.stream()
+        List<PlayerStatsDto> filteredList = allPlayers.stream()
                 .filter(player
-                        -> player.getName().toLowerCase().contains(lowerCaseQuery)
-                || String.valueOf(player.getScore()).startsWith(lowerCaseQuery)
+                        -> player.getPlayer().getName().toLowerCase().contains(lowerCaseQuery)
+                || String.valueOf(player.getPlayer().getScore()).startsWith(lowerCaseQuery)
                 )
                 .collect(Collectors.toList());
         loadPlayersList(filteredList);
     }
 
-    private void loadPlayersList(List<Player> players) {
+    private void loadPlayersList(List<PlayerStatsDto> players) {
         playersContainer.getChildren().clear();
-        for (Player player : players) {
+        for (PlayerStatsDto player : players) {
             try {
                 // Load the single card FXML
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeserver/player_card.fxml"));
@@ -87,10 +87,10 @@ public class Players_boardController implements Initializable {
     private void onTextFieldAction(ActionEvent event) {
     }
 
-    public void loadPlayers(List<Player> players) {
+    public void loadPlayers(List<PlayerStatsDto> players) {
         playersContainer.getChildren().clear();
 
-        for (Player player : players) {
+        for (PlayerStatsDto player : players) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/tictactoeserver/player_card.fxml"));
                 HBox cardBox = loader.load();

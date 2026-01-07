@@ -32,15 +32,15 @@ public class PlayerStatsDto {
         this.losses=losses;
     }
     
-    public Player getPlayer(Player player){
+    public Player getPlayer(){
         return player;
     }
     
-    public int getWins(int wins){
+    public int getWins(){
         return wins;
     }
     
-    public int getLosses(int losses){
+    public int getLosses(){
         return losses;
     }
 }
