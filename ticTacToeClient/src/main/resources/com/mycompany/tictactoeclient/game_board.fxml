@@ -32,6 +32,14 @@
                <children>
                   <Button mnemonicParsing="false" onAction="#onBackClicked" styleClass="back-button" text="&lt; Back" />
                   <Label styleClass="label-title" text="Tic Tac Toe Arena" />
+                  <ImageView fx:id="recordingIcon" fitHeight="47.0" fitWidth="99.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                     <image>
+                        <Image url="@../../../icons/Screen%20Recording.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets left="280.0" />
+                     </HBox.margin>
+                  </ImageView>
                </children>
                <padding>
                   <Insets left="10.0" />

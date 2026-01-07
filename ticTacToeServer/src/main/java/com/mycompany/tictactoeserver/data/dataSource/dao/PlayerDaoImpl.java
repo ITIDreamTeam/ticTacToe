@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.mycompany.tictactoeserver.data.dataSource.dao;
 
 import com.mycompany.tictactoeserver.data.model.Player;
@@ -11,24 +15,10 @@ import java.util.List;
 
 /**
  *
- * @author Nadin
+ * @author yasse
  */
- interface PlayerDAO {
+public class PlayerDaoImpl {
 
-    List<Player> getAllPlayers();
-
-    Player login(String email, String password);
-
-    boolean register(Player player);
-
-    boolean editPlayer(Player player);
-
-    List<Player> getLeaderboardPlayers(int playerId);
-}
-
-class PlayerDAOImpl implements PlayerDAO {
-
-    @Override
     public List<Player> getAllPlayers() {
         List<Player> players = new ArrayList<>();
         String sql = "SELECT * FROM PLAYER";
@@ -46,12 +36,11 @@ class PlayerDAOImpl implements PlayerDAO {
         return players;
     }
 
-    @Override
-    public Player login(String email, String password) {
+    public Player login(String email, String password) throws SQLException {
         String sql = "SELECT * FROM PLAYER WHERE EMAIL = ? AND PASSWORD = ?";
 
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
+        Connection con = DBConnection.getConnection();
+        PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, email);
             ps.setString(2, password);
 
@@ -61,37 +50,30 @@ class PlayerDAOImpl implements PlayerDAO {
                 return Helper.PlayerMapper(rs);
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         return null;
     }
 
-    @Override
-    public boolean register(Player player
-    ) {
-        String sql = "INSERT INTO PLAYER (NAME, EMAIL, PASSWORD, PLAYER_STATE, SCORE) "
-                + "VALUES (?, ?, ?, ?, ?)";
+public boolean register(Player player) throws SQLException {
+    String sql = "INSERT INTO PLAYER (NAME, EMAIL, PASSWORD, PLAYER_STATE, SCORE) "
+            + "VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+    Connection con = DBConnection.getConnection();
+    PreparedStatement ps = con.prepareStatement(sql);
 
-            ps.setString(1, player.getName());
-            ps.setString(2, player.getEmail());
-            ps.setString(3, player.getPassword());
-            ps.setInt(4, player.getPlayerState().getValue());
-            ps.setInt(5, player.getScore());
+        ps.setString(1, player.getName());
+        ps.setString(2, player.getEmail());
+        ps.setString(3, player.getPassword());
+        ps.setInt(4, 1);
+        ps.setInt(5, 300);
+        
+        int rowsAffected = ps.executeUpdate();
+        
+        System.out.print(player.getName() + " Registered: " + (rowsAffected > 0));
+        
+        return rowsAffected > 0;
+}
 
-            return ps.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    @Override
     public boolean editPlayer(Player player
     ) {
         String sql = "UPDATE PLAYER "
@@ -116,7 +98,6 @@ class PlayerDAOImpl implements PlayerDAO {
         return false;
     }
 
-    @Override
     public List<Player> getLeaderboardPlayers(int playerId
     ) {
         List<Player> leaderboard = new ArrayList<>();
@@ -138,5 +119,17 @@ class PlayerDAOImpl implements PlayerDAO {
         }
 
         return leaderboard;
+    }
+
+    public boolean isUsernameExist(String name) {
+        String sql = "SELECT 1 FROM PLAYER WHERE NAME = ?";
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

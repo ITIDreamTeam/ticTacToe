@@ -2,22 +2,17 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.tictactoeclient.data.models.userSession;
-
-import com.mycompany.tictactoeclient.network.MessageType;
-import com.mycompany.tictactoeclient.network.NetworkClient;
-import com.mycompany.tictactoeclient.network.NetworkMessage;
+package com.mycompany.tictactoeclient.network;
 
 /**
  *
- * @author Basmala
+ * @author yasse
  */
-public class UserSession {
+public final class UserSession {
      private static final UserSession INSTANCE = new UserSession();
     
     private volatile String username;
-    private volatile String email="NotFound";
-    private volatile String score="000";
+    private volatile String email;
     private volatile boolean isOnline;
     
     private UserSession() {}
@@ -38,22 +33,6 @@ public class UserSession {
         return email;
     }
     
-    public String getScore() {
-        return score;
-    }
-    
-    public void setUsername(String username) { 
-        this.username = username; 
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
-    public void setScore(String score) {
-        this.score=score;
-    }
-    
     public boolean isOnline() {
         return isOnline && NetworkClient.getInstance().isConnected();
     }
@@ -68,6 +47,7 @@ public class UserSession {
         this.username = null;
         this.email = null;
         this.isOnline = false;
+        
         NetworkClient client = NetworkClient.getInstance();
         if (client.isConnected()) {
             try {

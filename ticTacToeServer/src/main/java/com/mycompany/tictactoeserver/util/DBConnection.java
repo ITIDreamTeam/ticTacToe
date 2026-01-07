@@ -7,21 +7,22 @@ package com.mycompany.tictactoeserver.util;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import org.apache.derby.jdbc.ClientDriver;
 
 /**
  *
  * @author Nadin
  */
 public class DBConnection {
-    private static final String URL = "jdbc:derby://localhost:1527/ticTacToc";
-    private static final String USER = "nadin";
-    private static final String PASSWORD = "nadin";
+    private static final String URL = "jdbc:derby://localhost:1527/ticTacToe";
+    private static final String USER = "basmala";
+    private static final String PASSWORD = "basmala";
 
     private DBConnection() {
-        // prevent instantiation
+        
     }
-
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+            DriverManager.registerDriver(new ClientDriver());
+            return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }
