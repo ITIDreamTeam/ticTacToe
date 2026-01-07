@@ -20,22 +20,49 @@ import java.util.List;
  */
 public class PlayerDaoImpl {
 
-    public List<Player> getAllPlayers() {
-        List<Player> players = new ArrayList<>();
-        String sql = "SELECT * FROM PLAYER";
+//    public List<Player> getAllPlayers() {
+//        List<Player> players = new ArrayList<>();
+//        String sql = "SELECT * FROM PLAYER";
+//
+//        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+//
+//            while (rs.next()) {
+//                players.add(Helper.PlayerMapper(rs));
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return players;
+//    }
+    public List<PlayerStatsDto> getAllPlayers() {
+    List<PlayerStatsDto> players = new ArrayList<>();
+    
+    String sql = "SELECT p.*, " +
+                 "COALESCE(SUM(CASE WHEN g.GAME_STATE = p.ID THEN 1 ELSE 0 END), 0) as WINS, " +
+                 "COALESCE(SUM(CASE WHEN g.GAME_STATE != p.ID AND g.GAME_STATE != 0 THEN 1 ELSE 0 END), 0) as LOSSES, " +
+                 "COALESCE(SUM(CASE WHEN g.GAME_STATE = 0 THEN 1 ELSE 0 END), 0) as DRAWS, " +
+                 "COUNT(g.GAME_DATE) as TOTAL_GAMES " +
+                 "FROM PLAYER p " +
+                 "LEFT JOIN GAME g ON (p.ID = g.PLAYER_ONE_ID OR p.ID = g.PLAYER_TWO_ID) " +
+                 "GROUP BY p.ID, p.NAME, p.EMAIL, p.PASSWORD, p.PLAYER_STATE, p.SCORE " +
+                 "ORDER BY p.SCORE DESC";
 
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+    try (Connection con = DBConnection.getConnection(); 
+         PreparedStatement ps = con.prepareStatement(sql); 
+         ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()) {
-                players.add(Helper.PlayerMapper(rs));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        while (rs.next()) {
+            players.add(Helper.PlayerStatsDtoMapper(rs));
         }
 
-        return players;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+
+    return players;
+}
 
     public Player login(String email, String password) throws SQLException {
         String sql = "SELECT * FROM PLAYER WHERE EMAIL = ? AND PASSWORD = ?";
@@ -98,6 +125,88 @@ public boolean register(Player player) throws SQLException {
 
         return false;
     }
+    
+    public boolean editPlayerState(String playername, int state) {
+        String sql = "UPDATE PLAYER "
+                + "PLAYER_STATE = ?"
+                + "WHERE NAME = ?";
+
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, state);
+            ps.setString(2, playername);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    
+    public boolean addGame(String playerOneName, String playerTwoName, String winnerName) {
+        String sql = "INSERT INTO GAME (PLAYER_ONE_ID, PLAYER_TWO_ID, GAME_DATE, GAME_STATE) " +
+                     "VALUES (?, ?, CURRENT_TIMESTAMP, ?)";
+
+        String getPlayerIdSql = "SELECT ID FROM PLAYER WHERE NAME = ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement getPlayerStmt1 = con.prepareStatement(getPlayerIdSql);
+             PreparedStatement getPlayerStmt2 = con.prepareStatement(getPlayerIdSql);
+             PreparedStatement getWinnerid=con.prepareStatement(getPlayerIdSql);
+             PreparedStatement insertStmt = con.prepareStatement(sql)) {
+
+            // Get player one ID
+            getPlayerStmt1.setString(1, playerOneName);
+            ResultSet rs1 = getPlayerStmt1.executeQuery();
+            if (!rs1.next()) {
+                System.out.println("Player one not found: " + playerOneName);
+                return false;
+            }
+            int playerOneId = rs1.getInt("ID");
+
+            getPlayerStmt2.setString(1, playerTwoName);
+            ResultSet rs2 = getPlayerStmt2.executeQuery();
+            if (!rs2.next()) {
+                System.out.println("Player two not found: " + playerTwoName);
+                return false;
+            }
+            int playerTwoId = rs2.getInt("ID");
+            
+            getWinnerid.setString(1, playerTwoName);
+            ResultSet rs3 = getWinnerid.executeQuery();
+            if (!rs3.next()) {
+                System.out.println("Player two not found: " + playerTwoName);
+                return false;
+            }
+            int winnerId = rs3.getInt("ID");
+
+            if (winnerId != 0 && winnerId != playerOneId && winnerId != playerTwoId) {
+                System.out.println("Invalid winnerId: " + winnerId + 
+                                 ". Must be 0 (draw), " + playerOneId + " (" + playerOneName + 
+                                 "), or " + playerTwoId + " (" + playerTwoName + ")");
+                return false;
+            }
+
+            // Set parameters for insert
+            insertStmt.setInt(1, playerOneId);
+            insertStmt.setInt(2, playerTwoId);
+            insertStmt.setInt(3, winnerId);
+
+            int rowsAffected = insertStmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            // Handle duplicate game constraint (same players at same timestamp)
+            if (e.getErrorCode() == 23505) { // Duplicate key error code may vary by DB
+                System.out.println("Game already exists between these players at this time.");
+            } else {
+                e.printStackTrace();
+            }
+            return false;
+        }
+    }
 
 //    public List<Player> getLeaderboardPlayers(int playerId
 //    ) {
@@ -127,24 +236,24 @@ public boolean register(Player player) throws SQLException {
         String sqlGetPlayerId = "SELECT ID FROM PLAYER WHERE NAME = ?";
 
         String sql = "SELECT p.ID, p.NAME, p.EMAIL, p.SCORE, p.PLAYER_STATE, " +
-                     "COUNT(*) as TOTAL_GAMES, " +
-                     "SUM(CASE " +
-                     "    WHEN g.GAME_STATE = ? THEN 1 " +
-                     "    ELSE 0 " +
-                     "END) AS WINS, " +
-                     "SUM(CASE " +
-                     "    WHEN g.GAME_STATE = p.ID THEN 1 " +
-                     "    ELSE 0 " +
-                     "END) AS LOSSES, " +
-                     "FROM GAME g " +
-                     "JOIN PLAYER p ON ( " +
-                     "    (g.PLAYER_ONE_ID = ? AND p.ID = g.PLAYER_TWO_ID) OR " +
-                     "    (g.PLAYER_TWO_ID = ? AND p.ID = g.PLAYER_ONE_ID) " +
-                     ") " +
-                     "WHERE (g.PLAYER_ONE_ID = ? OR g.PLAYER_TWO_ID = ?) " +
-                     "AND p.PLAYER_STATE = 1 " +  
-                     "GROUP BY p.ID, p.NAME, p.EMAIL, p.SCORE, p.PLAYER_STATE " +
-                     "ORDER BY WINS DESC";
+                    "COUNT(g.GAME_DATE) as TOTAL_GAMES, " + 
+                    "COALESCE(SUM(CASE " +
+                    "    WHEN g.GAME_STATE = ? THEN 1 " + 
+                    "    ELSE 0 " +
+                    "END), 0) AS WINS, " +
+                    "COALESCE(SUM(CASE " +
+                    "    WHEN g.GAME_STATE = p.ID THEN 1 " +
+                    "    ELSE 0 " +
+                    "END), 0) AS LOSSES " +
+                    "FROM PLAYER p " +
+                    "LEFT JOIN GAME g ON ( " +
+                    "    ((g.PLAYER_ONE_ID = ? AND g.PLAYER_TWO_ID = p.ID) OR " +
+                    "     (g.PLAYER_TWO_ID = ? AND g.PLAYER_ONE_ID = p.ID)) " +
+                    ") " +
+                    "WHERE p.PLAYER_STATE = 1 " +  
+                    "AND p.ID <> ? " +
+                    "GROUP BY p.ID, p.NAME, p.EMAIL, p.SCORE, p.PLAYER_STATE " +
+                    "ORDER BY p.SCORE DESC, WINS DESC";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps1 = con.prepareStatement(sqlGetPlayerId);
@@ -159,12 +268,10 @@ public boolean register(Player player) throws SQLException {
 
             int playerId = rs1.getInt("ID");
 
-            // Set parameters for the main query
             ps.setInt(1, playerId);   // For wins calculation
             ps.setInt(2, playerId);   // First parameter in JOIN
             ps.setInt(3, playerId);   // Second parameter in JOIN
             ps.setInt(4, playerId);   // First WHERE condition
-            ps.setInt(5, playerId);   // Second WHERE condition
 
             ResultSet rs = ps.executeQuery();
 

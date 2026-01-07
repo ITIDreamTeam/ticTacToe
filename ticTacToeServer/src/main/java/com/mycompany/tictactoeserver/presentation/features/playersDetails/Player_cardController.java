@@ -5,6 +5,7 @@
 package com.mycompany.tictactoeserver.presentation.features.playersDetails;
 
 import com.mycompany.tictactoeserver.data.model.Player;
+import com.mycompany.tictactoeserver.data.model.PlayerStatsDto;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -40,7 +41,7 @@ public class Player_cardController implements Initializable {
     private Label player_state;
     @FXML
     private Label player_score;
-    private Player player; 
+    private PlayerStatsDto player; 
 
     /**
      * Initializes the controller class.
@@ -73,15 +74,14 @@ public class Player_cardController implements Initializable {
     }
     }
 
-    public void setPlayerData(Player player) {
-        // --- 2. SAVE THE DATA HERE ---
+    public void setPlayerData(PlayerStatsDto player) {
         this.player = player; 
-        // We take the 'player' coming from the outside and save it into our private field.
 
-        player_name.setText(player.getName());
-        player_score.setText("" + player.getScore());
+        player_name.setText(player.getPlayer().getName());
+        player_score.setText("" + player.getPlayer().getScore());
+        win_score.setText(Integer.toString(player.getWins()));
 
-        switch (player.getPlayerState()) {
+        switch (player.getPlayer().getPlayerState()) {
             case ONLINE:
                 player_state.setStyle("-fx-text-fill: #2ecc71;");
                 player_state.setText("ONLINE");

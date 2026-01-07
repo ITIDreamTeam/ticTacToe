@@ -5,11 +5,14 @@
 package com.mycompany.tictactoeserver.presentation.features.home;
 
 import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
+import com.mycompany.tictactoeserver.data.model.PlayerStatsDto;
 import com.mycompany.tictactoeserver.network.AuthService;
 import com.mycompany.tictactoeserver.network.GameServer;
 import com.mycompany.tictactoeserver.network.MessageRouter;
+import com.mycompany.tictactoeserver.presentation.features.playersDetails.Players_boardController;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -48,6 +51,7 @@ public class HomeController implements Initializable {
         
         barChart.setLegendVisible(false); 
         
+        List<PlayerStatsDto> list=new PlayerDaoImpl().getLeaderBoardPlayers("Bob");
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
         /*Dummy Data*/
@@ -98,6 +102,7 @@ public class HomeController implements Initializable {
     @FXML
     private void onSeeDetailsClicked(ActionEvent event) {
          try {
+             
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeserver/players_board.fxml"));
             Parent root = loader.load();
 
