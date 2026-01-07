@@ -8,6 +8,7 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  *
  * @author Basmala
  */
+import com.mycompany.tictactoeclient.core.RecordingSettings;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 
 import java.io.IOException;
@@ -49,7 +50,9 @@ public class TwoPlayerPopupController implements Initializable {
         startButton.setOnAction(e -> {
             handleStartButton(e);
         });
-        recordButton.setOnAction(e -> showRecords());
+        recordButton.selectedProperty().bindBidirectional(
+                RecordingSettings.recordingEnabledProperty()
+        );
     }
 
     @FXML
@@ -66,9 +69,6 @@ public class TwoPlayerPopupController implements Initializable {
             String p2 = player2Field.getText().isEmpty() ? "Player 2" : player2Field.getText();
             gameController.setPlayersName(p1, p2);
             gameController.setGameMode(false);
-            
-            boolean isChecked = recordButton.isSelected();
-            gameController.setIsRecorded(isChecked);
             
             Stage mainStage = (Stage) this.stage.getOwner();
             Scene scene = new Scene(root);

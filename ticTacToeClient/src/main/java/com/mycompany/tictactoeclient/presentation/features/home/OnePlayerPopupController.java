@@ -9,6 +9,7 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  *
  * @author Basmala
  */
+import com.mycompany.tictactoeclient.core.RecordingSettings;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine;
 import java.io.IOException;
@@ -57,6 +58,10 @@ public class OnePlayerPopupController implements Initializable {
 
         // Move logic to a proper handler method for cleanliness
         startButton.setOnAction(e -> handleStartButton(e));
+
+        recordButton.selectedProperty().bindBidirectional(
+                RecordingSettings.recordingEnabledProperty()
+        );
     }
 
     private void handleStartButton(javafx.event.ActionEvent event) {
@@ -67,9 +72,6 @@ public class OnePlayerPopupController implements Initializable {
             gameController.setGameMode(true);
 
             gameController.setPlayersName("Player", "Computer");
-            
-            boolean isChecked = recordButton.isSelected();
-            gameController.setIsRecorded(isChecked);
             
             Stage popupStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Stage mainStage = (Stage) popupStage.getOwner();

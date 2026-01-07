@@ -4,10 +4,16 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.game_board;
 
+import com.mycompany.tictactoeclient.core.RecordingSettings;
+import com.mycompany.tictactoeclient.data.dataSource.RecordedGamesJson;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine.Player;
 import com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController;
+import com.mycompany.tictactoeclient.data.models.MoveRecord;
+import com.mycompany.tictactoeclient.data.models.RecordedGame;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ResourceBundle;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
@@ -54,7 +60,6 @@ public class Game_boardController implements Initializable {
     private Circle recordingDot;
     @FXML
     private HBox recordingBox;
-    private boolean isRecorded;
 
     private GameEngine.Player nextStarter = GameEngine.Player.X;
     private Button[][] buttons = new Button[3][3];
@@ -81,6 +86,14 @@ public class Game_boardController implements Initializable {
             }
         }
         engine.difficulty = OnePlayerPopupController.difficulty;
+
+        Platform.runLater(() -> {
+            RecordingSettings.recordingEnabledProperty()
+                    .addListener((obs, oldVal, newVal) -> {
+                        updateRecordingState(newVal);
+                    });
+            updateRecordingState(RecordingSettings.isRecordingEnabled());
+        });
         startNewGame();
     }
 
@@ -94,15 +107,16 @@ public class Game_boardController implements Initializable {
         this.isVsComputer = isVsComputer;
     }
 
-    public void setIsRecorded(boolean isRecorded) {
-        this.isRecorded = isRecorded;
+    public void updateRecordingState(boolean isRecorded) {
         System.out.println("is Recorded = " + isRecorded);
-        
+
         if (isRecorded) {
             startRecordingUI();
+            engine.startRecording(playerNameX.getText(), playerNameO.getText());
 
         } else {
             stopRecordingUI();
+            engine.stopRecording();
         }
     }
 

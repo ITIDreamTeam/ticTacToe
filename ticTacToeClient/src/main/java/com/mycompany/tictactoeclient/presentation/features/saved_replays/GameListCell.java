@@ -40,13 +40,13 @@ public class GameListCell extends ListCell<RecordedGame> {
                 }
             }
             playerLabel.setText(game.getPlayerInfo());
-            dateLabel.setText(game.getDate() + " " + game.getTime());
+            dateLabel.setText(game.getFormattedDate());
             playBtn.setOnAction(event -> {
                 System.out.println("Playing game against: " + getItem().getPlayerInfo());
             });
 
             deleteBtn.setOnAction(event -> {
-                System.out.println("Deleting game from: " + getItem().getDate());
+                System.out.println("Deleting game from: " + getItem().getFormattedDate());
                 getListView().getItems().remove(getItem());
             });
             setText(null);
