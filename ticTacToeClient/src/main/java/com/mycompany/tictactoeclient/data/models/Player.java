@@ -19,7 +19,7 @@ public class Player {
     public enum PlayerStatus {
         ONLINE, OFFLINE, IN_GAME
     }
-    ublic Player() {}
+    public Player() {}
     
     public Player(String name, int score, int wins, int losses, PlayerStatus status) {
         this.name = name;
@@ -27,16 +27,18 @@ public class Player {
         this.wins = wins;
         this.losses = losses;
         this.status = status;
+        this.avatarUrl = "..\\..\\..\\avatar.png";
     }
     
-    // Constructor for online players (minimal info from server)
     public Player(String name, PlayerStatus status) {
         this.name = name;
         this.status = status;
         this.score = 0;
         this.wins = 0;
         this.losses = 0;
+        this.avatarUrl = "..\\..\\..\\avatar.png";
     }
+    
     public Player(String name, int score, PlayerStatus status) {
         this.name = name;
         this.score = score;
@@ -44,8 +46,20 @@ public class Player {
         this.avatarUrl = "..\\..\\..\\avatar.png";
     }
 
-    public String getName() { return name; }
+   public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    
     public int getScore() { return score; }
+    public void setScore(int score) { this.score = score; }
+    
+    public int getWins() { return wins; }
+    public void setWins(int wins) { this.wins = wins; }
+    
+    public int getLosses() { return losses; }
+    public void setLosses(int losses) { this.losses = losses; }
+    
     public PlayerStatus getStatus() { return status; }
+    public void setStatus(PlayerStatus status) { this.status = status; }
+    
     public String getAvatarUrl() { return avatarUrl; }
 }
