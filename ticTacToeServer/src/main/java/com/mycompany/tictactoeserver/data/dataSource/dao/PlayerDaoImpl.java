@@ -129,9 +129,7 @@ public boolean register(Player player) throws SQLException {
     }
     
     public boolean editPlayerState(String playername, int state) {
-        String sql = "UPDATE PLAYER "
-                + "PLAYER_STATE = ?"
-                + "WHERE NAME = ?";
+        String sql = "UPDATE PLAYER SET PLAYER_STATE = ? WHERE NAME = ?";
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
