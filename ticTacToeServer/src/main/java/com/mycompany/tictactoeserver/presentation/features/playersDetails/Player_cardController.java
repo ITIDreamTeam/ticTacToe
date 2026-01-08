@@ -6,7 +6,7 @@ package com.mycompany.tictactoeserver.presentation.features.playersDetails;
 
 import com.mycompany.tictactoeserver.data.model.Player;
 import static com.mycompany.tictactoeserver.data.model.Player.PlayerState.IN_GAME;
-import com.mycompany.tictactoeserver.data.model.PlayerStatsDto;
+import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;

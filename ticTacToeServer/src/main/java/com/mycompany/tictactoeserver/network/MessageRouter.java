@@ -5,6 +5,8 @@
 package com.mycompany.tictactoeserver.network;
 
 import com.google.gson.Gson;
+import com.mycompany.tictactoeserver.data.model.Player;
+import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import com.mycompany.tictactoeserver.network.dtos.ErrorPayload;
 import com.mycompany.tictactoeserver.network.request.RegisterRequest;
 import com.mycompany.tictactoeserver.network.response.ResultPayload;
@@ -17,9 +19,9 @@ import java.util.List;
 public final class MessageRouter {
   private final Gson gson;
     private final ClientRegistry registry;
-    private final AuthService auth;
+    private final GameService auth;
 
-    public MessageRouter(Gson gson, ClientRegistry registry, AuthService auth) {
+    public MessageRouter(Gson gson, ClientRegistry registry, GameService auth) {
         this.gson = gson;
         this.registry = registry;
         this.auth = auth;
@@ -165,6 +167,16 @@ public final class MessageRouter {
     
         System.out.println("Handled GET_ONLINE_PLAYERS for: " + session.getUsername());
         
+        System.out.print("get online players");
+        String userName = session.getUsername();
+        List<PlayerStatsDto> players = auth.getOnlineAndInGamePlayers(userName);
+        OnlinePlayersUpdate update = new OnlinePlayersUpdate(players);
+        session.send(new NetworkMessage(
+            MessageType.ONLINE_PLAYERS_UPDATE,
+            "Server",
+            userName,
+            gson.toJsonTree(update)
+        ));
     }
 
     private void handleGameInvite(ClientSession session, NetworkMessage msg) {
@@ -216,22 +228,19 @@ public final class MessageRouter {
     }
 
     private void broadcastOnlinePlayers() {
-        OnlinePlayersUpdate update = new OnlinePlayersUpdate(registry.onlineUsernames());
-        NetworkMessage message = new NetworkMessage(
-            MessageType.ONLINE_PLAYERS_UPDATE,
-            "Server",
-            null,
-            gson.toJsonTree(update)
-        );
-
-        int count = 0;
         for (ClientSession session : registry.allSessions()) {
-            if (session.isConnected()) {
-                session.send(message);
-                count++;
+            if (session.isConnected() && session.getUsername() != null) {
+                List<PlayerStatsDto> players = auth.getOnlineAndInGamePlayers(session.getUsername());
+                OnlinePlayersUpdate update = new OnlinePlayersUpdate(players);
+
+                session.send(new NetworkMessage(
+                    MessageType.ONLINE_PLAYERS_UPDATE,
+                    "Server",
+                    session.getUsername(),
+                    gson.toJsonTree(update)
+                ));
             }
         }
-        System.out.println("Broadcasted online players to " + count + " clients");
     }
     
 

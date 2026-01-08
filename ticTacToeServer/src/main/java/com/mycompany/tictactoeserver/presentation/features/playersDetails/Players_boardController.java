@@ -4,10 +4,8 @@
  */
 package com.mycompany.tictactoeserver.presentation.features.playersDetails;
 
-import com.mycompany.tictactoeserver.data.dataSource.FakeDataSource;
 import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
-import com.mycompany.tictactoeserver.data.model.Player;
-import com.mycompany.tictactoeserver.data.model.PlayerStatsDto;
+import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;

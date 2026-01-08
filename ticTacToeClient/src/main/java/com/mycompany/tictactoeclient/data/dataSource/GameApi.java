@@ -21,12 +21,12 @@ public class GameApi {
         this.client = client;
     }
     
-    public void requestOnlinePlayers() throws Exception {
+    public void requestOnlinePlayers() throws Exception  {
         NetworkMessage msg = new NetworkMessage(
             MessageType.GET_ONLINE_PLAYERS,
                 UserSession.getInstance().getUsername(),
                 "server",
-            client.getGson().toJsonTree(null)
+            null
         );
         client.send(msg);
     }

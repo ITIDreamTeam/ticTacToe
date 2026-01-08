@@ -44,6 +44,10 @@ public class HomeController implements Initializable {
         server = GameServer.getInstance();
         barChart.setLegendVisible(false);
 
+
+        
+        barChart.setLegendVisible(false); 
+        
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
         waitingData = new XYChart.Data<>("Waiting", 0);

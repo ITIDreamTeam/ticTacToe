@@ -5,24 +5,20 @@
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
-import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import static com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController.difficulty;
 import com.mycompany.tictactoeclient.shared.Navigation;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
 /**
  * FXML Controller class

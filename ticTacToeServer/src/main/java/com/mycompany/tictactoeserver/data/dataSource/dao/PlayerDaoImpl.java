@@ -5,7 +5,8 @@
 package com.mycompany.tictactoeserver.data.dataSource.dao;
 
 import com.mycompany.tictactoeserver.data.model.Player;
-import com.mycompany.tictactoeserver.data.model.PlayerStatsDto;
+import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
+
 import com.mycompany.tictactoeserver.util.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,6 +49,7 @@ public class PlayerDaoImpl {
                  "LEFT JOIN GAME g ON (p.ID = g.PLAYER_ONE_ID OR p.ID = g.PLAYER_TWO_ID) " +
                  "GROUP BY p.ID, p.NAME, p.EMAIL, p.PASSWORD, p.PLAYER_STATE, p.SCORE " +
                  "ORDER BY p.SCORE DESC";
+
 
     try (Connection con = DBConnection.getConnection(); 
          PreparedStatement ps = con.prepareStatement(sql); 

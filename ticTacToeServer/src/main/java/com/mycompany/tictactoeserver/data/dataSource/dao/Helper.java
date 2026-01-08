@@ -6,7 +6,7 @@ package com.mycompany.tictactoeserver.data.dataSource.dao;
 
 import com.mycompany.tictactoeserver.data.model.Player;
 import com.mycompany.tictactoeserver.data.model.Player.PlayerState;
-import com.mycompany.tictactoeserver.data.model.PlayerStatsDto;
+import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
