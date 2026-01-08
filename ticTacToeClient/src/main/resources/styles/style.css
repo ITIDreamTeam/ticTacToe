@@ -372,3 +372,18 @@
     -fx-fill: #FF004C;
     -fx-effect: dropshadow(gaussian, #FF004C, 8, 0.6, 0, 0);
 }
+.check-box .box {
+    -fx-background-color: black;
+    -fx-border-color: #FF00FF;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+}
+
+.check-box:selected .box {
+    -fx-background-color: black; 
+    -fx-border-color: #4E0585;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: #FF00FF;
+}

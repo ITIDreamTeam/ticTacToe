@@ -10,6 +10,7 @@ import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine
 import com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController;
 import com.mycompany.tictactoeclient.data.models.MoveRecord;
 import com.mycompany.tictactoeclient.data.models.RecordedGame;
+import com.mycompany.tictactoeclient.shared.Navigation;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -61,10 +63,11 @@ public class Game_boardController implements Initializable {
     @FXML
     private HBox recordingBox;
 
+    public static enum GameMode {vsComputer, twoPlayer, withFriend};
+    public static GameMode currentMode=GameMode.vsComputer;
     private GameEngine.Player nextStarter = GameEngine.Player.X;
     private Button[][] buttons = new Button[3][3];
     private GameEngine engine;
-    private boolean isVsComputer;
     private int xScore = 0;
     private int oScore = 0;
     private Timeline blinkingTimeline;
@@ -103,8 +106,8 @@ public class Game_boardController implements Initializable {
         statusLabel.setText(playerNameX.getText() + " Turn");
     }
 
-    public void setGameMode(boolean isVsComputer) {
-        this.isVsComputer = isVsComputer;
+    public static void setGameMode(GameMode mode) {
+        currentMode = mode;
     }
 
     public void updateRecordingState(boolean isRecorded) {
@@ -143,7 +146,7 @@ public class Game_boardController implements Initializable {
 
     private void startNewGame() {
         engine.resetGame(nextStarter);
-        if (isVsComputer) {
+        if (currentMode == GameMode.vsComputer) {
             if (nextStarter == Player.X) {
                 statusLabel.setText(playerNameX.getText() + " Turn");
             }
@@ -163,7 +166,7 @@ public class Game_boardController implements Initializable {
             }
         }
         setBoardDisabled(false);
-        if (isVsComputer && nextStarter == GameEngine.Player.O) {
+        if (currentMode==GameMode.vsComputer && nextStarter == GameEngine.Player.O) {
             statusLabel.setText("Computer is thinking...");
             setBoardDisabled(true);
 
@@ -187,7 +190,7 @@ public class Game_boardController implements Initializable {
                 return;
             }
             engine.switchTurn();
-            if (isVsComputer && engine.getCurrentPlayer() == GameEngine.Player.O) {
+            if (currentMode==GameMode.vsComputer  && engine.getCurrentPlayer() == GameEngine.Player.O) {
                 setBoardDisabled(true);
                 statusLabel.setText("Computer is thinking...");
                 PauseTransition pause = new PauseTransition(Duration.seconds(0.7));
@@ -329,16 +332,7 @@ public class Game_boardController implements Initializable {
 
     @FXML
     private void onBackClicked(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/home.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) gameGrid.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        Navigation.navigateTo(Navigation.homePage);
     }
+    
 }

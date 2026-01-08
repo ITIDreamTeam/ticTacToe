@@ -7,6 +7,7 @@ package com.mycompany.tictactoeclient.presentation.features.playersboard;
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.core.RecordingSettings;
 import com.mycompany.tictactoeclient.data.models.Player;
+import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import java.io.IOException;
 import java.net.URL;
@@ -49,7 +50,10 @@ public class Invite_popupController implements Initializable {
     // Timelines
     private Timeline delayTimeline;
     private Timeline timeoutTimeline;
-
+    Parent root;
+    FXMLLoader loader;
+    Game_boardController gameController;
+    private final UserSession session = UserSession.getInstance();
    
     /**
      * Initializes the controller class.
@@ -76,7 +80,7 @@ public class Invite_popupController implements Initializable {
         System.out.println("Invitation Cancelled");
         closePopup();
     }
- public void setDisplayData(Player player, Stage stage,ActionEvent event) {
+    public void setDisplayData(Player player, Stage stage,ActionEvent event) {
         this.opponent = player;
         this.stage = stage;
         playerNameLabel.setText(player.getName());

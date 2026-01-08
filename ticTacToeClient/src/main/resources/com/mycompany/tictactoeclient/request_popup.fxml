@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="350.0" spacing="15.0" style="-fx-background-color: #2C003E; -fx-background-radius: 20; -fx-border-color: #A90052; -fx-border-radius: 20; -fx-border-width: 2;" stylesheets="@../../../styles/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.tictactoeclient.presentation.features.playersboard.Request_popupController">
+   <children>
+      
+      <Label style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;" text="Game Invitation" />
+      
+      <Label fx:id="statusLabel" style="-fx-font-size: 14px; -fx-text-fill: #e0e0e0;" text="Play with me." />
+
+      <Label fx:id="playerNameLabel" style="-fx-font-size: 20px; -fx-text-fill: #f1c40f; -fx-font-weight: bold;" text="inveted by" />
+
+      <ProgressBar fx:id="timeProgressBar" prefWidth="300.0" progress="0.0" style="-fx-accent: #A90052;" />
+
+      <CheckBox fx:id="recordCheckBox" mnemonicParsing="false" onAction="#onClickCheckBox" style="-fx-font-size: 14px;" text="Record this game?" textFill="WHITE" />
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#onAcceptClick" prefWidth="120.0" style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 15; -fx-text-fill: white; -fx-font-size: 16px; -fx-cursor: hand;" text="Accept" />
+      
+            <Button mnemonicParsing="false" onAction="#onCancelClick" prefWidth="120.0" style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 15; -fx-text-fill: white; -fx-font-size: 16px; -fx-cursor: hand;" text="Cancel">
+               <HBox.margin>
+                  <Insets left="20.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>

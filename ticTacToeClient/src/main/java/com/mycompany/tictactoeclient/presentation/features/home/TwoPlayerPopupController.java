@@ -10,6 +10,7 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  */
 import com.mycompany.tictactoeclient.core.RecordingSettings;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
+import com.mycompany.tictactoeclient.shared.Navigation;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,7 +39,9 @@ public class TwoPlayerPopupController implements Initializable {
     @FXML
     private Button startButton;
     private Stage stage;
-
+    Parent root;
+    FXMLLoader loader;
+    Game_boardController gameController;
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -68,20 +71,21 @@ public class TwoPlayerPopupController implements Initializable {
             String p1 = player1Field.getText().isEmpty() ? "Player 1" : player1Field.getText();
             String p2 = player2Field.getText().isEmpty() ? "Player 2" : player2Field.getText();
             gameController.setPlayersName(p1, p2);
-            gameController.setGameMode(false);
+            gameController.setGameMode(Game_boardController.GameMode.twoPlayer);
             
             Stage mainStage = (Stage) this.stage.getOwner();
             Scene scene = new Scene(root);
             mainStage.setScene(scene);
             mainStage.show();
-            this.stage.close();
-
+            stage.close();
+            Navigation.navigateTo(Navigation.gameBoardPage);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    private void showRecords() {
-        System.out.println("Showing Two Player Records");
+        player1Field.setText("Player1");
+        player2Field.setText("Player2");
+        startButton.setOnAction(e -> {
+            handleStartButton(e);
+        });        
     }
 }

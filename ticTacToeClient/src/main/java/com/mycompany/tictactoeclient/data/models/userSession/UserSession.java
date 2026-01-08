@@ -4,47 +4,88 @@
  */
 package com.mycompany.tictactoeclient.data.models.userSession;
 
+import com.mycompany.tictactoeclient.network.MessageType;
+import com.mycompany.tictactoeclient.network.NetworkClient;
+import com.mycompany.tictactoeclient.network.NetworkMessage;
+
 /**
  *
  * @author Basmala
  */
 public class UserSession {
-    private static UserSession instance;
+     private static final UserSession INSTANCE = new UserSession();
     
-    private String username= "Basmala";
-    private boolean isLoggedIn;
+    private volatile String username;
+    private volatile String email="NotFound";
+    private volatile String score="000";
+    private volatile boolean isOnline;
     
-    private UserSession() {
-        this.isLoggedIn = true;
-        this.username = null;
+    private UserSession() {}
+    
+    public static UserSession getInstance() { 
+        return INSTANCE; 
     }
     
-    public static UserSession getInstance() {
-        if (instance == null) {
-            instance = new UserSession();
-        }
-        return instance;
+    public boolean isLoggedIn() { 
+        return username != null; 
     }
     
-    public void login(String username) {
+    public String getUsername() { 
+        return username; 
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public String getScore() {
+        return score;
+    }
+    
+    public void setUsername(String username) { 
+        this.username = username; 
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public void setScore(String score) {
+        this.score=score;
+    }
+    
+    public boolean isOnline() {
+        return isOnline && NetworkClient.getInstance().isConnected();
+    }
+    
+    public void login(String username, String email) {
         this.username = username;
-        this.isLoggedIn = true;
+        this.email = email;
+        this.isOnline = true;
     }
     
     public void logout() {
         this.username = null;
-        this.isLoggedIn = false;
+        this.email = null;
+        this.isOnline = false;
+        NetworkClient client = NetworkClient.getInstance();
+        if (client.isConnected()) {
+            try {
+                NetworkMessage logoutMsg = new NetworkMessage(
+                    MessageType.DISCONNECT,
+                    username,
+                    "Server",
+                    null
+                );
+                client.send(logoutMsg);
+            } catch (Exception ignored) {}
+            
+            client.disconnect();
+        }
+        client.clearListeners();
     }
     
-    public boolean isLoggedIn() {
-        return isLoggedIn;
-    }
-    
-    public String getUsername() {
-        return username;
-    }
-    
-    public void setUsername(String username) {
-        this.username = username;
+    public void setOffline() {
+        this.isOnline = false;
     }
 }
