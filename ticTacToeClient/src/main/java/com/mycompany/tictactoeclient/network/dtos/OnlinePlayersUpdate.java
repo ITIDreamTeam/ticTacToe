@@ -4,6 +4,7 @@
  */
 package com.mycompany.tictactoeclient.network.dtos;
 
+import com.mycompany.tictactoeclient.data.models.Player;
 import java.util.List;
 
 /**

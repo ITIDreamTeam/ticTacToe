@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.mycompany.tictactoeserver.network.dtos.ErrorPayload;
 import com.mycompany.tictactoeserver.network.request.RegisterRequest;
 import com.mycompany.tictactoeserver.network.response.ResultPayload;
+import java.util.List;
 
 /**
  *
@@ -153,13 +154,17 @@ public final class MessageRouter {
     private void handleGetOnlinePlayers(ClientSession session) {
         if (!isAuthenticated(session)) return;
         
-        OnlinePlayersUpdate update = new OnlinePlayersUpdate(registry.onlineUsernames());
-        session.send(new NetworkMessage(
-            MessageType.ONLINE_PLAYERS_UPDATE,
-            "Server",
-            session.getUsername(),
-            gson.toJsonTree(update)
-        ));
+//        OnlinePlayersUpdate update = new OnlinePlayersUpdate(registry.onlineUsernames());
+//        session.send(new NetworkMessage(
+//            MessageType.ONLINE_PLAYERS_UPDATE,
+//            "Server",
+//            session.getUsername(),
+//            gson.toJsonTree(update)
+//        ));
+        broadcastOnlinePlayers(); 
+    
+        System.out.println("Handled GET_ONLINE_PLAYERS for: " + session.getUsername());
+        
     }
 
     private void handleGameInvite(ClientSession session, NetworkMessage msg) {
@@ -228,6 +233,7 @@ public final class MessageRouter {
         }
         System.out.println("Broadcasted online players to " + count + " clients");
     }
+    
 
     private boolean isAuthenticated(ClientSession session) {
         if (session.getUsername() == null) {

@@ -17,7 +17,8 @@ module com.mycompany.tictactoeclient {
     opens com.mycompany.tictactoeclient.network.request to com.google.gson;
     opens com.mycompany.tictactoeclient.network to com.google.gson;
     opens com.mycompany.tictactoeclient.network.response to com.google.gson;
-
+    opens com.mycompany.tictactoeclient.network.dtos to com.google.gson;
+    opens com.mycompany.tictactoeclient.data.models to com.google.gson;
     opens com.mycompany.tictactoeclient to javafx.fxml;
     exports com.mycompany.tictactoeclient;
 }
