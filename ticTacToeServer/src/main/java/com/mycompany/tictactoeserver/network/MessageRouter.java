@@ -70,6 +70,7 @@ public final class MessageRouter {
             registry.remove(session);
             System.out.println("User disconnected: " + username);
             broadcastOnlinePlayers();
+            auth.updateStats();
         }
         session.close();
     }
@@ -117,6 +118,7 @@ public final class MessageRouter {
         ResultPayload authResult = auth.login(request);
         if (!authResult.isSuccess()) {
             auth.updatePlayerState(username, 1);
+            auth.updateStats();
             session.send(new NetworkMessage(
                 MessageType.LOGIN_RESULT, 
                 "Server", 

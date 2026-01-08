@@ -2,6 +2,7 @@ package com.mycompany.tictactoeserver.presentation.features.home;
 
 import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
 import com.mycompany.tictactoeserver.network.GameServer;
+import com.mycompany.tictactoeserver.network.GameService;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -42,10 +43,20 @@ public class HomeController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 
         server = GameServer.getInstance();
-        barChart.setLegendVisible(false);
 
+        logList.setItems(server.getLogs());
+        if (server.isRunning()) {
+            startToggleBtn.setSelected(true);
+            startToggleBtn.setText("Stop");
+        } else {
+            startToggleBtn.setSelected(false);
+            startToggleBtn.setText("Start");
+        }
+        server.getGameService().setOnStatsChanged(() -> {
+            loadPlayerStats(); 
+        });
+        
         barChart.setLegendVisible(false);
-
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
         waitingData = new XYChart.Data<>("Waiting", 0);
@@ -56,7 +67,6 @@ public class HomeController implements Initializable {
         series.getData().addAll(waitingData, inGameData, onlineData, offlineData);
         barChart.getData().add(series);
 
-        loadPlayerStats();
 
         Platform.runLater(() -> {
             waitingData.getNode().setStyle("-fx-bar-fill: #00FFFF;");
@@ -68,7 +78,8 @@ public class HomeController implements Initializable {
                     .forEach(n -> n.setStyle("-fx-text-fill: white;"));
             barChart.getYAxis().lookupAll(".tick-label")
                     .forEach(n -> n.setStyle("-fx-text-fill: white;"));
-        });
+        }); 
+        loadPlayerStats();
     }
 
     @FXML
@@ -78,9 +89,9 @@ public class HomeController implements Initializable {
             uiLog("Starting server...");
             new Thread(() -> {
                 try {
-                    server.start();
+                    server.start(); 
+
                 } catch (Exception e) {
-                    e.printStackTrace();
                     Platform.runLater(() -> {
                         startToggleBtn.setSelected(false);
                         startToggleBtn.setText("Start");
@@ -88,28 +99,14 @@ public class HomeController implements Initializable {
                     });
                 }
             }).start();
+
+
+            startToggleBtn.setText("Stop");
+            startToggleBtn.setDisable(false);
         } else {
             server.stop();
             startToggleBtn.setText("Start");
             uiLog("Server stopped");
-        }
-    }
-
-    @FXML
-    private void onSeeDetailsClicked(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/mycompany/tictactoeserver/players_board.fxml")
-            );
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            uiLog("Failed to load Players Screen");
         }
     }
 
@@ -130,6 +127,27 @@ public class HomeController implements Initializable {
     }
 
     private void uiLog(String message) {
-        Platform.runLater(() -> logList.getItems().add(message));
+        Platform.runLater(() -> {
+            server.getLogs().add(message);
+        });
+    }
+    @FXML
+    private void onSeeDetailsClicked(ActionEvent event) {
+        server.getGameService().setOnStatsChanged(null);
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/mycompany/tictactoeserver/players_board.fxml")
+            );
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            uiLog("Failed to load Players Screen");
+        }
     }
 }

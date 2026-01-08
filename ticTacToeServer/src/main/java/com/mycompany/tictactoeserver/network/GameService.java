@@ -18,7 +18,7 @@ import java.util.List;
  */
 public final class GameService {
     private final PlayerDaoImpl playerDao;
-
+    private Runnable onStatsChanged;
 
     public GameService(PlayerDaoImpl playerDao) {
         this.playerDao = playerDao;
@@ -59,6 +59,8 @@ public final class GameService {
         
         try {
             playerDao.login(userName, password);
+            playerDao.editPlayerState(userName, 1);
+            updateStats();
             return new ResultPayload(true, "OK", "Registered successfully.");
         } catch (SQLException ex) {
            return new ResultPayload(false, "INVALID_INPUT", "Un expected behavior");
@@ -76,4 +78,15 @@ public final class GameService {
         System.out.println("Updating state for " + username + " to: " + state);
         return playerDao.editPlayerState(username, state);
     }
+    
+    public void setOnStatsChanged(Runnable callback) {
+        this.onStatsChanged = callback;
+    }
+
+    public void updateStats() {
+        if (onStatsChanged != null) {
+            onStatsChanged.run();
+        }
+    }
+    
 }
