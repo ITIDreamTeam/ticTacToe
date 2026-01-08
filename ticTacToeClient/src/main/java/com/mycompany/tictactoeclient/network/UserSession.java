@@ -44,24 +44,23 @@ public final class UserSession {
     }
     
     public void logout() {
-        this.username = null;
-        this.email = null;
-        this.isOnline = false;
-        
         NetworkClient client = NetworkClient.getInstance();
-        if (client.isConnected()) {
+        if (client.isConnected() && username != null) {
             try {
                 NetworkMessage logoutMsg = new NetworkMessage(
                     MessageType.DISCONNECT,
-                    username,
+                    this.username,
                     "Server",
                     null
                 );
                 client.send(logoutMsg);
             } catch (Exception ignored) {}
-            
             client.disconnect();
         }
+
+        this.username = null;
+        this.email = null;
+        this.isOnline = false;
         client.clearListeners();
     }
     

@@ -112,7 +112,8 @@ public class HomeController implements Initializable {
                 App.showInfo("Logged Out", "You have been logged out successfully.");
                 updateUI();
             }
-        });
+            UserSession.getInstance().logout();
+        });   
     }
 
     private void showPopup(String fxmlFile, String title) {

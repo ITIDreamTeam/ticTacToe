@@ -5,7 +5,6 @@
 package com.mycompany.tictactoeserver.network;
 
 import com.google.gson.Gson;
-import com.mycompany.tictactoeserver.data.model.Player;
 import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import com.mycompany.tictactoeserver.network.dtos.ErrorPayload;
 import com.mycompany.tictactoeserver.network.request.RegisterRequest;
@@ -66,13 +65,13 @@ public final class MessageRouter {
 
     public void onDisconnect(ClientSession session) {
         String username = session.getUsername();
-        registry.remove(session);
-        session.close();
-        
         if (username != null) {
+            auth.updatePlayerState(username, 0);
+            registry.remove(session);
             System.out.println("User disconnected: " + username);
             broadcastOnlinePlayers();
         }
+        session.close();
     }
 
     private void handleRegister(ClientSession session, NetworkMessage msg) {
@@ -102,7 +101,6 @@ public final class MessageRouter {
         broadcastOnlinePlayers();
         
     } else {
-        // Registration failed
         session.send(new NetworkMessage(
             MessageType.REGISTER_RESULT,
             "Server",
@@ -118,6 +116,7 @@ public final class MessageRouter {
         
         ResultPayload authResult = auth.login(request);
         if (!authResult.isSuccess()) {
+            auth.updatePlayerState(username, 1);
             session.send(new NetworkMessage(
                 MessageType.LOGIN_RESULT, 
                 "Server", 
