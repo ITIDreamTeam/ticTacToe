@@ -70,4 +70,10 @@ public final class GameService {
     private String clean(String s) {
         return s == null ? "" : s.trim().toLowerCase();
     }
+    public boolean updatePlayerState(String username, int state) {
+        if (username == null || username.isEmpty()) return false;
+        
+        System.out.println("Updating state for " + username + " to: " + state);
+        return playerDao.editPlayerState(username, state);
+    }
 }
