@@ -41,6 +41,7 @@ public class TwoPlayerPopupController implements Initializable {
     Parent root;
     FXMLLoader loader;
     Game_boardController gameController;
+
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -59,7 +60,7 @@ public class TwoPlayerPopupController implements Initializable {
         player2Field.setText("Player2");
         startButton.setOnAction(e -> {
             handleStartButton(e);
-        });        
+        });
     }
 
     @FXML
@@ -72,8 +73,11 @@ public class TwoPlayerPopupController implements Initializable {
         String p2 = player2Field.getText().isEmpty() ? "Player 2" : player2Field.getText();
         gameController.setPlayersName(p1, p2);
         Game_boardController.setGameMode(Game_boardController.GameMode.twoPlayer);
-        stage.close();
-        Navigation.navigateTo(Navigation.gameBoardPage);
+        Stage mainStage = (Stage) this.stage.getOwner();
+        Scene scene = new Scene(root);
+        mainStage.setScene(scene);
+        mainStage.show();
+        this.stage.close();
     }
 
 }

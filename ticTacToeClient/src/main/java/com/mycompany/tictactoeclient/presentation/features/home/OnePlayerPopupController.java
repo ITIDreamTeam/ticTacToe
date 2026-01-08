@@ -50,10 +50,11 @@ public class OnePlayerPopupController implements Initializable {
     Game_boardController gameController;
     private final UserSession session = UserSession.getInstance();
     private Stage stage;
+
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         easyButton.setStyle("-fx-background-color: #4E0585; -fx-text-fill: white;");
@@ -67,10 +68,10 @@ public class OnePlayerPopupController implements Initializable {
             ex.printStackTrace();
         }
     }
-     
-    private void handleStartButton(javafx.event.ActionEvent event) { 
+
+    private void handleStartButton(javafx.event.ActionEvent event) {
         Game_boardController.setGameMode(Game_boardController.GameMode.vsComputer);
-        gameController.setPlayersName(session.isLoggedIn()?session.getUsername():"Player", "Computer");
+        gameController.setPlayersName(session.isLoggedIn() ? session.getUsername() : "Player", "Computer");
         ToggleButton selected = (ToggleButton) difficultyGroup.getSelectedToggle();
         if (selected == easyButton) {
             difficulty = GameEngine.gameDifficulty.Easy;
@@ -81,8 +82,11 @@ public class OnePlayerPopupController implements Initializable {
         }
         System.out.println("Starting One Player Game:");
         System.out.println("Difficulty: " + difficulty);
-        stage.close();
-        Navigation.navigateTo(Navigation.gameBoardPage);
+        Stage mainStage = (Stage) this.stage.getOwner();
+        Scene scene = new Scene(root);
+        mainStage.setScene(scene);
+        mainStage.show();
+        this.stage.close();
 
     }
 

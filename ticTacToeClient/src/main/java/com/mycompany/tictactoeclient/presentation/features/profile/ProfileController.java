@@ -2,16 +2,22 @@ package com.mycompany.tictactoeclient.presentation.features.profile;
 
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.shared.Navigation;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 
 public class ProfileController implements Initializable {
 
@@ -59,7 +65,7 @@ public class ProfileController implements Initializable {
             field.getStyleClass().add("text-field-editing");
             field.requestFocus();
             field.positionCaret(
-                field.getText() == null ? 0 : field.getText().length()
+                    field.getText() == null ? 0 : field.getText().length()
             );
             if (saveEditIcon != null) {
                 icon.setImage(saveEditIcon);
@@ -69,7 +75,7 @@ public class ProfileController implements Initializable {
                 field.setEditable(false);
                 field.getStyleClass().remove("text-field-editing");
                 field.getStyleClass().add("text-field-readonly");
-                
+
                 String newValue = field.getText();
                 if (field == usernameField) {
                     UserSession.getInstance().setUsername(newValue);
@@ -100,17 +106,47 @@ public class ProfileController implements Initializable {
 
     @FXML
     private void onBackClicked(ActionEvent event) {
-        Navigation.navigateTo(Navigation.homePage);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/home.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @FXML
     private void onChangePasswordClicked(ActionEvent event) {
-        Navigation.navigateTo(Navigation.changePasswordPage);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/changePassword.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @FXML
     private void onViewRecordedGames(ActionEvent event) {
-        Navigation.navigateTo(Navigation.recordedGamesPage);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/RecordedGames.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private boolean isInputValid(TextField field) {
@@ -140,7 +176,6 @@ public class ProfileController implements Initializable {
 
         return true;
     }
-
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
