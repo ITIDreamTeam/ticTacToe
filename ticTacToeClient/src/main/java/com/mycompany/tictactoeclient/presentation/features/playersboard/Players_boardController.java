@@ -122,6 +122,8 @@ public class Players_boardController implements Initializable {
         
         for (PlayerStatsDto dto : update.getPlayers()) {
                 Player player = dto.getPlayer();
+                player.setWins(dto.getWins());
+                player.setLosses(dto.getLosses());
                 players.add(player);
             }
         Platform.runLater(() -> {
@@ -129,7 +131,6 @@ public class Players_boardController implements Initializable {
             masterData.addAll(players);
             loadingSpinner.setVisible(false);
             playersListView.setVisible(true);
-            
             System.out.println("Loaded " + players.size() + " online/in-game players");
         });
     }

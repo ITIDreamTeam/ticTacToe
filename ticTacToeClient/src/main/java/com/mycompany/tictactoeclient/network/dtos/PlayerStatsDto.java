@@ -36,11 +36,11 @@ public class PlayerStatsDto {
         return player;
     }
     
-    public int getWins(int wins){
+    public int getWins(){
         return wins;
     }
     
-    public int getLosses(int losses){
+    public int getLosses(){
         return losses;
     }
 }

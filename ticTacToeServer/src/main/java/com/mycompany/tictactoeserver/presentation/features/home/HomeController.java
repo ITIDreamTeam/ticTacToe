@@ -4,11 +4,9 @@
  */
 package com.mycompany.tictactoeserver.presentation.features.home;
 
-import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
 import com.mycompany.tictactoeserver.network.GameServer;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
