@@ -44,10 +44,8 @@ public class HomeController implements Initializable {
         server = GameServer.getInstance();
         barChart.setLegendVisible(false);
 
+        barChart.setLegendVisible(false);
 
-        
-        barChart.setLegendVisible(false); 
-        
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
         waitingData = new XYChart.Data<>("Waiting", 0);
@@ -75,30 +73,21 @@ public class HomeController implements Initializable {
 
     @FXML
     private void onToggaleBtnClicked(ActionEvent event) {
-
         if (startToggleBtn.isSelected()) {
-            startToggleBtn.setDisable(true);
-            uiLog("Server starting...");
-
+            startToggleBtn.setText("Stop");
+            uiLog("Starting server...");
             new Thread(() -> {
                 try {
                     server.start();
-                    Platform.runLater(() -> {
-                        startToggleBtn.setText("Stop");
-                        startToggleBtn.setDisable(false);
-                        uiLog("Server started successfully");
-                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                     Platform.runLater(() -> {
                         startToggleBtn.setSelected(false);
                         startToggleBtn.setText("Start");
-                        startToggleBtn.setDisable(false);
                         uiLog("Server crashed: " + e.getMessage());
                     });
                 }
             }).start();
-
         } else {
             server.stop();
             startToggleBtn.setText("Start");
