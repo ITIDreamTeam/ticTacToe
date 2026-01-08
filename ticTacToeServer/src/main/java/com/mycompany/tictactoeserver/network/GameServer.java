@@ -28,7 +28,7 @@ public final class GameServer {
     private final ClientRegistry registry = new ClientRegistry();
     private final GameService auth = new GameService(playerDao);
     private final MessageRouter router = new MessageRouter(gson, registry, auth);
-    
+    private final javafx.collections.ObservableList<String> logs = javafx.collections.FXCollections.observableArrayList();    public javafx.collections.ObservableList<String> getLogs() { return logs; }
     private GameServer() {}
     
     public static synchronized GameServer getInstance() {
@@ -86,5 +86,8 @@ public final class GameServer {
     
     public ClientRegistry getRegistry() {
         return registry;
+    }
+    public GameService getGameService() {
+        return auth;
     }
 }
