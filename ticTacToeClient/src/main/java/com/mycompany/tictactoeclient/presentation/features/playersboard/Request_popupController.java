@@ -4,18 +4,18 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
+import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.data.dataSource.GameApi;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
-import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
-import static com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController.difficulty;
-import com.mycompany.tictactoeclient.shared.Navigation;
+import com.mycompany.tictactoeclient.network.NetworkClient;
+import com.mycompany.tictactoeclient.network.request.InviteRequest;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -28,60 +28,96 @@ import javafx.stage.Stage;
 public class Request_popupController implements Initializable {
 
 
-    @FXML
-    private Label statusLabel;
-    @FXML
-    private Label playerNameLabel;
-    @FXML
-    private ProgressBar timeProgressBar;
-    @FXML
-    private CheckBox recordCheckBox;
-    Parent root;
-    FXMLLoader loader;
-    Game_boardController gameController;
+     @FXML private Label statusLabel;
+    @FXML private Label playerNameLabel;
+    @FXML private ProgressBar timeProgressBar;
+    @FXML private CheckBox recordCheckBox;
+    
+    private final NetworkClient client = NetworkClient.getInstance();
+    private final GameApi gameApi = new GameApi(client);
     private final UserSession session = UserSession.getInstance();
+    
     private Stage stage;
+    private InviteRequest invite = new InviteRequest();
+
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-    /**
-     * Initializes the controller class.
-     */
+    
+    public void setInviteData(InviteRequest invite) {
+        this.invite = invite;
+        playerNameLabel.setText(invite.getSenderUsername());
+        recordCheckBox.setSelected(invite.isRecordGame());
+        statusLabel.setText(invite.getSenderUsername() + " wants to play with you!");
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        try {
-            loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/game_board.fxml"));
-            root = loader.load();
-            gameController = loader.getController();
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-     
-    private void handleStartButton(javafx.event.ActionEvent event) { 
-        Game_boardController.setGameMode(Game_boardController.GameMode.vsComputer);
-        gameController.setPlayersName(session.getUsername(),"invited name");
-       
-        System.out.println("Starting One Player Game:");
-        System.out.println("Difficulty: " + difficulty);
-        stage.close();
-        Navigation.navigateTo(Navigation.gameBoardPage);
-
+  
     }
     
     @FXML
     private void onAcceptClick(ActionEvent event) {
-        handleStartButton(event);
+        handleAccept();
     }
 
     @FXML
-    private void onCancelClick(ActionEvent event) {
+    private void onDeclineClick(ActionEvent event) {
+        handleDecline();
     }
     
     @FXML
     private void onClickCheckBox(ActionEvent event) {
-        gameController.changeRecoringIconVisiablitiy(recordCheckBox.isSelected());
+    }
+    
+    private void handleAccept() {
+        new Thread(() -> {
+            try {
+                gameApi.acceptInvite(invite.getSenderUsername(), invite.isRecordGame());
+                
+                Platform.runLater(() -> {
+                    try {
+                        App.showInfo("Game Starting", "Starting game with " + invite.getSenderUsername());                      
+                        closePopup();
+                        App.setRoot("game_board");
+                        
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        App.showError("Navigation Error", "Cannot start game.");
+                    }
+                });
+                
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    App.showError("Network Error", "Failed to accept invite: " + e.getMessage());
+                });
+            }
+        }, "accept-invite-thread").start();
+    }
+    
+    private void handleDecline() {
+        new Thread(() -> {
+            try {
+                gameApi.declineInvite(invite.getSenderUsername());
+                
+                Platform.runLater(() -> {
+                    App.showInfo("Invitation Declined", "You declined the invitation from " + invite.getSenderUsername());
+                    closePopup();
+                });
+                
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    App.showError("Network Error", "Failed to decline invite: " + e.getMessage());
+                    closePopup();
+                });
+            }
+        }, "decline-invite-thread").start();
+    }
+
+    private void closePopup() {
+        if (stage != null) {
+            stage.close();
+        }
     }
 
 }
