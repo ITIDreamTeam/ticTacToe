@@ -43,6 +43,7 @@ public class HomeController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 
         server = GameServer.getInstance();
+
         logList.setItems(server.getLogs());
         if (server.isRunning()) {
             startToggleBtn.setSelected(true);
@@ -84,25 +85,24 @@ public class HomeController implements Initializable {
     @FXML
     private void onToggaleBtnClicked(ActionEvent event) {
         if (startToggleBtn.isSelected()) {
-            startToggleBtn.setDisable(true);
-            uiLog("Server starting...");
-
+            startToggleBtn.setText("Stop");
+            uiLog("Starting server...");
             new Thread(() -> {
                 try {
                     server.start(); 
+
                 } catch (Exception e) {
                     Platform.runLater(() -> {
                         startToggleBtn.setSelected(false);
                         startToggleBtn.setText("Start");
-                        startToggleBtn.setDisable(false);
                         uiLog("Server crashed: " + e.getMessage());
                     });
                 }
             }).start();
 
+
             startToggleBtn.setText("Stop");
             startToggleBtn.setDisable(false);
-
         } else {
             server.stop();
             startToggleBtn.setText("Start");
