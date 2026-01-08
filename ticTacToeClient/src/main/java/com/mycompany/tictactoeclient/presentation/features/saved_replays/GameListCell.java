@@ -20,7 +20,7 @@ public class GameListCell extends ListCell<RecordedGame> {
     @FXML
     private Button deleteBtn;
     private FXMLLoader mLLoader;
-    private AnchorPane rootAnchorPane;
+    private AnchorPane rootAnchorPane; 
 
     @Override
     protected void updateItem(RecordedGame game, boolean empty) {

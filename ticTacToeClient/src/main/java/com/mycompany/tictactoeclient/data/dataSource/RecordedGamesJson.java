@@ -27,15 +27,16 @@ public class RecordedGamesJson {
 
     private static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class,
-                    (JsonSerializer<LocalDateTime>) (src, typeOfSrc, context) ->
-                            new JsonPrimitive(src.toString()))
+                    (JsonSerializer<LocalDateTime>) (src, typeOfSrc, context)
+                    -> new JsonPrimitive(src.toString()))
             .registerTypeAdapter(LocalDateTime.class,
-                    (JsonDeserializer<LocalDateTime>) (json, typeOfT, context) ->
-                            LocalDateTime.parse(json.getAsString()))
+                    (JsonDeserializer<LocalDateTime>) (json, typeOfT, context)
+                    -> LocalDateTime.parse(json.getAsString()))
             .setPrettyPrinting()
             .create();
 
-    private RecordedGamesJson() {}
+    private RecordedGamesJson() {
+    }
 
     public static List<RecordedGame> loadGames() {
         File file = new File(FILE_PATH);
@@ -45,8 +46,11 @@ public class RecordedGamesJson {
         }
 
         try (Reader reader = new FileReader(file)) {
-            Type listType = new TypeToken<List<RecordedGame>>() {}.getType();
-            return gson.fromJson(reader, listType);
+            Type listType = new TypeToken<List<RecordedGame>>() {
+            }.getType();
+            List<RecordedGame> games = gson.fromJson(reader, listType);
+
+            return games != null ? games : new ArrayList<>();
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();

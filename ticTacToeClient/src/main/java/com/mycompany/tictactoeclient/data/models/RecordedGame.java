@@ -56,7 +56,7 @@ public class RecordedGame {
     }
 
     public String getFormattedDate() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm aa");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
         return gameDate.format(formatter);
     }
 

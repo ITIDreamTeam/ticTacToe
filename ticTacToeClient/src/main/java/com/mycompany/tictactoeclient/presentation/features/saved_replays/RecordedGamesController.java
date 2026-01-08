@@ -38,31 +38,6 @@ public class RecordedGamesController implements Initializable {
         recordedGamesList.setItems(games);
     }
 
-//    private void loadRecordedGames() {
-//        ObservableList<RecordedGame> games = FXCollections.observableArrayList();
-//
-//        games.add(new RecordedGame("WithPlayer1", "20-12-2025", "02:22AM"));
-//        games.add(new RecordedGame("WithPlayer2", "20-12-2025", "02:32AM"));
-//        games.add(new RecordedGame("WithPlayer3", "20-12-2025", "02:44AM"));
-//        games.add(new RecordedGame("WithComputer", "20-12-2025", "12:22PM"));
-//        games.add(new RecordedGame("WithPlayer1", "20-12-2025", "02:22AM"));
-//        games.add(new RecordedGame("WithPlayer2", "20-12-2025", "02:32AM"));
-//        games.add(new RecordedGame("WithPlayer3", "20-12-2025", "02:44AM"));
-//        games.add(new RecordedGame("WithComputer", "20-12-2025", "12:22PM"));
-//        games.add(new RecordedGame("WithPlayer1", "20-12-2025", "02:22AM"));
-//        games.add(new RecordedGame("WithPlayer2", "20-12-2025", "02:32AM"));
-//        games.add(new RecordedGame("WithPlayer3", "20-12-2025", "02:44AM"));
-//        games.add(new RecordedGame("WithComputer", "20-12-2025", "12:22PM"));
-//        games.add(new RecordedGame("WithPlayer1", "20-12-2025", "02:22AM"));
-//        games.add(new RecordedGame("WithPlayer2", "20-12-2025", "02:32AM"));
-//        games.add(new RecordedGame("WithPlayer3", "20-12-2025", "02:44AM"));
-//        games.add(new RecordedGame("WithComputer", "20-12-2025", "12:22PM"));
-//        games.add(new RecordedGame("WithPlayer1", "20-12-2025", "02:22AM"));
-//        games.add(new RecordedGame("WithPlayer2", "20-12-2025", "02:32AM"));
-//        games.add(new RecordedGame("WithPlayer3", "20-12-2025", "02:44AM"));
-//        games.add(new RecordedGame("WithComputer", "20-12-2025", "12:22PM"));
-//        recordedGamesList.setItems(games);
-//    }
     @FXML
     private void onBackBtnClicked(ActionEvent event) {
         Navigation.navigateTo(Navigation.profilePage);

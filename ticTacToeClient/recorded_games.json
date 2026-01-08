@@ -314,5 +314,52 @@
         "player": "X"
       }
     ]
+  },
+  {
+    "playerXName": "Player X",
+    "playerOName": "Player O",
+    "gameDate": "2026-01-08T14:40:30.577007300",
+    "moves": [
+      {
+        "row": 0,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "O"
+      }
+    ]
   }
 ]
