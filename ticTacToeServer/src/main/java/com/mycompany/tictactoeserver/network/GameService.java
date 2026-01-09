@@ -14,6 +14,7 @@ import com.mycompany.tictactoeserver.network.dtos.ErrorPayload;
 import com.mycompany.tictactoeserver.network.dtos.GameMoveDto;
 import com.mycompany.tictactoeserver.network.dtos.GameStartDto;
 import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
+import com.mycompany.tictactoeserver.network.request.ChangePasswordRequest;
 import com.mycompany.tictactoeserver.network.request.RegisterRequest;
 import com.mycompany.tictactoeserver.network.response.ResultPayload;
 import java.sql.SQLException;
@@ -86,6 +87,7 @@ public final class GameService {
                 updateStats();
                 ResultPayload response = new ResultPayload(true, "OK", "Login successful.");
                 response.setJsonPayload(gson.toJson(player));
+
                 return response;
             }
 
@@ -240,5 +242,22 @@ public final class GameService {
         activeGames.put(player1.getUsername(), game);
         activeGames.put(player2.getUsername(), game);
         System.out.println("Private game started: " + player1.getUsername() + " vs " + player2.getUsername());
+    }
+
+    public ResultPayload changePassword(ChangePasswordRequest request) {
+        String username = request.getUsername();
+        String newPass = request.getNewPassword();
+
+        if (username == null || newPass == null || newPass.length() < 4) {
+            return new ResultPayload(false, "INVALID_INPUT", "Password must be at least 4 characters.");
+        }
+
+        boolean updated = playerDao.updatePassword(username, newPass);
+
+        if (updated) {
+            return new ResultPayload(true, "OK", "Password changed successfully.");
+        } else {
+            return new ResultPayload(false, "DB_ERROR", "Failed to update password.");
+        }
     }
 }

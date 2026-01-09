@@ -10,6 +10,7 @@ import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import com.mycompany.tictactoeserver.network.dtos.ErrorPayload;
 import com.mycompany.tictactoeserver.network.request.InviteRequest;
 import com.mycompany.tictactoeserver.network.dtos.GameMoveDto;
+import com.mycompany.tictactoeserver.network.request.ChangePasswordRequest;
 import com.mycompany.tictactoeserver.network.request.RegisterRequest;
 import com.mycompany.tictactoeserver.network.response.InviteResponse;
 import com.mycompany.tictactoeserver.network.response.ResultPayload;
@@ -69,6 +70,10 @@ public final class MessageRouter {
                     break;
                 case SURRENDER:
                     gameService.handleSurrender(session);
+                    break;
+
+                case CHANGE_PASSWORD:
+                    handleChangePassword(session, msg);
                     break;
 
                 default:
@@ -366,6 +371,24 @@ public final class MessageRouter {
         System.out.println(session.getUsername() + " declined invite from " + senderUsername);
 
         broadcastOnlinePlayers();
+    }
+
+    private void handleChangePassword(ClientSession session, NetworkMessage msg) {
+        ChangePasswordRequest request = gson.fromJson(msg.getPayload(), ChangePasswordRequest.class);
+
+        if (!session.getUsername().equals(request.getUsername())) {
+            sendError(session, "UNAUTHORIZED", "You cannot change another user's password.");
+            return;
+        }
+
+        ResultPayload result = gameService.changePassword(request);
+
+        session.send(new NetworkMessage(
+                MessageType.CHANGE_PASSWORD_RESULT,
+                "Server",
+                session.getUsername(),
+                gson.toJsonTree(result)
+        ));
     }
 
 }
