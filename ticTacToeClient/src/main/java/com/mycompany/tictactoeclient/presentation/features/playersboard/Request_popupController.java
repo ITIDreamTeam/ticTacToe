@@ -20,6 +20,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
+
 /**
  * FXML Controller class
  *
@@ -27,23 +28,26 @@ import javafx.stage.Stage;
  */
 public class Request_popupController implements Initializable {
 
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private Label playerNameLabel;
+    @FXML
+    private ProgressBar timeProgressBar;
+    @FXML
+    private CheckBox recordCheckBox;
 
-     @FXML private Label statusLabel;
-    @FXML private Label playerNameLabel;
-    @FXML private ProgressBar timeProgressBar;
-    @FXML private CheckBox recordCheckBox;
-    
     private final NetworkClient client = NetworkClient.getInstance();
     private final GameApi gameApi = new GameApi(client);
     private final UserSession session = UserSession.getInstance();
-    
+
     private Stage stage;
     private InviteRequest invite = new InviteRequest();
 
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-    
+
     public void setInviteData(InviteRequest invite) {
         this.invite = invite;
         playerNameLabel.setText(invite.getSenderUsername());
@@ -53,9 +57,9 @@ public class Request_popupController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-  
+
     }
-    
+
     @FXML
     private void onAcceptClick(ActionEvent event) {
         handleAccept();
@@ -65,28 +69,28 @@ public class Request_popupController implements Initializable {
     private void onDeclineClick(ActionEvent event) {
         handleDecline();
     }
-    
+
     @FXML
     private void onClickCheckBox(ActionEvent event) {
     }
-    
+
     private void handleAccept() {
         new Thread(() -> {
             try {
                 gameApi.acceptInvite(invite.getSenderUsername(), invite.isRecordGame());
-                
+
                 Platform.runLater(() -> {
                     try {
-                        App.showInfo("Game Starting", "Starting game with " + invite.getSenderUsername());                      
+                        App.showInfo("Game Starting", "Starting game with " + invite.getSenderUsername());
                         closePopup();
                         App.setRoot("game_board");
-                        
+
                     } catch (IOException e) {
                         e.printStackTrace();
                         App.showError("Navigation Error", "Cannot start game.");
                     }
                 });
-                
+
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     App.showError("Network Error", "Failed to accept invite: " + e.getMessage());
@@ -94,17 +98,17 @@ public class Request_popupController implements Initializable {
             }
         }, "accept-invite-thread").start();
     }
-    
+
     private void handleDecline() {
         new Thread(() -> {
             try {
                 gameApi.declineInvite(invite.getSenderUsername());
-                
+
                 Platform.runLater(() -> {
                     App.showInfo("Invitation Declined", "You declined the invitation from " + invite.getSenderUsername());
                     closePopup();
                 });
-                
+
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     App.showError("Network Error", "Failed to decline invite: " + e.getMessage());
@@ -120,4 +124,17 @@ public class Request_popupController implements Initializable {
         }
     }
 
+    @FXML
+    private void onCancelClick(ActionEvent event) {
+        try {
+            if (invite.getSenderUsername() != null) {
+                gameApi.declineInvite(invite.getSenderUsername());
+            }
+            if (stage != null) {
+                stage.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -4,7 +4,10 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
+import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.data.dataSource.GameApi;
 import com.mycompany.tictactoeclient.data.models.Player;
+import com.mycompany.tictactoeclient.network.NetworkClient;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -43,7 +46,8 @@ public class Player_cardController implements Initializable {
     private Button send_request_button;
     @FXML
     private Label player_score;
-    private Player player; 
+    private Player player;
+    GameApi gameApi = new GameApi(NetworkClient.getInstance());
 
     /**
      * Initializes the controller class.
@@ -56,24 +60,35 @@ public class Player_cardController implements Initializable {
     @FXML
     private void onClickSendRequest(ActionEvent event) {
         try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/invite_popup.fxml"));
-        Parent root = loader.load();
-        Invite_popupController popupController = loader.getController();
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL); 
-        popupStage.initStyle(StageStyle.TRANSPARENT); 
-        popupStage.setScene(new Scene(root));
-        
-        popupStage.getScene().setFill(Color.TRANSPARENT);
-        popupStage.showAndWait();
+            gameApi.sendGameInvite(player.getName(), false);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/invite_popup.fxml"));
+            Parent root = loader.load();
+            Invite_popupController popupController = loader.getController();
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.initStyle(StageStyle.TRANSPARENT);
+            popupStage.setScene(new Scene(root));
+            popupStage.getScene().setFill(Color.TRANSPARENT);
+            Stage ownerStage = (Stage) send_request_button.getScene().getWindow();
+            popupStage.initOwner(ownerStage);
+            popupStage.setOnShown(e -> {
+                double x = ownerStage.getX() + (ownerStage.getWidth() - popupStage.getWidth()) / 2;
+                double y = ownerStage.getY() + (ownerStage.getHeight() - popupStage.getHeight()) / 2;
+                popupStage.setX(x);
+                popupStage.setY(y);
+            });
+            popupController.setDisplayData(this.player, popupStage);
+            popupStage.showAndWait();
 
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception ex) {
+            System.getLogger(Player_cardController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 
     public void setPlayerData(Player player) {
-        this.player = player; 
+        this.player = player;
 
         player_name.setText(player.getName());
         player_score.setText("" + player.getScore());
@@ -91,6 +106,9 @@ public class Player_cardController implements Initializable {
                 player_state.setStyle("-fx-text-fill: #f1c40f;");
                 player_state.setText("IN GAME");
                 break;
+            case WAITING:
+                player_state.setStyle("-fx-text-fill: #f1c40f;");
+                player_state.setText("WAITING");
         }
     }
 }
