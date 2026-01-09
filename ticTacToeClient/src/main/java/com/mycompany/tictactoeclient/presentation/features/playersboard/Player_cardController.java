@@ -89,8 +89,9 @@ public class Player_cardController implements Initializable {
 
     public void setPlayerData(Player player) {
         this.player = player;
-
         player_name.setText(player.getName());
+        win_score.setText((player.getWins())+"");
+        lose_score.setText((player.getLosses())+"");
         player_score.setText("" + player.getScore());
 
         switch (player.getStatus()) {
