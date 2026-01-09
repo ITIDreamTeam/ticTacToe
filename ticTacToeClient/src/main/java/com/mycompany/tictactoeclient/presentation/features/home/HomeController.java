@@ -67,9 +67,9 @@ public class HomeController implements Initializable {
                     "You must be logged in and connected to play online.");
             Navigation.navigateTo(Navigation.loginPage);
             return;
+        } else {
+            Navigation.navigateTo(Navigation.playersBoardPage);
         }
-
-        Navigation.navigateTo(Navigation.playersBoardPage);
     }
 
     @FXML
@@ -113,7 +113,7 @@ public class HomeController implements Initializable {
                 updateUI();
             }
             UserSession.getInstance().logout();
-        });   
+        });
     }
 
     private void showPopup(String fxmlFile, String title) {

@@ -9,7 +9,7 @@ package com.mycompany.tictactoeserver.network;
  * @author yasse
  */
 public enum MessageType {
-    // Auth
+ // Auth
     REGISTER,
     REGISTER_RESULT,
     LOGIN,
@@ -18,7 +18,7 @@ public enum MessageType {
     
     // Players
     GET_ONLINE_PLAYERS,
-    ONLINE_PLAYERS_UPDATE,
+    ONLINE_PLAYERS_UPDATE,  
     
     // Game Invites
     SEND_REQUEST,
@@ -29,7 +29,21 @@ public enum MessageType {
     GAME_MOVE,
     GAME_STATE_UPDATE,
     GAME_END,
+    GAME_OVER,        
+    OPPONENT_LEFT,    
+    SURRENDER,       
+    UPDATE_BOARD,
     
     // General
-    ERROR
+    ERROR,
+    
+    // Phase 1
+    FIND_MATCH,
+    GAME_START,
+    MAKE_MOVE,
+
+    // Phase 2
+    INVITE_PLAYER,
+    GAME_INVITATION,
+    INVITE_RESPONSE,
 }

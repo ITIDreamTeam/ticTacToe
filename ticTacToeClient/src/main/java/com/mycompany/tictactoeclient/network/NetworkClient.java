@@ -89,7 +89,7 @@ public class NetworkClient {
             out.flush();
         }
     }
-    
+
     public void disconnect() {
         running = false;
         closeSocket();

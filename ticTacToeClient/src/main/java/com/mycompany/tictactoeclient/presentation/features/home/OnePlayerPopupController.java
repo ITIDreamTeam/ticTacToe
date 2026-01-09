@@ -30,25 +30,15 @@ import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
 public class OnePlayerPopupController implements Initializable {
-
-    @FXML
-    private ToggleGroup difficultyGroup;
-
-    @FXML
-    private CheckBox recordButton;
-
-    @FXML
-    private Button startButton;
-    @FXML
-    private ToggleButton easyButton;
-    @FXML
-    private ToggleButton mediumButton;
-    @FXML
-    private ToggleButton hardButton;
+@FXML private ToggleGroup difficultyGroup;
+    @FXML private CheckBox recordButton;
+    @FXML private Button startButton;
+    @FXML private ToggleButton easyButton;
+    @FXML private ToggleButton mediumButton;
+    @FXML private ToggleButton hardButton;
 
     public static GameEngine.gameDifficulty difficulty = GameEngine.gameDifficulty.Easy;
     
-    private final UserSession session = UserSession.getInstance();
     private Stage stage;
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -61,11 +51,7 @@ public class OnePlayerPopupController implements Initializable {
     }
      
     private void handleStartButton(javafx.event.ActionEvent event) { 
-        GameSession.playerX = session.isLoggedIn() ? session.getUsername() : "Player";
-        GameSession.playerO = "Computer";
-        Game_boardController.setGameMode(Game_boardController.GameMode.vsComputer);
         ToggleButton selected = (ToggleButton) difficultyGroup.getSelectedToggle();
-        GameSessionManager.getInstance().setGameSession("computer", recordButton.isSelected(), true);
         if (selected == easyButton) {
             difficulty = GameEngine.gameDifficulty.Easy;
         } else if (selected == mediumButton) {
@@ -73,37 +59,29 @@ public class OnePlayerPopupController implements Initializable {
         } else if (selected == hardButton) {
             difficulty = GameEngine.gameDifficulty.Hard;
         }
-        System.out.println("Starting One Player Game:");
-        System.out.println("Difficulty: " + difficulty);
+        GameSessionManager.getInstance().setComputerSession(recordButton.isSelected());
         stage.close();
         Navigation.navigateTo(Navigation.gameBoardPage);
-
     }
 
-    @FXML
-    public void onRecordButton() {
-        GameSession.recordingEnabled = recordButton.isSelected();
-    }
+    @FXML public void onRecordButton() {} 
 
     @FXML
     public void onEasyButton() {
-        easyButton.setStyle("-fx-background-color: #4E0585;");
-        mediumButton.setStyle("-fx-background-color: black;");
-        hardButton.setStyle("-fx-background-color: black;");
+        updateStyles(easyButton, mediumButton, hardButton);
     }
-
     @FXML
     public void onMediumButton() {
-        easyButton.setStyle("-fx-background-color: black;");
-        mediumButton.setStyle("-fx-background-color: #4E0585;");
-        hardButton.setStyle("-fx-background-color: black;");
+        updateStyles(mediumButton, easyButton, hardButton);
     }
-
     @FXML
     public void onHardButton() {
-        easyButton.setStyle("-fx-background-color: black;");
-        mediumButton.setStyle("-fx-background-color: black;");
-        hardButton.setStyle("-fx-background-color: #4E0585;");
+        updateStyles(hardButton, easyButton, mediumButton);
+    }
 
+    private void updateStyles(ToggleButton active, ToggleButton inactive1, ToggleButton inactive2) {
+        active.setStyle("-fx-background-color: #4E0585; -fx-text-fill: white;");
+        inactive1.setStyle("-fx-background-color: black; -fx-text-fill: white;");
+        inactive2.setStyle("-fx-background-color: black; -fx-text-fill: white;");
     }
 }

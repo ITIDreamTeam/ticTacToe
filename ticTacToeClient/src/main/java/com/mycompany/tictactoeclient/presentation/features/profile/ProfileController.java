@@ -43,7 +43,7 @@ public class ProfileController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         usernameField.setText(UserSession.getInstance().getUsername());
         emailField.setText(UserSession.getInstance().getEmail());
-        scoreTextField.setText(UserSession.getInstance().getScore());
+        scoreTextField.setText(UserSession.getInstance().getScore()+"");
         try {
             editIcon = new Image(getClass().getResource("/icons/Edit-20.png").toExternalForm());
             saveEditIcon = new Image(getClass().getResource("/icons/Save-edit-01.png").toExternalForm());

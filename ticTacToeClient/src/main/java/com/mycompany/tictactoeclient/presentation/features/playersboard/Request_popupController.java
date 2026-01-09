@@ -8,7 +8,6 @@ import com.mycompany.tictactoeclient.data.models.GameSession;
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.dataSource.GameApi;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
-import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.request.InviteRequest;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameSessionManager;
@@ -74,7 +73,6 @@ public class Request_popupController implements Initializable {
         System.out.println("Difficulty: " + difficulty);
         stage.close();
         Navigation.navigateTo(Navigation.gameBoardPage);
-        // Initialization if needed
     }
 
     @FXML
@@ -109,34 +107,31 @@ public class Request_popupController implements Initializable {
 
 
     private void handleAccept() {
-        statusLabel.setText("Accepting invitation...");
-        
-        new Thread(() -> {
-            try {
-                gameApi.acceptInvite(invite.getSenderUsername(), invite.isRecordGame());
+statusLabel.setText("Accepting invitation...");
+    
+    new Thread(() -> {
+        try {
+            gameApi.acceptInvite(invite.getSenderUsername(), invite.isRecordGame());
+            
+            Platform.runLater(() -> {
+                gameSession.setOnlineSession(
+                    invite.getSenderUsername(), 
+                    invite.isRecordGame(), 
+                    false                       
+                );
+                App.showInfo("Game Starting", 
+                    "Starting game with " + invite.getSenderUsername());
                 
-                Platform.runLater(() -> {
-                    gameSession.setGameSession(
-                        invite.getSenderUsername(), 
-                        invite.isRecordGame(), 
-                        false
-                    );
-                    
-                    App.showInfo("Game Starting", 
-                        "Starting game with " + invite.getSenderUsername());
-                    
-                    closePopup();
-                    navigateToGameBoard();
-                });
+                closePopup();
+                navigateToGameBoard();
+            });
 
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    App.showError("Network Error", 
+        } catch (Exception e) {
+           App.showError("Network Error", 
                         "Failed to accept invite: " + e.getMessage());
                     closePopup();
-                });
-            }
-        }, "accept-invite-thread").start();
+        }
+    }, "accept-invite-thread").start();
     }
 
     private void handleDecline() {
