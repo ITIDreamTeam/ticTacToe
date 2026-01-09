@@ -8,6 +8,7 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  *
  * @author Basmala
  */
+import com.mycompany.tictactoeclient.data.models.GameSession;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import com.mycompany.tictactoeclient.shared.Navigation;
 
@@ -38,23 +39,12 @@ public class TwoPlayerPopupController implements Initializable {
     @FXML
     private Button startButton;
     private Stage stage;
-    Parent root;
-    FXMLLoader loader;
-    Game_boardController gameController;
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        try {
-            loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/game_board.fxml"));
-            root = loader.load();
-            gameController = loader.getController();
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
         player1Field.setText("Player1");
         player2Field.setText("Player2");
         startButton.setOnAction(e -> {
@@ -64,13 +54,12 @@ public class TwoPlayerPopupController implements Initializable {
 
     @FXML
     public void onRecordButton() {
-        gameController.changeRecoringIconVisiablitiy(recordButton.isSelected());
+        GameSession.recordingEnabled = recordButton.isSelected();
     }
 
     private void handleStartButton(ActionEvent event) {
-        String p1 = player1Field.getText().isEmpty() ? "Player 1" : player1Field.getText();
-        String p2 = player2Field.getText().isEmpty() ? "Player 2" : player2Field.getText();
-        gameController.setPlayersName(p1, p2);
+        GameSession.playerX = player1Field.getText().isEmpty() ? "Player 1" : player1Field.getText();
+        GameSession.playerO = player2Field.getText().isEmpty() ? "Player 2" : player2Field.getText();
         Game_boardController.setGameMode(Game_boardController.GameMode.twoPlayer);
         stage.close();
         Navigation.navigateTo(Navigation.gameBoardPage);

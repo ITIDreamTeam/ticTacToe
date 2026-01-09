@@ -4,6 +4,7 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
+import com.mycompany.tictactoeclient.data.models.GameSession;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import static com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController.difficulty;
@@ -38,7 +39,6 @@ public class Request_popupController implements Initializable {
     private CheckBox recordCheckBox;
     Parent root;
     FXMLLoader loader;
-    Game_boardController gameController;
     private final UserSession session = UserSession.getInstance();
     private Stage stage;
     public void setStage(Stage stage) {
@@ -49,20 +49,12 @@ public class Request_popupController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        try {
-            loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/game_board.fxml"));
-            root = loader.load();
-            gameController = loader.getController();
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        
     }
      
     private void handleStartButton(javafx.event.ActionEvent event) { 
         Game_boardController.setGameMode(Game_boardController.GameMode.vsComputer);
-        gameController.setPlayersName(session.getUsername(),"invited name");
-       
+        GameSession.playerX = session.getUsername();
         System.out.println("Starting One Player Game:");
         System.out.println("Difficulty: " + difficulty);
         stage.close();
@@ -81,7 +73,7 @@ public class Request_popupController implements Initializable {
     
     @FXML
     private void onClickCheckBox(ActionEvent event) {
-        gameController.changeRecoringIconVisiablitiy(recordCheckBox.isSelected());
+        GameSession.recordingEnabled = recordCheckBox.isSelected();
     }
 
 }

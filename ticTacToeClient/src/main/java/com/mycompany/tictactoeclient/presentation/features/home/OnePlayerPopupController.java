@@ -9,6 +9,7 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  *
  * @author Basmala
  */
+import com.mycompany.tictactoeclient.data.models.GameSession;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine;
@@ -45,9 +46,7 @@ public class OnePlayerPopupController implements Initializable {
     private ToggleButton hardButton;
 
     public static GameEngine.gameDifficulty difficulty = GameEngine.gameDifficulty.Easy;
-    Parent root;
-    FXMLLoader loader;
-    Game_boardController gameController;
+    
     private final UserSession session = UserSession.getInstance();
     private Stage stage;
     public void setStage(Stage stage) {
@@ -58,19 +57,12 @@ public class OnePlayerPopupController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         easyButton.setStyle("-fx-background-color: #4E0585; -fx-text-fill: white;");
         startButton.setOnAction(e -> handleStartButton(e));
-        try {
-            loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/game_board.fxml"));
-            root = loader.load();
-            gameController = loader.getController();
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
      
     private void handleStartButton(javafx.event.ActionEvent event) { 
+        GameSession.playerX = session.isLoggedIn() ? session.getUsername() : "Player";
+        GameSession.playerO = "Computer";
         Game_boardController.setGameMode(Game_boardController.GameMode.vsComputer);
-        gameController.setPlayersName(session.isLoggedIn()?session.getUsername():"Player", "Computer");
         ToggleButton selected = (ToggleButton) difficultyGroup.getSelectedToggle();
         if (selected == easyButton) {
             difficulty = GameEngine.gameDifficulty.Easy;
@@ -86,19 +78,9 @@ public class OnePlayerPopupController implements Initializable {
 
     }
 
-    private String getSelectedDifficulty() {
-        if (difficultyGroup.getSelectedToggle() == mediumButton) {
-            return "medium";
-        }
-        if (difficultyGroup.getSelectedToggle() == hardButton) {
-            return "hard";
-        }
-        return "easy";
-    }
-
     @FXML
     public void onRecordButton() {
-        gameController.changeRecoringIconVisiablitiy(recordButton.isSelected());
+        GameSession.recordingEnabled = recordButton.isSelected();
     }
 
     @FXML

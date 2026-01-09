@@ -4,6 +4,7 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
+import com.mycompany.tictactoeclient.data.models.GameSession;
 import com.mycompany.tictactoeclient.data.models.Player;
 import java.io.IOException;
 import java.net.URL;
@@ -55,6 +56,7 @@ public class Player_cardController implements Initializable {
 
     @FXML
     private void onClickSendRequest(ActionEvent event) {
+        GameSession.playerO = player.getName();
         try {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/invite_popup.fxml"));
         Parent root = loader.load();
