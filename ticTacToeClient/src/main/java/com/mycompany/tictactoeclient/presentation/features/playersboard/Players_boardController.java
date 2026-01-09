@@ -114,13 +114,10 @@ public class Players_boardController implements Initializable {
     }
 
     private void handlePlayersUpdate(NetworkMessage msg) {
-        // Debug: Print the raw payload to see exactly what the server sent
         System.out.println("Received Payload: " + msg.getPayload().toString());
 
         OnlinePlayersUpdate data = NetworkClient.getInstance().getGson()
                 .fromJson(msg.getPayload(), OnlinePlayersUpdate.class);
-
-        // Ensure we are on the JavaFX Application Thread
         Platform.runLater(() -> {
             if (data != null && data.getPlayers() != null) {
                 masterData.clear();

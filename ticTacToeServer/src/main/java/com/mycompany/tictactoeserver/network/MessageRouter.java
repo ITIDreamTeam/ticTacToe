@@ -54,6 +54,8 @@ public final class MessageRouter {
                 case DISCONNECT:
                     onDisconnect(session);
                     break;
+                case ACCEPT_REQUEST:
+                    handleAcceptRequest(session,msg);
 
                 default:
                     sendError(session, "UNKNOWN_TYPE", "Unknown message type: " + msg.getType());
@@ -267,5 +269,38 @@ public final class MessageRouter {
                 session.getUsername(),
                 gson.toJsonTree(new ErrorPayload(code, message))
         ));
+    }
+
+    private void handleAcceptRequest(ClientSession session, NetworkMessage msg) {
+         if (!isAuthenticated(session)) return;
+    
+    InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
+    String senderUsername = response.getSenderUsername();
+    
+    if (senderUsername == null || senderUsername.trim().isEmpty()) {
+        sendError(session, "INVALID_INPUT", "Sender username is required");
+        return;
+    }
+
+    ClientSession senderSession = registry.get(senderUsername);
+    if (senderSession == null || !senderSession.isConnected()) {
+        sendError(session, "USER_OFFLINE", "User '" + senderUsername + "' is not online");
+        return;
+    }
+    gameService.updatePlayerState(session.getUsername(), 3);
+    gameService.updatePlayerState(senderUsername, 3);
+    
+    // Forward accept response to sender
+    senderSession.send(new NetworkMessage(
+        MessageType.ACCEPT_REQUEST,
+        session.getUsername(),
+        senderUsername,
+        msg.getPayload()
+    ));
+    
+    System.out.println(session.getUsername() + " accepted invite from " + senderUsername);
+    
+    // Broadcast updated player states
+    broadcastOnlinePlayers();
     }
 }
