@@ -4,6 +4,7 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.game_board;
 
+import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine.Player;
 import com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController;
 import com.mycompany.tictactoeclient.shared.Navigation;
@@ -74,6 +75,7 @@ public class Game_boardController implements Initializable {
                 gameGrid.add(btn, col, row);
             }
         }
+        initializeGameMode();
         engine.difficulty = OnePlayerPopupController.difficulty;
         startNewGame();
     }
@@ -204,7 +206,29 @@ public class Game_boardController implements Initializable {
         }
         return false;
     }
-
+private void initializeGameMode() {
+    GameSessionManager gameSession = GameSessionManager.getInstance();
+    UserSession userSession = UserSession.getInstance();
+    
+    if (currentMode == GameMode.withFriend) {
+        String currentPlayer = userSession.getUsername();
+        String opponent = gameSession.getOpponentUsername();
+        
+        if (gameSession.isHost()) {
+            setPlayersName(currentPlayer, opponent);
+        } else {
+            setPlayersName(opponent, currentPlayer);
+        }
+        
+        if (recordingIcon != null) {
+            recordingIcon.setVisible(gameSession.isRecordingGame());
+        }
+        
+        System.out.println("Game initialized: " + currentPlayer + " vs " + opponent);
+        System.out.println("Host: " + gameSession.isHost());
+        System.out.println("Recording: " + gameSession.isRecordingGame());
+    }
+}
     private void showEndGamePopup(String message, ActionEvent event) {
         PauseTransition delay = new PauseTransition(Duration.seconds(1));
         delay.setOnFinished(e -> {
@@ -276,7 +300,8 @@ public class Game_boardController implements Initializable {
 
     @FXML
     private void onBackClicked(ActionEvent event) {
-        Navigation.navigateTo(Navigation.homePage);
+        GameSessionManager.getInstance().clearSession();
+            Navigation.navigateTo(Navigation.homePage);
     }
     public void changeRecoringIconVisiablitiy(boolean vis){
         recordingIcon.setVisible(GameSessionManager.getInstance().isRecordingGame());

@@ -48,10 +48,13 @@ import javafx.stage.StageStyle;
  */
 public class Players_boardController implements Initializable {
 
-    @FXML private TextField search_text_field;
-    @FXML private ListView<Player> playersListView;
-    @FXML private ProgressIndicator loadingSpinner;
-    
+    @FXML
+    private TextField search_text_field;
+    @FXML
+    private ListView<Player> playersListView;
+    @FXML
+    private ProgressIndicator loadingSpinner;
+
     private final ObservableList<Player> masterData = FXCollections.observableArrayList();
     private FilteredList<Player> filteredData;
 
@@ -59,15 +62,12 @@ public class Players_boardController implements Initializable {
     private final GameApi gameApi = new GameApi(client);
     private final UserSession session = UserSession.getInstance();
     private final GameSessionManager gameSession = GameSessionManager.getInstance();
-    
+
     private final Gson gson = new Gson();
-    
+
     private Consumer<NetworkMessage> onlinePlayersListener;
     private Consumer<NetworkMessage> receiveInviteListener;
-    private Consumer<NetworkMessage> acceptInviteListener;
-    private Consumer<NetworkMessage> declineInviteListener;
-    
-    private Stage currentInvitePopup; 
+    private static Stage currentInvitePopup;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -76,13 +76,13 @@ public class Players_boardController implements Initializable {
         setupAllListeners();
         requestOnlinePlayers();
     }
-    
+
     private void setupListView() {
         playersListView.setCellFactory(listView -> new PlayerListCell());
         filteredData = new FilteredList<>(masterData, p -> true);
         playersListView.setItems(filteredData);
     }
-    
+
     private void setupSearchFilter() {
         search_text_field.textProperty().addListener((obs, oldVal, newVal) -> {
             filteredData.setPredicate(player -> {
@@ -90,29 +90,22 @@ public class Players_boardController implements Initializable {
                     return true;
                 }
                 String lower = newVal.toLowerCase();
-                return player.getName().toLowerCase().contains(lower) ||
-                       String.valueOf(player.getScore()).contains(lower);
+                return player.getName().toLowerCase().contains(lower)
+                        || String.valueOf(player.getScore()).contains(lower);
             });
         });
     }
-    
+
     private void setupAllListeners() {
         onlinePlayersListener = this::handleOnlinePlayersUpdate;
-        client.on(MessageType.ONLINE_PLAYERS_UPDATE, onlinePlayersListener);   
+        client.on(MessageType.ONLINE_PLAYERS_UPDATE, onlinePlayersListener);
         receiveInviteListener = this::handleReceiveInvite;
         client.on(MessageType.SEND_REQUEST, receiveInviteListener);
-        acceptInviteListener = this::handleAcceptResponse;
-        client.on(MessageType.ACCEPT_REQUEST, acceptInviteListener);   
-        declineInviteListener = this::handleDeclineResponse;
-        client.on(MessageType.DECLINE_REQUEST, declineInviteListener);
     }
-    
+
     public void cleanup() {
         client.off(MessageType.ONLINE_PLAYERS_UPDATE, onlinePlayersListener);
         client.off(MessageType.SEND_REQUEST, receiveInviteListener);
-        client.off(MessageType.ACCEPT_REQUEST, acceptInviteListener);
-        client.off(MessageType.DECLINE_REQUEST, declineInviteListener);
-        
         if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
             currentInvitePopup.close();
         }
@@ -121,16 +114,16 @@ public class Players_boardController implements Initializable {
     private void handleOnlinePlayersUpdate(NetworkMessage msg) {
         try {
             OnlinePlayersUpdate update = client.getGson().fromJson(
-                msg.getPayload(),
-                OnlinePlayersUpdate.class
+                    msg.getPayload(),
+                    OnlinePlayersUpdate.class
             );
 
             if (update != null && update.getPlayers() != null) {
                 List<Player> players = new ArrayList<>();
                 String currentUsername = session.getUsername();
-                
+
                 for (PlayerStatsDto dto : update.getPlayers()) {
-                    Player p = dto.getPlayer();            
+                    Player p = dto.getPlayer();
                     if (!p.getName().equalsIgnoreCase(currentUsername)) {
                         p.setWins(dto.getWins());
                         p.setLosses(dto.getLosses());
@@ -157,12 +150,12 @@ public class Players_boardController implements Initializable {
         try {
             loadingSpinner.setVisible(true);
             playersListView.setVisible(false);
-            
+
             client.send(new NetworkMessage(
-                MessageType.GET_ONLINE_PLAYERS, 
-                session.getUsername(), 
-                "server", 
-                null
+                    MessageType.GET_ONLINE_PLAYERS,
+                    session.getUsername(),
+                    "server",
+                    null
             ));
         } catch (Exception e) {
             System.err.println("Failed to request online players: " + e.getMessage());
@@ -172,20 +165,20 @@ public class Players_boardController implements Initializable {
             });
         }
     }
-    
+
     private void handleReceiveInvite(NetworkMessage msg) {
         try {
             InviteRequest invite = gson.fromJson(msg.getPayload(), InviteRequest.class);
-            
+
             if (invite == null || invite.getSenderUsername() == null) {
                 System.err.println("Invalid invite received");
                 return;
             }
-            
+
             System.out.println("Received invite from: " + invite.getSenderUsername());
-            
+
             Platform.runLater(() -> showInviteRequestPopup(invite));
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             Platform.runLater(() -> {
@@ -193,65 +186,85 @@ public class Players_boardController implements Initializable {
             });
         }
     }
-    
+
     private void showInviteRequestPopup(InviteRequest invite) {
+if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
+            return;
+        }
         try {
             FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/com/mycompany/tictactoeclient/request_popup.fxml")
+                    getClass().getResource("/com/mycompany/tictactoeclient/request_popup.fxml")
             );
             Parent root = loader.load();
             Request_popupController popupController = loader.getController();
-            
+
             Stage popupStage = new Stage();
             popupStage.initModality(Modality.APPLICATION_MODAL);
             popupStage.initStyle(StageStyle.TRANSPARENT);
             popupStage.setScene(new Scene(root));
             popupStage.getScene().setFill(Color.TRANSPARENT);
-            
+
             if (playersListView.getScene() != null && playersListView.getScene().getWindow() != null) {
                 Stage ownerStage = (Stage) playersListView.getScene().getWindow();
                 popupStage.initOwner(ownerStage);
+                javafx.beans.value.ChangeListener<Number> centerListener = (obs, oldVal, newVal) -> {
+                    if (popupStage.isShowing() && !Double.isNaN(popupStage.getWidth())) {
+                        double x = ownerStage.getX() + (ownerStage.getWidth() - popupStage.getWidth()) / 2;
+                        double y = ownerStage.getY() + (ownerStage.getHeight() - popupStage.getHeight()) / 2;
+                        popupStage.setX(x);
+                        popupStage.setY(y);
+                    }
+                };
+
+                ownerStage.xProperty().addListener(centerListener);
+                ownerStage.yProperty().addListener(centerListener);
+                
                 popupStage.setOnShown(e -> {
-                    double x = ownerStage.getX() + (ownerStage.getWidth() - popupStage.getWidth()) / 2;
-                    double y = ownerStage.getY() + (ownerStage.getHeight() - popupStage.getHeight()) / 2;
-                    popupStage.setX(x);
-                    popupStage.setY(y);
+                    centerListener.changed(null, null, null);
                 });
+
+                popupStage.setOnHidden(e -> {
+                    currentInvitePopup = null;
+                    ownerStage.xProperty().removeListener(centerListener);
+                    ownerStage.yProperty().removeListener(centerListener);
+                });
+                
             }
-            
+
             currentInvitePopup = popupStage;
+            
             popupController.setStage(popupStage);
             popupController.setInviteData(invite);
-            
+
             popupStage.showAndWait();
-            
+
         } catch (IOException e) {
             e.printStackTrace();
             App.showError("Error", "Cannot show invite popup.");
         }
     }
-    
+
     private void handleAcceptResponse(NetworkMessage msg) {
         try {
             InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
-            
+
             if (response == null || response.getSenderUsername() == null) {
                 System.err.println("Invalid accept response");
                 return;
             }
-            
+
             String opponentName = response.getSenderUsername();
             boolean recordGame = response.isRecordGame();
-            
+
             System.out.println(opponentName + " accepted your invite!");
-            
+
             Platform.runLater(() -> {
                 gameSession.setGameSession(opponentName, recordGame, true);
-                App.showInfo("Invitation Accepted", 
-                    opponentName + " accepted your invitation!");
+                App.showInfo("Invitation Accepted",
+                        opponentName + " accepted your invitation!");
                 navigateToGameBoard();
             });
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             Platform.runLater(() -> {
@@ -259,31 +272,31 @@ public class Players_boardController implements Initializable {
             });
         }
     }
-    
+
     private void handleDeclineResponse(NetworkMessage msg) {
         try {
             InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
-            
+
             if (response == null || response.getSenderUsername() == null) {
                 System.err.println("Invalid decline response");
                 return;
             }
-            
+
             String opponentName = response.getSenderUsername();
-            
+
             System.out.println(opponentName + " declined your invite.");
-            
+
             Platform.runLater(() -> {
-                App.showWarning("Invitation Declined", 
-                    opponentName + " declined your invitation.");
+                App.showWarning("Invitation Declined",
+                        opponentName + " declined your invitation.");
                 requestOnlinePlayers();
             });
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     private void navigateToGameBoard() {
         try {
             cleanup();

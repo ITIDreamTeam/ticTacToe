@@ -58,8 +58,10 @@ public final class MessageRouter {
                     break;
                 case ACCEPT_REQUEST:
                     handleAcceptRequest(session, msg);
+                    break;
                 case DECLINE_REQUEST:
                     handleDeclineRequest(session, msg);
+                    break;
 
                 default:
                     sendError(session, "UNKNOWN_TYPE", "Unknown message type: " + msg.getType());
@@ -293,16 +295,19 @@ public final class MessageRouter {
             sendError(session, "USER_OFFLINE", "User '" + senderUsername + "' is not online");
             return;
         }
-        gameService.updatePlayerState(session.getUsername(), 2);
-        gameService.updatePlayerState(senderUsername, 2);
+
+        gameService.updatePlayerState(session.getUsername(), 3);
+        gameService.updatePlayerState(senderUsername, 3);
 
         senderSession.send(new NetworkMessage(
-                MessageType.ACCEPT_REQUEST,
-                session.getUsername(),
-                senderUsername,
-                msg.getPayload()
-        ));
+        MessageType.ACCEPT_REQUEST,
+        session.getUsername(), 
+        senderUsername,
+        msg.getPayload()
+));
+
         System.out.println(session.getUsername() + " accepted invite from " + senderUsername);
+
         broadcastOnlinePlayers();
     }
 
@@ -321,17 +326,23 @@ public final class MessageRouter {
 
         ClientSession senderSession = registry.get(senderUsername);
         if (senderSession == null || !senderSession.isConnected()) {
+            gameService.updatePlayerState(session.getUsername(), 1);
             return;
         }
 
+        // Forward decline response to sender
         senderSession.send(new NetworkMessage(
                 MessageType.DECLINE_REQUEST,
                 session.getUsername(),
                 senderUsername,
                 msg.getPayload()
         ));
+
         gameService.updatePlayerState(session.getUsername(), 1);
         gameService.updatePlayerState(senderUsername, 1);
-        System.out.println(session.getUsername());
+
+        System.out.println(session.getUsername() + " declined invite from " + senderUsername);
+
+        broadcastOnlinePlayers();
     }
 }

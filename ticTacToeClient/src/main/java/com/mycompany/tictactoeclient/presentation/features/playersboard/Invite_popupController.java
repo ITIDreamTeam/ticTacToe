@@ -12,6 +12,7 @@ import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.response.InviteResponse;
+import com.mycompany.tictactoeclient.presentation.features.game_board.GameSessionManager;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import java.io.IOException;
 import java.net.URL;
@@ -149,23 +150,27 @@ public class Invite_popupController implements Initializable {
     }
 
     private void handleAcceptResponse(NetworkMessage msg) {
-        if (responseReceived) {
+if (responseReceived) return;
+        if (!msg.getUsername().equalsIgnoreCase(opponent.getName())) {
             return;
         }
-
-        InviteResponse response = client.getGson().fromJson(msg.getPayload(), InviteResponse.class);
-        if (!response.getSenderUsername().equalsIgnoreCase(opponent.getName())) {
-            return;
-        }
-
         responseReceived = true;
         cleanup();
 
         Platform.runLater(() -> {
+            InviteResponse response = client.getGson().fromJson(msg.getPayload(), InviteResponse.class);
+            
+            GameSessionManager.getInstance().setGameSession(
+                opponent.getName(), 
+                recordCheckBox.isSelected(),
+                true
+            );
+            App.showInfo("Invitation Accepted", 
+                opponent.getName() + " accepted your invitation!");
+            
+            closePopup(); 
             try {
-                App.showInfo("Invitation Accepted", opponent.getName() + " accepted your invitation!");
                 App.setRoot("game_board");
-                closePopup();
             } catch (IOException e) {
                 e.printStackTrace();
                 App.showError("Navigation Error", "Cannot start game.");
@@ -174,19 +179,21 @@ public class Invite_popupController implements Initializable {
     }
 
     private void handleDeclineResponse(NetworkMessage msg) {
-        if (responseReceived) {
-            return;
-        }
-        InviteResponse response = client.getGson().fromJson(msg.getPayload(), InviteResponse.class);
-        if (!response.getSenderUsername().equalsIgnoreCase(opponent.getName())) {
-            return;
-        }
-        responseReceived = true;
-        cleanup();
-        Platform.runLater(() -> {
-            App.showWarning("Invitation Declined", opponent.getName() + " declined your invitation.");
-            closePopup();
-        });
+if (responseReceived) {
+        return;
+    }
+
+    if (!msg.getUsername().equalsIgnoreCase(opponent.getName())) {
+        return;
+    }
+
+    responseReceived = true;
+    cleanup();
+    
+    Platform.runLater(() -> {
+        App.showWarning("Invitation Declined", opponent.getName() + " declined your invitation.");
+        closePopup();
+    });
     }
 
     private void handleTimeout() {
