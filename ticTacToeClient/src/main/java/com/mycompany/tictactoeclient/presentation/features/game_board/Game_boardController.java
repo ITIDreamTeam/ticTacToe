@@ -5,6 +5,7 @@
 package com.mycompany.tictactoeclient.presentation.features.game_board;
 
 import com.mycompany.tictactoeclient.data.models.GameSession;
+import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine.Player;
 import com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController;
 import com.mycompany.tictactoeclient.shared.Navigation;
@@ -203,7 +204,6 @@ public class Game_boardController implements Initializable {
         }
         return false;
     }
-
     private void showEndGamePopup(String message, ActionEvent event) {
         PauseTransition delay = new PauseTransition(Duration.seconds(1));
         delay.setOnFinished(e -> {
@@ -275,9 +275,10 @@ public class Game_boardController implements Initializable {
 
     @FXML
     private void onBackClicked(ActionEvent event) {
-        Navigation.navigateTo(Navigation.homePage);
+        GameSessionManager.getInstance().clearSession();
+            Navigation.navigateTo(Navigation.homePage);
     }
     public void changeRecoringIconVisiablitiy(boolean vis){
-        recordingIcon.setVisible(vis);
+        recordingIcon.setVisible(GameSessionManager.getInstance().isRecordingGame());
     }
 }

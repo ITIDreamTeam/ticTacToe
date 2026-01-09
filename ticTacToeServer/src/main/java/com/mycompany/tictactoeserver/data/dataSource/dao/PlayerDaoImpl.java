@@ -266,7 +266,7 @@ public boolean register(Player player) throws SQLException {
                     "    ((g.PLAYER_ONE_ID = ? AND g.PLAYER_TWO_ID = p.ID) OR " +
                     "     (g.PLAYER_TWO_ID = ? AND g.PLAYER_ONE_ID = p.ID)) " +
                     ") " +
-                    "WHERE p.PLAYER_STATE = 1 " +  
+                    "WHERE p.PLAYER_STATE  IN (1, 2, 3) " +  
                     "AND p.ID <> ? " +
                     "GROUP BY p.ID, p.NAME, p.EMAIL, p.SCORE, p.PLAYER_STATE " +
                     "ORDER BY p.SCORE DESC, WINS DESC";

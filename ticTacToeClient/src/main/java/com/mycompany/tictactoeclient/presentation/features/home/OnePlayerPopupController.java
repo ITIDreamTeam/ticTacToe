@@ -13,6 +13,7 @@ import com.mycompany.tictactoeclient.data.models.GameSession;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine;
+import com.mycompany.tictactoeclient.presentation.features.game_board.GameSessionManager;
 import com.mycompany.tictactoeclient.shared.Navigation;
 import java.io.IOException;
 import java.net.URL;
@@ -64,6 +65,7 @@ public class OnePlayerPopupController implements Initializable {
         GameSession.playerO = "Computer";
         Game_boardController.setGameMode(Game_boardController.GameMode.vsComputer);
         ToggleButton selected = (ToggleButton) difficultyGroup.getSelectedToggle();
+        GameSessionManager.getInstance().setGameSession("computer", recordButton.isSelected(), true);
         if (selected == easyButton) {
             difficulty = GameEngine.gameDifficulty.Easy;
         } else if (selected == mediumButton) {
