@@ -22,12 +22,13 @@ public class Navigation {
     public static String registerPage="register";
     public static String playAgainPopup="PlayAgainPopup";
 
-    public static void navigateTo(String page) {
+    public static <T> T navigateTo(String page) {
         try {
-            App.setRoot(page);
+            return App.setRoot(page);
         } catch (IOException e) {
             e.printStackTrace();
-            App.showError("Navigation Error", "Cannot navigate to register page.");
+            App.showError("Navigation Error", "Cannot navigate to page: " + page);
+            return null;
         }
     }
 }

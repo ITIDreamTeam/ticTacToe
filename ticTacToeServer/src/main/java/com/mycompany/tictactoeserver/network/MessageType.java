@@ -31,5 +31,13 @@ public enum MessageType {
     GAME_END,
     
     // General
-    ERROR
+    ERROR,
+    
+    // Game with friend
+    FIND_MATCH,
+    GAME_START,
+    MAKE_MOVE,
+    UPDATE_BOARD,
+    GAME_OVER,
+    OPPONENT_LEFT,
 }

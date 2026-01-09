@@ -4,13 +4,24 @@
  */
 package com.mycompany.tictactoeserver.network;
 
+import com.google.gson.Gson;
+import com.mycompany.tictactoeserver.data.dataSource.dao.GameDAO;
 import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
+import com.mycompany.tictactoeserver.data.model.ActiveGame;
+import com.mycompany.tictactoeserver.data.model.GameEngine;
 import com.mycompany.tictactoeserver.data.model.Player;
+import com.mycompany.tictactoeserver.network.dtos.ErrorPayload;
+import com.mycompany.tictactoeserver.network.dtos.GameMoveDto;
+import com.mycompany.tictactoeserver.network.dtos.GameStartDto;
 import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import com.mycompany.tictactoeserver.network.request.RegisterRequest;
 import com.mycompany.tictactoeserver.network.response.ResultPayload;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 /**
  *
@@ -18,10 +29,15 @@ import java.util.List;
  */
 public final class GameService {
     private final PlayerDaoImpl playerDao;
+    private final GameDAO gameDao;
     private Runnable onStatsChanged;
+    private final Queue<ClientSession> matchmakingQueue = new LinkedList<>();
+    private final Map<String, ActiveGame> activeGames = new HashMap<>();
+    private final Gson gson = new Gson();
 
-    public GameService(PlayerDaoImpl playerDao) {
+    public GameService(PlayerDaoImpl playerDao, GameDAO gameDao) {
         this.playerDao = playerDao;
+        this.gameDao = gameDao;
     }
 
      public ResultPayload register(RegisterRequest request) {
@@ -89,4 +105,85 @@ public final class GameService {
         }
     }
     
+    public synchronized void findMatch(ClientSession playerSession) {
+        matchmakingQueue.add(playerSession);
+
+        if (matchmakingQueue.size() >= 2) {
+            ClientSession player1 = matchmakingQueue.poll();
+            ClientSession player2 = matchmakingQueue.poll();
+
+            // Create a new game
+            ActiveGame game = new ActiveGame(player1, player2);
+            activeGames.put(player1.getUsername(), game);
+            activeGames.put(player2.getUsername(), game);
+
+            // Notify players
+            player1.send(new NetworkMessage(MessageType.GAME_START, "server", player1.getUsername(), gson.toJsonTree(new GameStartDto(player2.getUsername(), true))));
+            player2.send(new NetworkMessage(MessageType.GAME_START, "server", player2.getUsername(), gson.toJsonTree(new GameStartDto(player1.getUsername(), false))));
+        }
+    }
+
+    public void handleGameMove(ClientSession session, GameMoveDto move) {
+        ActiveGame game = activeGames.get(session.getUsername());
+        if (game == null) {
+            return;
+        }
+
+        if (game.makeMove(move.getRow(), move.getColumn(), session.getUsername())) {
+            ClientSession opponent = game.getOpponent(session.getUsername());
+            opponent.send(new NetworkMessage(MessageType.UPDATE_BOARD, session.getUsername(), opponent.getUsername(), gson.toJsonTree(move)));
+            
+            GameEngine gameEngine = game.getGameEngine();
+            GameEngine.Player winner = gameEngine.getWinner();
+            if (winner != GameEngine.Player.NONE) {
+                session.send(new NetworkMessage(MessageType.GAME_OVER, "server", session.getUsername(), gson.toJsonTree("You Win!")));
+                opponent.send(new NetworkMessage(MessageType.GAME_OVER, "server", opponent.getUsername(), gson.toJsonTree("You Lose!")));
+                cleanupGame(game, winner);
+            } else if (gameEngine.isBoardFull()) {
+                session.send(new NetworkMessage(MessageType.GAME_OVER, "server", session.getUsername(), gson.toJsonTree("It's a Draw!")));
+                opponent.send(new NetworkMessage(MessageType.GAME_OVER, "server", opponent.getUsername(), gson.toJsonTree("It's a Draw!")));
+                cleanupGame(game, GameEngine.Player.NONE);
+            }
+
+        } else {
+            session.send(new NetworkMessage(MessageType.ERROR, "server", session.getUsername(), gson.toJsonTree(new ErrorPayload("INVALID_MOVE", "Invalid move"))));
+        }
+    }
+
+    private void cleanupGame(ActiveGame game, GameEngine.Player winner) {
+        String winnerName = null;
+        if (winner == GameEngine.Player.X) {
+            winnerName = game.getPlayerX().getUsername();
+            playerDao.updatePlayerScore(game.getPlayerX().getUsername(), 100);
+            playerDao.updatePlayerScore(game.getPlayerO().getUsername(), -50);
+        } else if (winner == GameEngine.Player.O) {
+            winnerName = game.getPlayerO().getUsername();
+            playerDao.updatePlayerScore(game.getPlayerO().getUsername(), 100);
+            playerDao.updatePlayerScore(game.getPlayerX().getUsername(), -50);
+        } else { // Draw
+            playerDao.updatePlayerScore(game.getPlayerX().getUsername(), 50);
+            playerDao.updatePlayerScore(game.getPlayerO().getUsername(), 50);
+        }
+
+        gameDao.addGame(game.getPlayerX().getUsername(), game.getPlayerO().getUsername(), winnerName);
+
+        playerDao.editPlayerState(game.getPlayerX().getUsername(), 1); // 1 for Online
+        playerDao.editPlayerState(game.getPlayerO().getUsername(), 1); // 1 for Online
+
+        activeGames.remove(game.getPlayerX().getUsername());
+        activeGames.remove(game.getPlayerO().getUsername());
+        
+        updateStats();
+    }
+
+    public void handlePlayerDisconnect(ClientSession session) {
+        ActiveGame game = activeGames.get(session.getUsername());
+        if (game != null) {
+            ClientSession opponent = game.getOpponent(session.getUsername());
+            opponent.send(new NetworkMessage(MessageType.OPPONENT_LEFT, session.getUsername(), opponent.getUsername(), gson.toJsonTree("Your opponent has disconnected. You win!")));
+            
+            GameEngine.Player winner = game.getPlayerX() == opponent ? GameEngine.Player.X : GameEngine.Player.O;
+            cleanupGame(game, winner);
+        }
+    }
 }

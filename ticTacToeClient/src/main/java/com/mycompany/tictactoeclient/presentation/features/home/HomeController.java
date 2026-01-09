@@ -69,7 +69,14 @@ public class HomeController implements Initializable {
             return;
         }
 
-        Navigation.navigateTo(Navigation.playersBoardPage);
+        client.sendFindMatchRequest();
+
+        Alert waitingAlert = new Alert(Alert.AlertType.INFORMATION);
+        waitingAlert.setTitle("Matchmaking");
+        waitingAlert.setHeaderText(null);
+        waitingAlert.setContentText("Waiting for an opponent...");
+        waitingAlert.show();
+        App.setWaitingAlert(waitingAlert);
     }
 
     @FXML

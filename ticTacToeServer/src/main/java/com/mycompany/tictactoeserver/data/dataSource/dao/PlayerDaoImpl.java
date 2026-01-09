@@ -337,5 +337,16 @@ public boolean register(Player player) throws SQLException {
         return -1;
     }
 
-
+    public boolean updatePlayerScore(String playerName, int scoreDelta) {
+        String sql = "UPDATE PLAYER SET SCORE = SCORE + ? WHERE NAME = ?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, scoreDelta);
+            ps.setString(2, playerName);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
