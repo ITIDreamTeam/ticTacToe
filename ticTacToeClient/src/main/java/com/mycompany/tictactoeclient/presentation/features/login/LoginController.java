@@ -5,6 +5,7 @@
 package com.mycompany.tictactoeclient.presentation.features.login;
 
 import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.data.models.Player;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
@@ -27,6 +28,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+
 /**
  * FXML Controller class
  *
@@ -34,19 +36,21 @@ import javafx.scene.input.MouseEvent;
  */
 public class LoginController implements Initializable {
 
+    @FXML
+    private TextField nameTextField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private TextField passwordTextField;
+    @FXML
+    private ImageView eyeIcon;
 
- @FXML private TextField nameTextField;
-    @FXML private PasswordField passwordField;
-    @FXML private TextField passwordTextField;
-    @FXML private ImageView eyeIcon;
-
-    
     private Image eyeOpenImage;
     private Image eyeClosedImage;
-    
+
     private final NetworkClient client = NetworkClient.getInstance();
     private final UserSession session = UserSession.getInstance();
-    
+
     private Consumer<NetworkMessage> loginResultListener;
     private volatile boolean isProcessing = false;
     @FXML
@@ -60,12 +64,12 @@ public class LoginController implements Initializable {
         loadIcons();
         setupListeners();
     }
-    
+
     private void setupPasswordFields() {
         passwordTextField.setVisible(false);
         passwordTextField.setManaged(false);
     }
-    
+
     private void loadIcons() {
         try {
             eyeOpenImage = new Image(getClass().getResource("/icons/visibility-on_1.png").toExternalForm());
@@ -75,12 +79,12 @@ public class LoginController implements Initializable {
             System.err.println("Error loading icons: " + e.getMessage());
         }
     }
-    
+
     private void setupListeners() {
         loginResultListener = this::handleLoginResult;
         client.on(MessageType.LOGIN_RESULT, loginResultListener);
     }
-    
+
     public void cleanup() {
         client.off(MessageType.LOGIN_RESULT, loginResultListener);
     }
@@ -96,7 +100,7 @@ public class LoginController implements Initializable {
         if (isProcessing) {
             return;
         }
-        
+
         String username = nameTextField.getText().trim();
         String password = passwordField.isVisible() ? passwordField.getText() : passwordTextField.getText();
 
@@ -106,18 +110,18 @@ public class LoginController implements Initializable {
 
         isProcessing = true;
         disableForm(true);
-        
+
         new Thread(() -> {
             try {
                 client.configure("127.0.0.1", 5005);
                 client.connect();
-                
-                RegisterRequest req = new RegisterRequest(username, null, password); 
+
+                RegisterRequest req = new RegisterRequest(username, null, password);
                 NetworkMessage msg = new NetworkMessage(
-                    MessageType.LOGIN,
-                    username,
-                    "Server",
-                    client.getGson().toJsonTree(req)
+                        MessageType.LOGIN,
+                        username,
+                        "Server",
+                        client.getGson().toJsonTree(req)
                 );
                 client.send(msg);
             } catch (Exception e) {
@@ -130,23 +134,23 @@ public class LoginController implements Initializable {
             }
         }, "login-thread").start();
     }
-    
+
     private boolean validateInput(String username, String password) {
         if (username.isEmpty()) {
             App.showWarning("Invalid Input", "Username is required.");
             return false;
         }
-        
+
         if (password.isEmpty()) {
             App.showWarning("Invalid Input", "Password is required.");
             return false;
         }
-        
+
         if (password.length() < 4) {
             App.showWarning("Invalid Input", "Password must be at least 4 characters.");
             return false;
         }
-        
+
         return true;
     }
 
@@ -157,31 +161,30 @@ public class LoginController implements Initializable {
     }
 
     private void handleLoginResult(NetworkMessage msg) {
-        if (!isProcessing) return;
-        
+        if (!isProcessing) {
+            return;
+        }
         isProcessing = false;
         disableForm(false);
-        
         ResultPayload result = client.getGson().fromJson(msg.getPayload(), ResultPayload.class);
-        
         if (result.isSuccess()) {
-            System.out.println(msg.getReceiver());
-            System.out.println(msg.getPayload());
-            String username = nameTextField.getText().trim();
-            
-            session.login(username, null);
-            
-            App.showInfo("Login Successful", "Welcome back, " + username + "!");
-            
+            if (result.getJsonPayload() != null && !result.getJsonPayload().isEmpty()) {
+                Player player = client.getGson().fromJson(result.getJsonPayload(), Player.class);
+                session.login(player);
+            } else {
+                String username = nameTextField.getText().trim();
+                session.login(username, null);
+            }
+            App.showInfo("Login Successful", "Welcome back, " + session.getUsername() + "!");
             cleanup();
             Navigation.navigateTo(Navigation.homePage);
-            
+
         } else {
-            App.showError("Login Failed", result.getMessage());
+            App.showError("Login Failed", (String) result.getMessage());
             client.disconnect();
         }
     }
-    
+
     private void disableForm(boolean disable) {
         nameTextField.setDisable(disable);
         passwordField.setDisable(disable);
@@ -189,7 +192,7 @@ public class LoginController implements Initializable {
         togglePassButton.setDisable(disable);
         loginButton.setDisable(disable);
     }
-    
+
     @FXML
     private void toggalePassword(MouseEvent event) {
         if (togglePassButton.isSelected()) {
@@ -209,4 +212,3 @@ public class LoginController implements Initializable {
         }
     }
 }
-

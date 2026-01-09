@@ -5,6 +5,7 @@
 package com.mycompany.tictactoeclient.presentation.features.register;
 
 import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.data.models.Player;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
@@ -36,24 +37,35 @@ import javafx.scene.input.MouseEvent;
  */
 public class RegisterController implements Initializable {
 
-    @FXML private TextField userNameTextField;
-    @FXML private TextField emailTextField;
-    @FXML private PasswordField passwordField;
-    @FXML private TextField passwordTextField;
-    @FXML private ImageView eyeIconPassword;
-    @FXML private PasswordField confirmPasswordField;
-    @FXML private TextField confirmPasswordTextField;
-    @FXML private ImageView eyeIconConfirmPass;
-    @FXML private ToggleButton togglePassButton;
-    @FXML private ToggleButton toggleConfirmPassButton;
-    @FXML private Button registerButton;
+    @FXML
+    private TextField userNameTextField;
+    @FXML
+    private TextField emailTextField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private TextField passwordTextField;
+    @FXML
+    private ImageView eyeIconPassword;
+    @FXML
+    private PasswordField confirmPasswordField;
+    @FXML
+    private TextField confirmPasswordTextField;
+    @FXML
+    private ImageView eyeIconConfirmPass;
+    @FXML
+    private ToggleButton togglePassButton;
+    @FXML
+    private ToggleButton toggleConfirmPassButton;
+    @FXML
+    private Button registerButton;
 
     private Image eyeOpenImage;
     private Image eyeClosedImage;
 
     private final NetworkClient client = NetworkClient.getInstance();
     private final UserSession session = UserSession.getInstance();
-    
+
     private Consumer<NetworkMessage> registerResultListener;
     private volatile boolean isProcessing = false;
 
@@ -63,14 +75,14 @@ public class RegisterController implements Initializable {
         loadIcons();
         setupListeners();
     }
-    
+
     private void setupPasswordFields() {
         passwordTextField.setVisible(false);
         passwordTextField.setManaged(false);
         confirmPasswordTextField.setVisible(false);
         confirmPasswordTextField.setManaged(false);
     }
-    
+
     private void loadIcons() {
         try {
             eyeOpenImage = new Image(getClass().getResource("/icons/visibility-on_1.png").toExternalForm());
@@ -79,12 +91,12 @@ public class RegisterController implements Initializable {
             System.err.println("Error loading icons: " + e.getMessage());
         }
     }
-    
+
     private void setupListeners() {
         registerResultListener = this::handleRegisterResult;
         client.on(MessageType.REGISTER_RESULT, registerResultListener);
     }
-    
+
     public void cleanup() {
         client.off(MessageType.REGISTER_RESULT, registerResultListener);
     }
@@ -98,9 +110,9 @@ public class RegisterController implements Initializable {
     @FXML
     private void onRegisterClicked(ActionEvent event) {
         if (isProcessing) {
-            return; 
+            return;
         }
-        
+
         String username = userNameTextField.getText().trim();
         String email = emailTextField.getText().trim();
         String password = passwordField.isVisible() ? passwordField.getText() : passwordTextField.getText();
@@ -114,16 +126,16 @@ public class RegisterController implements Initializable {
         disableForm(true);
         new Thread(() -> {
             try {
-                client.connect();   
+                client.connect();
                 RegisterRequest req = new RegisterRequest(username, email, password);
                 NetworkMessage msg = new NetworkMessage(
-                    MessageType.REGISTER,
-                    username,
-                    "Server",
-                    client.getGson().toJsonTree(req)
+                        MessageType.REGISTER,
+                        username,
+                        "Server",
+                        client.getGson().toJsonTree(req)
                 );
                 client.send(msg);
-                
+
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     App.showError("Connection Error", "Failed to connect to server: " + e.getMessage());
@@ -134,33 +146,33 @@ public class RegisterController implements Initializable {
             }
         }, "register-thread").start();
     }
-    
+
     private boolean validateInput(String username, String email, String password, String confirm) {
         if (username.isEmpty()) {
             App.showWarning("Invalid Input", "Username is required.");
             return false;
         }
-        
+
         if (username.length() < 3) {
             App.showWarning("Invalid Input", "Username must be at least 3 characters.");
             return false;
         }
-        
+
         if (email.isEmpty() || !email.contains("@")) {
             App.showWarning("Invalid Input", "Please enter a valid email address.");
             return false;
         }
-        
+
         if (password.length() < 4) {
             App.showWarning("Invalid Input", "Password must be at least 4 characters.");
             return false;
         }
-        
+
         if (!password.equals(confirm)) {
             App.showWarning("Invalid Input", "Passwords do not match.");
             return false;
         }
-        
+
         return true;
     }
 
@@ -171,33 +183,35 @@ public class RegisterController implements Initializable {
     }
 
     private void handleRegisterResult(NetworkMessage msg) {
-        if (!isProcessing) return;
-        
+        if (!isProcessing) {
+            return;
+        }
         isProcessing = false;
         disableForm(false);
-        
         ResultPayload result = client.getGson().fromJson(msg.getPayload(), ResultPayload.class);
-        
         if (result.isSuccess()) {
-            // Registration successful - establish session and login
-            String username = userNameTextField.getText().trim();
-            String email = emailTextField.getText().trim();
-            
-            session.login(username, email);
-            
-            App.showInfo("Registration Successful", 
-                "Welcome " + username + "! You have been registered and logged in.");
+            if (result.getJsonPayload() != null && !result.getJsonPayload().isEmpty()) {
+                Player player = client.getGson().fromJson(result.getJsonPayload(), Player.class);
+                session.login(player);
+            } else {
+                String username = userNameTextField.getText().trim();
+                String email = emailTextField.getText().trim();
+                session.login(username, email);
+            }
+            App.showInfo("Registration Successful",
+                    "Welcome " + session.getUsername() + "! You have been registered and logged in.");
+
             cleanup();
             Navigation.navigateTo(Navigation.homePage);
-            
+
         } else {
-            App.showError("Registration Failed", result.getMessage());
+            App.showError("Registration Failed", (String) result.getMessage());
             client.disconnect();
         }
     }
 
     private void toggleVisibility(ToggleButton toggleButton, PasswordField passwordField,
-                                   TextField textField, ImageView eyeIcon) {
+            TextField textField, ImageView eyeIcon) {
         if (toggleButton.isSelected()) {
             textField.setText(passwordField.getText());
             textField.setVisible(true);
@@ -214,7 +228,7 @@ public class RegisterController implements Initializable {
             eyeIcon.setImage(eyeClosedImage);
         }
     }
-    
+
     private void disableForm(boolean disable) {
         userNameTextField.setDisable(disable);
         emailTextField.setDisable(disable);

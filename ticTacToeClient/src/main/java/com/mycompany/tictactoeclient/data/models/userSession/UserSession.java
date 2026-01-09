@@ -4,6 +4,7 @@
  */
 package com.mycompany.tictactoeclient.data.models.userSession;
 
+import com.mycompany.tictactoeclient.data.models.Player;
 import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
@@ -25,7 +26,18 @@ public class UserSession {
     public static UserSession getInstance() { 
         return INSTANCE; 
     }
-    
+    public void login(Player player) {
+        this.username = player.getName();
+        this.email = player.getEmail();
+        this.score = player.getScore();
+        this.isOnline = true;
+    }
+
+    public void login(String username, String email) {
+        this.username = username;
+        this.email = email;
+        this.isOnline = true;
+    }
     public boolean isLoggedIn() { 
         return username != null; 
     }
@@ -58,11 +70,6 @@ public class UserSession {
         return isOnline && NetworkClient.getInstance().isConnected();
     }
     
-    public void login(String username, String email) {
-        this.username = username;
-        this.email = email;
-        this.isOnline = true;
-    }
     
     public void logout() {
         this.username = null;
