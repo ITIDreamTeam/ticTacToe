@@ -18,7 +18,7 @@ public class GameSessionManager {
     private String userName;
     private boolean isRecordingGame;
     private boolean isHost; 
-    private GameMode gameMode;
+    private GameMode gameMode;     
     
     private GameSessionManager() {}
     
@@ -26,46 +26,49 @@ public class GameSessionManager {
         return INSTANCE;
     }
     
-    public void setGameSession(String opponentUsername, boolean isRecordingGame, boolean isHost) {
+    public void setOnlineSession(String opponentUsername, boolean isRecordingGame, boolean isHost) {
         this.opponentUsername = opponentUsername;
         this.isRecordingGame = isRecordingGame;
         this.isHost = isHost;
         this.userName = UserSession.getInstance().getUsername();
-        this.gameMode = gameMode.vsComputer;
+        this.gameMode = GameMode.withFriend; 
     }
-        public void setGameSession(String opponentUsername,String userName, boolean isRecordingGame, boolean isHost) {
-        this.opponentUsername = opponentUsername;
+
+    public void setComputerSession(boolean isRecordingGame) {
+        this.opponentUsername = "Computer";
+        this.userName = UserSession.getInstance().isLoggedIn() ? UserSession.getInstance().getUsername() : "Player";
         this.isRecordingGame = isRecordingGame;
-        this.isHost = isHost;
-        this.userName = userName;
-         this.gameMode = gameMode.twoPlayer;
+        this.isHost = true; 
+        this.gameMode = GameMode.vsComputer;
     }
-    public void setGameSession(String opponentUsername,String userName, boolean isRecordingGame, boolean isHost,GameMode gameMode) {
-        this.opponentUsername = opponentUsername;
+
+    public void setLocalPvpSession(String player1, String player2, boolean isRecordingGame) {
+        this.userName = player1;   
+        this.opponentUsername = player2; 
         this.isRecordingGame = isRecordingGame;
-        this.isHost = isHost;
-        this.userName = userName;
-        this.gameMode = gameMode;
+        this.isHost = true;
+        this.gameMode = GameMode.twoPlayer;
     }
     
-    public String getOpponentUsername() {
-        return opponentUsername;
-    }
-    public String getUserName(){
-    return userName;
+    
+    public String getOpponentName() { return opponentUsername; }
+    public String getUserName() { return userName; }
+    public boolean isRecordingGame() { return isRecordingGame; }
+    public GameMode getGameMode() { return gameMode; }
+    
+    public boolean isMyTurnFirst() {
+        return isHost; 
     }
     
-    public boolean isRecordingGame() {
-        return isRecordingGame;
-    }
-    
-    public boolean isHost() {
-        return isHost;
+    public boolean isOnlineGame() {
+        return this.gameMode == GameMode.withFriend;
     }
     
     public void clearSession() {
         this.opponentUsername = null;
+        this.userName = null;
         this.isRecordingGame = false;
         this.isHost = false;
+        this.gameMode = null;
     }
 }

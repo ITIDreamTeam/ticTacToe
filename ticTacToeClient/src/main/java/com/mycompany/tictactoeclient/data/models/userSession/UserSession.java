@@ -17,7 +17,7 @@ public class UserSession {
     
     private volatile String username ;
     private volatile String email;
-    private volatile String score;
+    private volatile int score;
     private volatile boolean isOnline;
     
     private UserSession() {}
@@ -38,7 +38,7 @@ public class UserSession {
         return email;
     }
     
-    public String getScore() {
+    public int getScore() {
         return score;
     }
     
@@ -50,7 +50,7 @@ public class UserSession {
         this.email = email;
     }
     
-    public void setScore(String score) {
+    public void setScore(int score) {
         this.score=score;
     }
     

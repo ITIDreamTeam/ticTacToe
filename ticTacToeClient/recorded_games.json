@@ -487,5 +487,84 @@
         "player": "X"
       }
     ]
+  },
+  {
+    "playerXName": "Player",
+    "playerOName": "Computer",
+    "gameDate": "2026-01-09T22:54:58.281576200",
+    "moves": [
+      {
+        "row": 0,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "player": "X"
+      }
+    ]
+  },
+  {
+    "playerXName": "Player1",
+    "playerOName": "Player2",
+    "gameDate": "2026-01-09T22:56:29.304043500",
+    "moves": [
+      {
+        "row": 0,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "player": "O"
+      }
+    ]
   }
 ]

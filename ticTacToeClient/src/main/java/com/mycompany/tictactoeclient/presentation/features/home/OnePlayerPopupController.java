@@ -31,10 +31,8 @@ public class OnePlayerPopupController implements Initializable {
 
     @FXML
     private ToggleGroup difficultyGroup;
-
     @FXML
     private CheckBox recordButton;
-
     @FXML
     private Button startButton;
     @FXML
@@ -45,7 +43,6 @@ public class OnePlayerPopupController implements Initializable {
     private ToggleButton hardButton;
 
     public static GameEngine.gameDifficulty difficulty = GameEngine.gameDifficulty.Easy;
-
     private final UserSession session = UserSession.getInstance();
     private Stage stage;
 
@@ -74,7 +71,7 @@ public class OnePlayerPopupController implements Initializable {
             gameController.setGameMode(Game_boardController.GameMode.vsComputer);
             gameController.setPlayersName(session.isLoggedIn() ? session.getUsername() : "Player", "Computer");
             ToggleButton selected = (ToggleButton) difficultyGroup.getSelectedToggle();
-            GameSessionManager.getInstance().setGameSession("computer", recordButton.isSelected(), true);
+            GameSessionManager.getInstance().setComputerSession(recordButton.isSelected());
             if (selected == easyButton) {
                 difficulty = GameEngine.gameDifficulty.Easy;
             } else if (selected == mediumButton) {
@@ -92,29 +89,23 @@ public class OnePlayerPopupController implements Initializable {
     }
 
     @FXML
-    public void onRecordButton() {
-        GameSession.recordingEnabled = recordButton.isSelected();
-    }
-
-    @FXML
     public void onEasyButton() {
-        easyButton.setStyle("-fx-background-color: #4E0585;");
-        mediumButton.setStyle("-fx-background-color: black;");
-        hardButton.setStyle("-fx-background-color: black;");
+        updateStyles(easyButton, mediumButton, hardButton);
     }
 
     @FXML
     public void onMediumButton() {
-        easyButton.setStyle("-fx-background-color: black;");
-        mediumButton.setStyle("-fx-background-color: #4E0585;");
-        hardButton.setStyle("-fx-background-color: black;");
+        updateStyles(mediumButton, easyButton, hardButton);
     }
 
     @FXML
     public void onHardButton() {
-        easyButton.setStyle("-fx-background-color: black;");
-        mediumButton.setStyle("-fx-background-color: black;");
-        hardButton.setStyle("-fx-background-color: #4E0585;");
+        updateStyles(hardButton, easyButton, mediumButton);
+    }
 
+    private void updateStyles(ToggleButton active, ToggleButton inactive1, ToggleButton inactive2) {
+        active.setStyle("-fx-background-color: #4E0585; -fx-text-fill: white;");
+        inactive1.setStyle("-fx-background-color: black; -fx-text-fill: white;");
+        inactive2.setStyle("-fx-background-color: black; -fx-text-fill: white;");
     }
 }

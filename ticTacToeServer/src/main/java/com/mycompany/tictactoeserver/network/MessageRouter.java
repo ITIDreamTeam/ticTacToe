@@ -9,6 +9,7 @@ import static com.mycompany.tictactoeserver.network.MessageType.ACCEPT_REQUEST;
 import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import com.mycompany.tictactoeserver.network.dtos.ErrorPayload;
 import com.mycompany.tictactoeserver.network.request.InviteRequest;
+import com.mycompany.tictactoeserver.network.dtos.GameMoveDto;
 import com.mycompany.tictactoeserver.network.request.RegisterRequest;
 import com.mycompany.tictactoeserver.network.response.InviteResponse;
 import com.mycompany.tictactoeserver.network.response.ResultPayload;
@@ -45,6 +46,10 @@ public final class MessageRouter {
                     handleGetOnlinePlayers(session);
                     break;
 
+                case FIND_MATCH:
+                    handleFindMatch(session);
+                    break;
+
                 case SEND_REQUEST:
                     handleGameInvite(session, msg);
                     break;
@@ -62,6 +67,9 @@ public final class MessageRouter {
                 case DECLINE_REQUEST:
                     handleDeclineRequest(session, msg);
                     break;
+                case SURRENDER:
+                    gameService.handleSurrender(session);
+                    break;
 
                 default:
                     sendError(session, "UNKNOWN_TYPE", "Unknown message type: " + msg.getType());
@@ -76,6 +84,8 @@ public final class MessageRouter {
     public void onDisconnect(ClientSession session) {
         String username = session.getUsername();
         if (username != null) {
+            gameService.updatePlayerState(username, 0);
+            gameService.handlePlayerDisconnect(session);
             gameService.updatePlayerState(username, 0);
             registry.remove(session);
             System.out.println("User disconnected: " + username);
@@ -190,6 +200,14 @@ public final class MessageRouter {
         ));
     }
 
+    private void handleFindMatch(ClientSession session) {
+        if (!isAuthenticated(session)) {
+            return;
+        }
+        gameService.findMatch(session);
+        System.out.println("User " + session.getUsername() + " is looking for a match.");
+    }
+
     private void handleGameInvite(ClientSession session, NetworkMessage msg) {
         if (!isAuthenticated(session)) {
             return;
@@ -235,13 +253,18 @@ public final class MessageRouter {
             return;
         }
 
-        // Forward the move to opponent
         opponentSession.send(new NetworkMessage(
                 MessageType.GAME_MOVE,
                 session.getUsername(),
                 opponentUsername,
                 msg.getPayload()
         ));
+        if (!isAuthenticated(session)) {
+            return;
+        }
+
+        GameMoveDto move = gson.fromJson(msg.getPayload(), GameMoveDto.class);
+        gameService.handleGameMove(session, move);
     }
 
     private void broadcastOnlinePlayers() {
@@ -298,13 +321,13 @@ public final class MessageRouter {
 
         gameService.updatePlayerState(session.getUsername(), 3);
         gameService.updatePlayerState(senderUsername, 3);
-
+        gameService.startPrivateGame(senderSession, session);
         senderSession.send(new NetworkMessage(
-        MessageType.ACCEPT_REQUEST,
-        session.getUsername(), 
-        senderUsername,
-        msg.getPayload()
-));
+                MessageType.ACCEPT_REQUEST,
+                session.getUsername(),
+                senderUsername,
+                msg.getPayload()
+        ));
 
         System.out.println(session.getUsername() + " accepted invite from " + senderUsername);
 
@@ -330,7 +353,6 @@ public final class MessageRouter {
             return;
         }
 
-        // Forward decline response to sender
         senderSession.send(new NetworkMessage(
                 MessageType.DECLINE_REQUEST,
                 session.getUsername(),
@@ -345,4 +367,5 @@ public final class MessageRouter {
 
         broadcastOnlinePlayers();
     }
+
 }

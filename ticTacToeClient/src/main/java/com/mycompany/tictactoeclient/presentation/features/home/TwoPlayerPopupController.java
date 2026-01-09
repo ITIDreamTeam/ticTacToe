@@ -30,16 +30,15 @@ public class TwoPlayerPopupController implements Initializable {
 
     @FXML
     private TextField player1Field;
-
     @FXML
     private TextField player2Field;
-
     @FXML
     private CheckBox recordButton;
-
     @FXML
     private Button startButton;
+
     private Stage stage;
+
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -48,14 +47,11 @@ public class TwoPlayerPopupController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         player1Field.setText("Player1");
         player2Field.setText("Player2");
-        startButton.setOnAction(e -> {
-            handleStartButton(e);
-        });
+        startButton.setOnAction(this::handleStartButton);
         recordButton.selectedProperty().bindBidirectional(
                 RecordingSettings.recordingEnabledProperty()
         );
     }
-
 
     private void handleStartButton(ActionEvent event) {
         try {
@@ -66,7 +62,12 @@ public class TwoPlayerPopupController implements Initializable {
             String p2 = player2Field.getText().isEmpty() ? "Player 2" : player2Field.getText();
             gameController.setPlayersName(p1, p2);
             gameController.setGameMode(Game_boardController.GameMode.twoPlayer);
-            
+            GameSessionManager.getInstance().setLocalPvpSession(p1, p2, recordButton.isSelected());
+            player1Field.setText("Player1");
+            player2Field.setText("Player2");
+            startButton.setOnAction(e -> {
+                handleStartButton(e);
+            });
             Stage mainStage = (Stage) this.stage.getOwner();
             Scene scene = new Scene(root);
             mainStage.setScene(scene);
@@ -76,11 +77,5 @@ public class TwoPlayerPopupController implements Initializable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
-        player1Field.setText("Player1");
-        player2Field.setText("Player2");
-        startButton.setOnAction(e -> {
-            handleStartButton(e);
-        });        
     }
 }
