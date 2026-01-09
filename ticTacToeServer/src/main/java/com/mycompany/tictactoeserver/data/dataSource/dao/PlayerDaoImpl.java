@@ -66,12 +66,12 @@ public class PlayerDaoImpl {
     return players;
 }
 
-    public Player login(String email, String password) throws SQLException {
-        String sql = "SELECT * FROM PLAYER WHERE EMAIL = ? AND PASSWORD = ?";
+    public Player login(String name, String password) throws SQLException {
+        String sql = "SELECT * FROM PLAYER WHERE NAME = ? AND PASSWORD = ?";
 
         Connection con = DBConnection.getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, email);
+            ps.setString(1, name);
             ps.setString(2, password);
 
             ResultSet rs = ps.executeQuery();

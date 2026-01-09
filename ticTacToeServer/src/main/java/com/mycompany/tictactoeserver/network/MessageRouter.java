@@ -119,8 +119,6 @@ public final class MessageRouter {
 
         ResultPayload authResult = gameService.login(request);
         if (!authResult.isSuccess()) {
-            gameService.updatePlayerState(username, 1);
-            gameService.updateStats();
             session.send(new NetworkMessage(
                     MessageType.LOGIN_RESULT,
                     "Server",

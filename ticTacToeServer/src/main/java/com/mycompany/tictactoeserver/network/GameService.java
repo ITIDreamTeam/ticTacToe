@@ -49,7 +49,7 @@ public final class GameService {
     public ResultPayload login(RegisterRequest request) {
         String userName = clean(request.getUsername());
         String password = request.getPassword() == null ? "" : request.getPassword();
-
+        System.out.print("this is the login player :"+ request.getPassword() );
         if (userName.isEmpty() || password.length() < 4) {
             return new ResultPayload(false, "INVALID_INPUT", "Username required, password min 4 chars.");
         }
@@ -59,10 +59,16 @@ public final class GameService {
         }
 
         try {
-            playerDao.login(userName, password);
+            Player player = playerDao.login(userName, password);
+            System.out.print("this is the login player :"+ player );
+            if(player == null){
+                return new ResultPayload(false, "INVALID_INPUT", "Invalid password");
+            }else{
             playerDao.editPlayerState(userName, 1);
             updateStats();
             return new ResultPayload(true, "OK", "Registered successfully.");
+            }
+            
         } catch (SQLException ex) {
             return new ResultPayload(false, "INVALID_INPUT", "Un expected behavior");
         }

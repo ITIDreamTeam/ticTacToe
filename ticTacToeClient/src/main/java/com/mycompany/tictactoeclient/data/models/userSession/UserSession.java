@@ -15,9 +15,9 @@ import com.mycompany.tictactoeclient.network.NetworkMessage;
 public class UserSession {
      private static final UserSession INSTANCE = new UserSession();
     
-    private volatile String username = "player";
-    private volatile String email="NotFound";
-    private volatile String score="000";
+    private volatile String username ;
+    private volatile String email;
+    private volatile String score;
     private volatile boolean isOnline;
     
     private UserSession() {}
