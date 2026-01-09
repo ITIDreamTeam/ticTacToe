@@ -15,6 +15,8 @@ import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.dtos.OnlinePlayersUpdate;
 import com.mycompany.tictactoeclient.network.dtos.PlayerStatsDto;
 import com.mycompany.tictactoeclient.network.request.InviteRequest;
+import com.mycompany.tictactoeclient.network.response.InviteResponse;
+import com.mycompany.tictactoeclient.presentation.features.game_board.GameSessionManager;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -46,50 +48,94 @@ import javafx.stage.StageStyle;
  */
 public class Players_boardController implements Initializable {
 
-    @FXML
-    private TextField search_text_field;
-    @FXML
-    private ListView<Player> playersListView;
-    @FXML
-    private ProgressIndicator loadingSpinner;
+    @FXML private TextField search_text_field;
+    @FXML private ListView<Player> playersListView;
+    @FXML private ProgressIndicator loadingSpinner;
+    
     private final ObservableList<Player> masterData = FXCollections.observableArrayList();
     private FilteredList<Player> filteredData;
 
     private final NetworkClient client = NetworkClient.getInstance();
     private final GameApi gameApi = new GameApi(client);
     private final UserSession session = UserSession.getInstance();
-    Gson gson = new Gson();
+    private final GameSessionManager gameSession = GameSessionManager.getInstance();
+    
+    private final Gson gson = new Gson();
+    
     private Consumer<NetworkMessage> onlinePlayersListener;
+    private Consumer<NetworkMessage> receiveInviteListener;
+    private Consumer<NetworkMessage> acceptInviteListener;
+    private Consumer<NetworkMessage> declineInviteListener;
+    
+    private Stage currentInvitePopup; 
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        setupListView();
+        setupSearchFilter();
+        setupAllListeners();
+        requestOnlinePlayers();
+    }
+    
+    private void setupListView() {
         playersListView.setCellFactory(listView -> new PlayerListCell());
         filteredData = new FilteredList<>(masterData, p -> true);
         playersListView.setItems(filteredData);
-        setupSearchFilter();
-
-        NetworkClient.getInstance().on(MessageType.ONLINE_PLAYERS_UPDATE, this::handleOnlinePlayersUpdate);
-        NetworkClient.getInstance().on(MessageType.SEND_REQUEST, this::handleGameRequest);
-        requestOnlinePlayers();
+    }
+    
+    private void setupSearchFilter() {
+        search_text_field.textProperty().addListener((obs, oldVal, newVal) -> {
+            filteredData.setPredicate(player -> {
+                if (newVal == null || newVal.isEmpty()) {
+                    return true;
+                }
+                String lower = newVal.toLowerCase();
+                return player.getName().toLowerCase().contains(lower) ||
+                       String.valueOf(player.getScore()).contains(lower);
+            });
+        });
+    }
+    
+    private void setupAllListeners() {
+        onlinePlayersListener = this::handleOnlinePlayersUpdate;
+        client.on(MessageType.ONLINE_PLAYERS_UPDATE, onlinePlayersListener);   
+        receiveInviteListener = this::handleReceiveInvite;
+        client.on(MessageType.SEND_REQUEST, receiveInviteListener);
+        acceptInviteListener = this::handleAcceptResponse;
+        client.on(MessageType.ACCEPT_REQUEST, acceptInviteListener);   
+        declineInviteListener = this::handleDeclineResponse;
+        client.on(MessageType.DECLINE_REQUEST, declineInviteListener);
+    }
+    
+    public void cleanup() {
+        client.off(MessageType.ONLINE_PLAYERS_UPDATE, onlinePlayersListener);
+        client.off(MessageType.SEND_REQUEST, receiveInviteListener);
+        client.off(MessageType.ACCEPT_REQUEST, acceptInviteListener);
+        client.off(MessageType.DECLINE_REQUEST, declineInviteListener);
+        
+        if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
+            currentInvitePopup.close();
+        }
     }
 
     private void handleOnlinePlayersUpdate(NetworkMessage msg) {
         try {
-            OnlinePlayersUpdate update = NetworkClient.getInstance().getGson().fromJson(
-                    msg.getPayload(),
-                    OnlinePlayersUpdate.class
+            OnlinePlayersUpdate update = client.getGson().fromJson(
+                msg.getPayload(),
+                OnlinePlayersUpdate.class
             );
 
             if (update != null && update.getPlayers() != null) {
                 List<Player> players = new ArrayList<>();
+                String currentUsername = session.getUsername();
+                
                 for (PlayerStatsDto dto : update.getPlayers()) {
-                    Player p = dto.getPlayer();
-                    p.setWins(dto.getWins());
-                    p.setLosses(dto.getLosses());
-                    players.add(p);
+                    Player p = dto.getPlayer();            
+                    if (!p.getName().equalsIgnoreCase(currentUsername)) {
+                        p.setWins(dto.getWins());
+                        p.setLosses(dto.getLosses());
+                        players.add(p);
+                    }
                 }
 
                 Platform.runLater(() -> {
@@ -101,83 +147,68 @@ public class Players_boardController implements Initializable {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            Platform.runLater(() -> {
+                App.showError("Error", "Failed to update player list: " + e.getMessage());
+            });
         }
     }
 
     private void requestOnlinePlayers() {
         try {
             loadingSpinner.setVisible(true);
-            NetworkClient.getInstance().send(new NetworkMessage(MessageType.GET_ONLINE_PLAYERS, null, null, null));
+            playersListView.setVisible(false);
+            
+            client.send(new NetworkMessage(
+                MessageType.GET_ONLINE_PLAYERS, 
+                session.getUsername(), 
+                "server", 
+                null
+            ));
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    private void handlePlayersUpdate(NetworkMessage msg) {
-        System.out.println("Received Payload: " + msg.getPayload().toString());
-
-        OnlinePlayersUpdate data = NetworkClient.getInstance().getGson()
-                .fromJson(msg.getPayload(), OnlinePlayersUpdate.class);
-        Platform.runLater(() -> {
-            if (data != null && data.getPlayers() != null) {
-                masterData.clear();
-                for (PlayerStatsDto player : data.getPlayers()) {
-                    Player p = player.getPlayer();
-                    p.setWins(player.getWins());
-                    p.setLosses(player.getLosses());
-                    masterData.add(p);
-                }
-            }
-            loadingSpinner.setVisible(false);
-            playersListView.setVisible(true);
-        });
-
-        filteredData = new FilteredList<>(masterData, p -> true);
-        playersListView.setItems(filteredData);
-    }
-
-    private void setupSearchFilter() {
-        search_text_field.textProperty().addListener((obs, oldVal, newVal) -> {
-            filteredData.setPredicate(player -> {
-                if (newVal == null || newVal.isEmpty()) {
-                    return true;
-                }
-
-                String lower = newVal.toLowerCase();
-                return player.getName().toLowerCase().contains(lower)
-                        || String.valueOf(player.getScore()).contains(lower);
+            System.err.println("Failed to request online players: " + e.getMessage());
+            Platform.runLater(() -> {
+                loadingSpinner.setVisible(false);
+                App.showError("Network Error", "Failed to load players.");
             });
-        });
-    }
-
-    @FXML
-    private void onClickBack(ActionEvent event) {
-        NetworkClient.getInstance().off(MessageType.ONLINE_PLAYERS_UPDATE, this::handlePlayersUpdate);
-
-        try {
-            App.setRoot("home");
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
     }
-
-    @FXML
-    private void onTextFieldAction(ActionEvent event) {
+    
+    private void handleReceiveInvite(NetworkMessage msg) {
+        try {
+            InviteRequest invite = gson.fromJson(msg.getPayload(), InviteRequest.class);
+            
+            if (invite == null || invite.getSenderUsername() == null) {
+                System.err.println("Invalid invite received");
+                return;
+            }
+            
+            System.out.println("Received invite from: " + invite.getSenderUsername());
+            
+            Platform.runLater(() -> showInviteRequestPopup(invite));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Platform.runLater(() -> {
+                App.showError("Error", "Failed to process invite: " + e.getMessage());
+            });
+        }
     }
-
-    private void handleGameRequest(NetworkMessage msg) {
-        InviteRequest inviteRequest = gson.fromJson(msg.getPayload(), InviteRequest.class);
-        System.out.println("Running handleGameRequest Listener!");
-        Platform.runLater(() -> {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/request_popup.fxml"));
-                Parent root = loader.load();
-                Request_popupController popupController = loader.getController();
-                Stage popupStage = new Stage();
-                popupStage.initModality(Modality.APPLICATION_MODAL);
-                popupStage.initStyle(StageStyle.TRANSPARENT);
-                popupStage.setScene(new Scene(root));
-                popupStage.getScene().setFill(Color.TRANSPARENT);
+    
+    private void showInviteRequestPopup(InviteRequest invite) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/com/mycompany/tictactoeclient/request_popup.fxml")
+            );
+            Parent root = loader.load();
+            Request_popupController popupController = loader.getController();
+            
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.initStyle(StageStyle.TRANSPARENT);
+            popupStage.setScene(new Scene(root));
+            popupStage.getScene().setFill(Color.TRANSPARENT);
+            
+            if (playersListView.getScene() != null && playersListView.getScene().getWindow() != null) {
                 Stage ownerStage = (Stage) playersListView.getScene().getWindow();
                 popupStage.initOwner(ownerStage);
                 popupStage.setOnShown(e -> {
@@ -186,12 +217,96 @@ public class Players_boardController implements Initializable {
                     popupStage.setX(x);
                     popupStage.setY(y);
                 });
-
-                popupStage.showAndWait();
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-        });
+            
+            currentInvitePopup = popupStage;
+            popupController.setStage(popupStage);
+            popupController.setInviteData(invite);
+            
+            popupStage.showAndWait();
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            App.showError("Error", "Cannot show invite popup.");
+        }
+    }
+    
+    private void handleAcceptResponse(NetworkMessage msg) {
+        try {
+            InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
+            
+            if (response == null || response.getSenderUsername() == null) {
+                System.err.println("Invalid accept response");
+                return;
+            }
+            
+            String opponentName = response.getSenderUsername();
+            boolean recordGame = response.isRecordGame();
+            
+            System.out.println(opponentName + " accepted your invite!");
+            
+            Platform.runLater(() -> {
+                gameSession.setGameSession(opponentName, recordGame, true);
+                App.showInfo("Invitation Accepted", 
+                    opponentName + " accepted your invitation!");
+                navigateToGameBoard();
+            });
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Platform.runLater(() -> {
+                App.showError("Error", "Failed to process accept response: " + e.getMessage());
+            });
+        }
+    }
+    
+    private void handleDeclineResponse(NetworkMessage msg) {
+        try {
+            InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
+            
+            if (response == null || response.getSenderUsername() == null) {
+                System.err.println("Invalid decline response");
+                return;
+            }
+            
+            String opponentName = response.getSenderUsername();
+            
+            System.out.println(opponentName + " declined your invite.");
+            
+            Platform.runLater(() -> {
+                App.showWarning("Invitation Declined", 
+                    opponentName + " declined your invitation.");
+                requestOnlinePlayers();
+            });
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void navigateToGameBoard() {
+        try {
+            cleanup();
+            App.setRoot("game_board");
+        } catch (IOException e) {
+            e.printStackTrace();
+            App.showError("Navigation Error", "Cannot navigate to game board.");
+        }
+    }
+
+    @FXML
+    private void onClickBack(ActionEvent event) {
+        cleanup();
+        try {
+            App.setRoot("home");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            App.showError("Navigation Error", "Cannot navigate to home.");
+        }
+    }
+
+    @FXML
+    private void onTextFieldAction(ActionEvent event) {
+        // Search on enter key
     }
 }

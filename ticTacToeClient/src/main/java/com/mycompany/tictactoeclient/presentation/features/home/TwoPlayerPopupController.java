@@ -8,6 +8,7 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  *
  * @author Basmala
  */
+import com.mycompany.tictactoeclient.presentation.features.game_board.GameSessionManager;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import com.mycompany.tictactoeclient.shared.Navigation;
 
@@ -70,7 +71,7 @@ public class TwoPlayerPopupController implements Initializable {
     private void handleStartButton(ActionEvent event) {
         String p1 = player1Field.getText().isEmpty() ? "Player 1" : player1Field.getText();
         String p2 = player2Field.getText().isEmpty() ? "Player 2" : player2Field.getText();
-        gameController.setPlayersName(p1, p2);
+        GameSessionManager.getInstance().setGameSession(p1, p2, recordButton.isSelected(), true);
         Game_boardController.setGameMode(Game_boardController.GameMode.twoPlayer);
         stage.close();
         Navigation.navigateTo(Navigation.gameBoardPage);

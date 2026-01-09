@@ -79,8 +79,8 @@ public class Game_boardController implements Initializable {
     }
 
     public void setPlayersName(String playerX, String PlayerO) {
-        playerNameX.setText(playerX);
-        playerNameO.setText(PlayerO);
+        playerNameX.setText(GameSessionManager.getInstance().getUserName());
+        playerNameO.setText(GameSessionManager.getInstance().getOpponentUsername());
         statusLabel.setText(playerNameX.getText() + " Turn");
     }
 
@@ -279,6 +279,6 @@ public class Game_boardController implements Initializable {
         Navigation.navigateTo(Navigation.homePage);
     }
     public void changeRecoringIconVisiablitiy(boolean vis){
-        recordingIcon.setVisible(vis);
+        recordingIcon.setVisible(GameSessionManager.getInstance().isRecordingGame());
     }
 }

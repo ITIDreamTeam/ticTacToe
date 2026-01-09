@@ -22,9 +22,9 @@
       <CheckBox fx:id="recordCheckBox" mnemonicParsing="false" onAction="#onClickCheckBox" style="-fx-font-size: 14px;" text="Record this game?" textFill="WHITE" />
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#onAcceptClick" prefWidth="120.0" style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 15; -fx-text-fill: white; -fx-font-size: 16px; -fx-cursor: hand;" text="Accept" />
+            <Button fx:id="acceptButton" mnemonicParsing="false" onAction="#onAcceptClick" prefWidth="120.0" style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 15; -fx-text-fill: white; -fx-font-size: 16px; -fx-cursor: hand;" text="Accept" />
       
-            <Button mnemonicParsing="false" onAction="#onCancelClick" prefWidth="120.0" style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 15; -fx-text-fill: white; -fx-font-size: 16px; -fx-cursor: hand;" text="Cancel">
+            <Button fx:id="declineButton" mnemonicParsing="false" onAction="#onCancelClick" prefWidth="120.0" style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 15; -fx-text-fill: white; -fx-font-size: 16px; -fx-cursor: hand;" text="decline">
                <HBox.margin>
                   <Insets left="20.0" />
                </HBox.margin>
