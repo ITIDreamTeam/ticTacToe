@@ -114,9 +114,7 @@ public class RegisterController implements Initializable {
         disableForm(true);
         new Thread(() -> {
             try {
-                client.configure("127.0.0.1", 5005);
-                client.connect();
-                
+                client.connect();   
                 RegisterRequest req = new RegisterRequest(username, email, password);
                 NetworkMessage msg = new NetworkMessage(
                     MessageType.REGISTER,

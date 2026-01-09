@@ -66,12 +66,12 @@ public class PlayerDaoImpl {
     return players;
 }
 
-    public Player login(String email, String password) throws SQLException {
-        String sql = "SELECT * FROM PLAYER WHERE EMAIL = ? AND PASSWORD = ?";
+    public Player login(String name, String password) throws SQLException {
+        String sql = "SELECT * FROM PLAYER WHERE NAME = ? AND PASSWORD = ?";
 
         Connection con = DBConnection.getConnection();
         PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, email);
+            ps.setString(1, name);
             ps.setString(2, password);
 
             ResultSet rs = ps.executeQuery();
@@ -104,8 +104,7 @@ public boolean register(Player player) throws SQLException {
         return rowsAffected > 0;
 }
 
-    public boolean editPlayer(Player player
-    ) {
+    public boolean updatePlayer(Player player) {
         String sql = "UPDATE PLAYER "
                 + "SET NAME = ?, EMAIL = ?, PASSWORD = ?, PLAYER_STATE = ?, SCORE = ? "
                 + "WHERE ID = ?";
@@ -128,12 +127,29 @@ public boolean register(Player player) throws SQLException {
         return false;
     }
     
-    public boolean editPlayerState(String playername, int state) {
+    public boolean updatePlayerState(String playername, int state) {
         String sql = "UPDATE PLAYER SET PLAYER_STATE = ? WHERE NAME = ?";
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, state);
+            ps.setString(2, playername);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    
+    public boolean updatePlayerScore(String playername, int score) {
+        String sql = "UPDATE PLAYER SET SCORE = SCORE+? WHERE NAME = ?";
+
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, score);
             ps.setString(2, playername);
 
             return ps.executeUpdate() > 0;
@@ -250,7 +266,7 @@ public boolean register(Player player) throws SQLException {
                     "    ((g.PLAYER_ONE_ID = ? AND g.PLAYER_TWO_ID = p.ID) OR " +
                     "     (g.PLAYER_TWO_ID = ? AND g.PLAYER_ONE_ID = p.ID)) " +
                     ") " +
-                    "WHERE p.PLAYER_STATE = 1 " +  
+                    "WHERE p.PLAYER_STATE  IN (1, 2, 3) " +  
                     "AND p.ID <> ? " +
                     "GROUP BY p.ID, p.NAME, p.EMAIL, p.SCORE, p.PLAYER_STATE " +
                     "ORDER BY p.SCORE DESC, WINS DESC";
