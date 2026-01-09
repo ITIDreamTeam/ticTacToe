@@ -455,6 +455,7 @@
         "player": "X"
       }
     ]
+<<<<<<< HEAD
   },
   {
     "playerXName": "Player1",
@@ -487,5 +488,7 @@
         "player": "X"
       }
     ]
+=======
+>>>>>>> ca98c6083d2312dd0c6ebe55f24fcbe0da48d34f
   }
 ]
