@@ -94,13 +94,12 @@ public class LoginController implements Initializable {
     @FXML
     private void onLoginClicked(ActionEvent event) {
         if (isProcessing) {
-            return; // Prevent double submission
+            return;
         }
         
         String username = nameTextField.getText().trim();
         String password = passwordField.isVisible() ? passwordField.getText() : passwordTextField.getText();
 
-        // Validation
         if (!validateInput(username, password)) {
             return;
         }
@@ -108,13 +107,11 @@ public class LoginController implements Initializable {
         isProcessing = true;
         disableForm(true);
         
-        // Connect and login
         new Thread(() -> {
             try {
                 client.configure("127.0.0.1", 5005);
                 client.connect();
                 
-                // Create login request
                 RegisterRequest req = new RegisterRequest(username, null, password); 
                 NetworkMessage msg = new NetworkMessage(
                     MessageType.LOGIN,
@@ -123,7 +120,6 @@ public class LoginController implements Initializable {
                     client.getGson().toJsonTree(req)
                 );
                 client.send(msg);
-                /// recive  userdata
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     App.showError("Connection Error", "Failed to connect to server: " + e.getMessage());
@@ -171,20 +167,16 @@ public class LoginController implements Initializable {
         if (result.isSuccess()) {
             System.out.println(msg.getReceiver());
             System.out.println(msg.getPayload());
-            // Login successful - establish session
             String username = nameTextField.getText().trim();
             
-            // Note: We don't have email from login response, so pass null or fetch it separately
             session.login(username, null);
             
             App.showInfo("Login Successful", "Welcome back, " + username + "!");
             
-            // Navigate to home (user is now logged in)
             cleanup();
             Navigation.navigateTo(Navigation.homePage);
             
         } else {
-            // Login failed - disconnect
             App.showError("Login Failed", result.getMessage());
             client.disconnect();
         }

@@ -59,7 +59,7 @@ public final class GameService {
         
         try {
             playerDao.login(userName, password);
-            playerDao.editPlayerState(userName, 1);
+            playerDao.updatePlayerState(userName, 1);
             updateStats();
             return new ResultPayload(true, "OK", "Registered successfully.");
         } catch (SQLException ex) {
@@ -76,7 +76,7 @@ public final class GameService {
         if (username == null || username.isEmpty()) return false;
         
         System.out.println("Updating state for " + username + " to: " + state);
-        return playerDao.editPlayerState(username, state);
+        return playerDao.updatePlayerState(username, state);
     }
     
     public void setOnStatsChanged(Runnable callback) {
@@ -88,5 +88,15 @@ public final class GameService {
             onStatsChanged.run();
         }
     }
-    
+    public boolean increasePlayerScore(String username, int points) {
+        if (username == null || username.isEmpty()) return false;
+        boolean success = playerDao.updatePlayerScore(username, points);
+
+        if (success) {
+            updateStats();
+            System.out.println("Score Update: " + username + " gained " + points + " points.");
+        }
+
+        return success;
+    }
 }
