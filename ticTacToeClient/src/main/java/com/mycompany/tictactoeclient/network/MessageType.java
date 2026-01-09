@@ -29,7 +29,21 @@ public enum MessageType {
     GAME_MOVE,
     GAME_STATE_UPDATE,
     GAME_END,
+    GAME_OVER,        
+    OPPONENT_LEFT,    
+    SURRENDER,       
+    UPDATE_BOARD,
     
     // General
-    ERROR
+    ERROR,
+    
+    // Phase 1
+    FIND_MATCH,
+    GAME_START,
+    MAKE_MOVE,
+
+    // Phase 2
+    INVITE_PLAYER,
+    GAME_INVITATION,
+    INVITE_RESPONSE,
 }

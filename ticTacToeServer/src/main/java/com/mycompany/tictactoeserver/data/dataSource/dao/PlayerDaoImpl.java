@@ -144,23 +144,6 @@ public boolean register(Player player) throws SQLException {
         return false;
     }
     
-    public boolean updatePlayerScore(String playername, int score) {
-        String sql = "UPDATE PLAYER SET SCORE = SCORE+? WHERE NAME = ?";
-
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, score);
-            ps.setString(2, playername);
-
-            return ps.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-    
     public boolean addGame(String playerOneName, String playerTwoName, String winnerName) {
         String sql = "INSERT INTO GAME (PLAYER_ONE_ID, PLAYER_TWO_ID, GAME_DATE, GAME_STATE) " +
                      "VALUES (?, ?, CURRENT_TIMESTAMP, ?)";
@@ -352,6 +335,20 @@ public boolean register(Player player) throws SQLException {
         }
         return -1;
     }
+        public boolean updatePlayerScore(String playername, int score) {
+        String sql = "UPDATE PLAYER SET SCORE = SCORE+? WHERE NAME = ?";
 
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
+            ps.setInt(1, score);
+            ps.setString(2, playername);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }

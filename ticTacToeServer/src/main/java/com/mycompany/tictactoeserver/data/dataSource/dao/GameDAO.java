@@ -1,46 +1,58 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.tictactoeserver.data.dataSource.dao;
 
-import com.mycompany.tictactoeserver.data.model.Game;
 import com.mycompany.tictactoeserver.util.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 
-/**
- *
- * @author Nadin
- */
-public interface GameDAO {
+public class GameDAO {
 
-    boolean addGameResult(Game game);
-}
+    public boolean addGame(String playerOneName, String playerTwoName, String winnerName) {
+        String sql = "INSERT INTO GAME (PLAYER_ONE_ID, PLAYER_TWO_ID, GAME_DATE, GAME_STATE) "
+                + "VALUES (?, ?, CURRENT_TIMESTAMP, ?)";
 
-class GameDAOImpl implements GameDAO {
+        try (Connection con = DBConnection.getConnection(); PreparedStatement insertStmt = con.prepareStatement(sql)) {
 
-    @Override
-    public boolean addGameResult(Game game) {
+            int playerOneId = getPlayerId(playerOneName);
+            int playerTwoId = getPlayerId(playerTwoName);
+            Integer winnerId = null;
+            if (winnerName != null) {
+                winnerId = getPlayerId(winnerName);
+            }
 
-        String sql = "INSERT INTO GAME(PLAYER_ONE_ID, PLAYER_TWO_ID, GAME_DATE, GAME_STATE)"
-                + "VALUES (?, ?, ?, ?)";
+            if (playerOneId == -1 || playerTwoId == -1 || (winnerName != null && winnerId == -1)) {
+                return false;
+            }
 
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            insertStmt.setInt(1, playerOneId);
+            insertStmt.setInt(2, playerTwoId);
+            if (winnerId != null) {
+                insertStmt.setInt(3, winnerId);
+            } else {
+                insertStmt.setNull(3, java.sql.Types.INTEGER);
+            }
 
-            ps.setInt(1, game.getPlayerOne().getId());
-            ps.setInt(2, game.getPlayerTwo().getId());
-            ps.setTimestamp(3, Timestamp.valueOf(game.getGameDate()));
-            ps.setInt(4, game.getGameState().getValue());
-
-            return ps.executeUpdate() > 0;
+            int rowsAffected = insertStmt.executeUpdate();
+            return rowsAffected > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
+    }
 
-        return false;
+    public int getPlayerId(String name) {
+        String sql = "SELECT ID FROM PLAYER WHERE NAME = ?";
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("ID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }

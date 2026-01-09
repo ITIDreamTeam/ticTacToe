@@ -160,7 +160,7 @@ if (responseReceived) return;
         Platform.runLater(() -> {
             InviteResponse response = client.getGson().fromJson(msg.getPayload(), InviteResponse.class);
             
-            GameSessionManager.getInstance().setGameSession(
+            GameSessionManager.getInstance().setOnlineSession(
                 opponent.getName(), 
                 recordCheckBox.isSelected(),
                 true
