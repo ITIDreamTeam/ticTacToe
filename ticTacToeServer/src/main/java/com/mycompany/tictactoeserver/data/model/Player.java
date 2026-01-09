@@ -16,10 +16,7 @@ public class Player {
     private String password;
     private int score;
     private PlayerState playerState;
-     private String avatarUrl;
-    private int wins;
-    private int losses;
-
+    
     public static enum PlayerState {
         OFFLINE(0),
         ONLINE(1),
@@ -100,5 +97,15 @@ public class Player {
 
     public PlayerState getPlayerState() {
         return playerState;
+    }
+    @Override
+    public String toString() {
+        return "Player{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", score=" + score +
+                ", playerState=" + playerState +
+                '}';
     }
 }

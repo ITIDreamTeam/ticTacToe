@@ -5,12 +5,14 @@
 package com.mycompany.tictactoeserver.presentation.features.playersDetails;
 
 import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
+import com.mycompany.tictactoeserver.network.GameServer;
 import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -42,11 +44,21 @@ public class Players_boardController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        allPlayers = new PlayerDaoImpl().getAllPlayers();
-        loadPlayersList(allPlayers);
+        refreshPlayerData();
+        GameServer.getInstance().getGameService().setOnStatsChanged(() -> {
+            Platform.runLater(() -> {
+                refreshPlayerData();
+                // Re-apply search filter if user is currently typing
+                filterPlayers(search_text_field.getText());
+            });
+        });
         search_text_field.textProperty().addListener((observable, oldValue, newValue) -> {
             filterPlayers(newValue);
         });
+    }
+    private void refreshPlayerData() {
+        allPlayers = new PlayerDaoImpl().getAllPlayers();
+        loadPlayersList(allPlayers);
     }
 
     private void filterPlayers(String query) {
@@ -106,19 +118,17 @@ public class Players_boardController implements Initializable {
     
     @FXML
     private void onBackClicked(ActionEvent event) {
+        GameServer.getInstance().getGameService().setOnStatsChanged(null);
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tictactoeserver/home.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeserver/home.fxml"));
             Parent root = loader.load();
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
+            stage.setScene(new Scene(root));
             stage.show();
-
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Failed to load Home Screen FXML");
         }
     }
-
 }

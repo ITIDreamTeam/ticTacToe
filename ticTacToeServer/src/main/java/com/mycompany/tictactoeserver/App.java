@@ -44,7 +44,7 @@ public class App extends Application {
     server.stop();
     }
 
-    static void setRoot(String fxml) throws IOException {
+    static public void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
 

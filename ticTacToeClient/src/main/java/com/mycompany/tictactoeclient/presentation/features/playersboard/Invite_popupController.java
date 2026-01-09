@@ -6,22 +6,26 @@ package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.core.RecordingSettings;
+import com.mycompany.tictactoeclient.data.dataSource.GameApi;
 import com.mycompany.tictactoeclient.data.models.Player;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
+import com.mycompany.tictactoeclient.network.MessageType;
+import com.mycompany.tictactoeclient.network.NetworkClient;
+import com.mycompany.tictactoeclient.network.NetworkMessage;
+import com.mycompany.tictactoeclient.network.response.InviteResponse;
+import com.mycompany.tictactoeclient.presentation.features.game_board.GameSessionManager;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -47,17 +51,18 @@ public class Invite_popupController implements Initializable {
     private Stage stage;
     private Player opponent;
 
-    // Timelines
+    private final NetworkClient client = NetworkClient.getInstance();
+    private final GameApi gameApi = new GameApi(client);
+    private final UserSession session = UserSession.getInstance();
+
     private Timeline delayTimeline;
     private Timeline timeoutTimeline;
-    Parent root;
-    FXMLLoader loader;
-    Game_boardController gameController;
-    private final UserSession session = UserSession.getInstance();
-   
-    /**
-     * Initializes the controller class.
-     */
+
+    private Consumer<NetworkMessage> acceptListener;
+    private Consumer<NetworkMessage> declineListener;
+
+    private boolean responseReceived = false;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         recordCheckBox.selectedProperty().bindBidirectional(
@@ -67,60 +72,138 @@ public class Invite_popupController implements Initializable {
 
     @FXML
     private void onClickCheckBox(ActionEvent event) {
+        setupListeners();
     }
 
-    @FXML
-    private void onCancelClick(ActionEvent event) {
+    private void setupListeners() {
+        acceptListener = this::handleAcceptResponse;
+        declineListener = this::handleDeclineResponse;
+
+        client.on(MessageType.ACCEPT_REQUEST, acceptListener);
+        client.on(MessageType.DECLINE_REQUEST, declineListener);
+    }
+
+    public void cleanup() {
+        client.off(MessageType.ACCEPT_REQUEST, acceptListener);
+        client.off(MessageType.DECLINE_REQUEST, declineListener);
+
         if (delayTimeline != null) {
             delayTimeline.stop();
         }
         if (timeoutTimeline != null) {
             timeoutTimeline.stop();
         }
-        System.out.println("Invitation Cancelled");
+    }
+
+    @FXML
+    private void onCancelClick(ActionEvent event) {
+        cleanup();
         closePopup();
     }
-    public void setDisplayData(Player player, Stage stage,ActionEvent event) {
+
+    public void setDisplayData(Player player, Stage stage) {
         this.opponent = player;
         this.stage = stage;
         playerNameLabel.setText(player.getName());
-
-        startBufferPhase( event);
+        startBufferPhase();
     }
 
-    private void startBufferPhase(ActionEvent event) {
-        statusLabel.setText("Sending request in...");
+    private void startBufferPhase() {
+        statusLabel.setText("Preparing to send invite...");
         timeProgressBar.setProgress(1.0);
         delayTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(5), e -> sendNetworkRequest(event))
+                new KeyFrame(Duration.seconds(3), e -> sendInviteRequest())
         );
         delayTimeline.play();
     }
 
-    private void sendNetworkRequest(ActionEvent event) {
-        boolean isRecording = recordCheckBox.isSelected();
-        System.out.println("Request Sent to " + opponent.getName() + " | Record: " + isRecording);
-        statusLabel.setText("Waiting for response...");
-        recordCheckBox.setDisable(true);
-        startTimeoutPhase(event);
+
+    private void sendInviteRequest() {
+        boolean recordGame = recordCheckBox.isSelected();
+
+        new Thread(() -> {
+            try {
+                gameApi.sendGameInvite(opponent.getName(), recordGame);
+
+                Platform.runLater(() -> {
+                    statusLabel.setText("Waiting for " + opponent.getName() + "'s response...");
+                    recordCheckBox.setDisable(true);
+                    startTimeoutPhase();
+                });
+
+                System.out.println("Invite sent to " + opponent.getName() + " | Record: " + recordGame);
+
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    App.showError("Network Error", "Failed to send invite: " + e.getMessage());
+                    cleanup();
+                    closePopup();
+                });
+            }
+        }, "send-invite-thread").start();
     }
 
-    private void startTimeoutPhase(ActionEvent event) {
+    private void startTimeoutPhase() {
         timeoutTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(10), e -> handleTimeout())
+                new KeyFrame(Duration.seconds(30), e -> {
+                    if (!responseReceived) {
+                        handleTimeout();
+                    }
+                })
         );
         timeoutTimeline.play();
-        try {
-            App.setRoot("game_board");
-            closePopup();
-            System.out.println("Go to home");
-        } catch (IOException ex) {
-            ex.printStackTrace();
+    }
+
+    private void handleAcceptResponse(NetworkMessage msg) {
+if (responseReceived) return;
+        if (!msg.getUsername().equalsIgnoreCase(opponent.getName())) {
+            return;
         }
+        responseReceived = true;
+        cleanup();
+
+        Platform.runLater(() -> {
+            InviteResponse response = client.getGson().fromJson(msg.getPayload(), InviteResponse.class);
+            
+            GameSessionManager.getInstance().setGameSession(
+                opponent.getName(), 
+                recordCheckBox.isSelected(),
+                true
+            );
+            App.showInfo("Invitation Accepted", 
+                opponent.getName() + " accepted your invitation!");
+            
+            closePopup(); 
+            try {
+                App.setRoot("game_board");
+            } catch (IOException e) {
+                e.printStackTrace();
+                App.showError("Navigation Error", "Cannot start game.");
+            }
+        });
+    }
+
+    private void handleDeclineResponse(NetworkMessage msg) {
+if (responseReceived) {
+        return;
+    }
+
+    if (!msg.getUsername().equalsIgnoreCase(opponent.getName())) {
+        return;
+    }
+
+    responseReceived = true;
+    cleanup();
+    
+    Platform.runLater(() -> {
+        App.showWarning("Invitation Declined", opponent.getName() + " declined your invitation.");
+        closePopup();
+    });
     }
 
     private void handleTimeout() {
-        System.out.println("No response from " + opponent.getName());
+        cleanup();
+        App.showWarning("No Response", opponent.getName() + " did not respond to your invitation.");
         closePopup();
     }
 

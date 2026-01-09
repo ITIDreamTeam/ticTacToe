@@ -9,20 +9,22 @@ package com.mycompany.tictactoeclient.data.models;
  * @author yasse
  */
 public class Player {
- private int id;
+
+    private int id;
     private String name;
     private String email;
     private String password;
     private int score;
     private PlayerState playerState;
-     private String avatarUrl;
+    private String avatarUrl;
     private int wins;
     private int losses;
-    
+
     public static enum PlayerState {
         OFFLINE(0),
         ONLINE(1),
-        IN_GAME(2);
+        IN_GAME(2),
+        WAITING(3);
 
         private final int value;
 
@@ -43,9 +45,10 @@ public class Player {
             return OFFLINE;
         }
     }
-    
-    public Player() {}
-    
+
+    public Player() {
+    }
+
     public Player(String name, int score, int wins, int losses, PlayerState status) {
         this.name = name;
         this.score = score;
@@ -54,7 +57,7 @@ public class Player {
         this.playerState = status;
         this.avatarUrl = "..\\..\\..\\avatar.png";
     }
-    
+
     public Player(String name, PlayerState status) {
         this.name = name;
         this.playerState = status;
@@ -63,7 +66,7 @@ public class Player {
         this.losses = 0;
         this.avatarUrl = "..\\..\\..\\avatar.png";
     }
-    
+
     public Player(String name, int score, PlayerState status) {
         this.name = name;
         this.score = score;
@@ -71,28 +74,62 @@ public class Player {
         this.avatarUrl = "..\\..\\..\\avatar.png";
     }
 
-   public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    
-    public int getScore() { return score; }
-    public void setScore(int score) { this.score = score; }
-    
-    public int getWins() { return wins; }
-    public void setWins(int wins) { this.wins = wins; }
-    
-    public int getLosses() { return losses; }
-    public void setLosses(int losses) { this.losses = losses; }
-    
-    public PlayerState getStatus() { return playerState; }
-    public void setStatus(PlayerState status) { this.playerState = status; }
-    public String getAvatarUrl() { return avatarUrl; }
-    
-     public static PlayerState fromStateCode(int stateCode) {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getWins() {
+        return wins;
+    }
+
+    public void setWins(int wins) {
+        this.wins = wins;
+    }
+
+    public int getLosses() {
+        return losses;
+    }
+
+    public void setLosses(int losses) {
+        this.losses = losses;
+    }
+
+    public PlayerState getStatus() {
+        return playerState;
+    }
+
+    public void setStatus(PlayerState status) {
+        this.playerState = status;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public static PlayerState fromStateCode(int stateCode) {
         switch (stateCode) {
-            case 1: return PlayerState.ONLINE;
-            case 0: return PlayerState.OFFLINE;
-            case 2: return PlayerState.IN_GAME;
-            default: return PlayerState.OFFLINE;
+            case 1:
+                return PlayerState.ONLINE;
+            case 0:
+                return PlayerState.OFFLINE;
+            case 2:
+                return PlayerState.IN_GAME;
+            case 3:
+                return PlayerState.WAITING;
+            default:
+                return PlayerState.OFFLINE;
         }
     }
 }
