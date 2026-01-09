@@ -10,9 +10,11 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  * @author Basmala
  */
 import com.mycompany.tictactoeclient.core.RecordingSettings;
+import com.mycompany.tictactoeclient.data.models.GameSession;
 import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine;
+import com.mycompany.tictactoeclient.presentation.features.game_board.GameSessionManager;
 import com.mycompany.tictactoeclient.shared.Navigation;
 import java.io.IOException;
 import java.net.URL;
@@ -43,9 +45,7 @@ public class OnePlayerPopupController implements Initializable {
     private ToggleButton hardButton;
 
     public static GameEngine.gameDifficulty difficulty = GameEngine.gameDifficulty.Easy;
-    Parent root;
-    FXMLLoader loader;
-    Game_boardController gameController;
+
     private final UserSession session = UserSession.getInstance();
     private Stage stage;
 
@@ -68,10 +68,13 @@ public class OnePlayerPopupController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/game_board.fxml"));
             Parent root = loader.load();
             Game_boardController gameController = loader.getController();
-            
+
+            GameSession.playerX = session.isLoggedIn() ? session.getUsername() : "Player";
+            GameSession.playerO = "Computer";
             gameController.setGameMode(Game_boardController.GameMode.vsComputer);
             gameController.setPlayersName(session.isLoggedIn() ? session.getUsername() : "Player", "Computer");
             ToggleButton selected = (ToggleButton) difficultyGroup.getSelectedToggle();
+            GameSessionManager.getInstance().setGameSession("computer", recordButton.isSelected(), true);
             if (selected == easyButton) {
                 difficulty = GameEngine.gameDifficulty.Easy;
             } else if (selected == mediumButton) {
@@ -86,21 +89,11 @@ public class OnePlayerPopupController implements Initializable {
         } catch (IOException ex) {
             System.getLogger(OnePlayerPopupController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
-
-    }
-
-    private String getSelectedDifficulty() {
-        if (difficultyGroup.getSelectedToggle() == mediumButton) {
-            return "medium";
-        }
-        if (difficultyGroup.getSelectedToggle() == hardButton) {
-            return "hard";
-        }
-        return "easy";
     }
 
     @FXML
     public void onRecordButton() {
+        GameSession.recordingEnabled = recordButton.isSelected();
     }
 
     @FXML

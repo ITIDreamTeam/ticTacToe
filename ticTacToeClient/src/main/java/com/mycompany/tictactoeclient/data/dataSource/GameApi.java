@@ -9,6 +9,8 @@ import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.dtos.GameMoveDto;
+import com.mycompany.tictactoeclient.network.request.InviteRequest;
+import com.mycompany.tictactoeclient.network.response.InviteResponse;
 
 /**
  *
@@ -31,32 +33,52 @@ public class GameApi {
         client.send(msg);
     }
     
-    public void sendGameInvite(String targetUsername) throws Exception {
+   public void sendGameInvite(String targetUsername, boolean recordGame) throws Exception {
+        InviteRequest request = new InviteRequest(
+            UserSession.getInstance().getUsername(),
+            targetUsername,
+            recordGame
+        );
+        
         NetworkMessage msg = new NetworkMessage(
             MessageType.SEND_REQUEST,
             UserSession.getInstance().getUsername(),
             targetUsername,
-            null
+            client.getGson().toJsonTree(request)
         );
         client.send(msg);
     }
     
-    public void acceptInvite(String senderUsername) throws Exception {
+    public void acceptInvite(String senderUsername, boolean recordGame) throws Exception {
+        InviteResponse response = new InviteResponse(
+            senderUsername,
+            UserSession.getInstance().getUsername(),
+            true,
+            recordGame
+        );
+        
         NetworkMessage msg = new NetworkMessage(
             MessageType.ACCEPT_REQUEST,
             UserSession.getInstance().getUsername(),
             senderUsername,
-            null
+            client.getGson().toJsonTree(response)
         );
         client.send(msg);
     }
     
     public void declineInvite(String senderUsername) throws Exception {
+        InviteResponse response = new InviteResponse(
+            senderUsername,
+            UserSession.getInstance().getUsername(),
+            false,
+            false
+        );
+        
         NetworkMessage msg = new NetworkMessage(
             MessageType.DECLINE_REQUEST,
             UserSession.getInstance().getUsername(),
             senderUsername,
-            null
+            client.getGson().toJsonTree(response)
         );
         client.send(msg);
     }

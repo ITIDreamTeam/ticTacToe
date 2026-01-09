@@ -11,11 +11,11 @@ package com.mycompany.tictactoeserver.network.response;
 public final class ResultPayload {
     private boolean success;
     private String code;  
-    private String message;
+    private Object message;
 
     public ResultPayload() {}
 
-    public ResultPayload(boolean success, String code, String message) {
+    public ResultPayload(boolean success, String code, Object message) {
         this.success = success;
         this.code = code;
         this.message = message;
@@ -23,5 +23,5 @@ public final class ResultPayload {
 
     public boolean isSuccess() { return success; }
     public String getCode() { return code; }
-    public String getMessage() { return message; }
+    public Object getMessage() { return message; }
 }

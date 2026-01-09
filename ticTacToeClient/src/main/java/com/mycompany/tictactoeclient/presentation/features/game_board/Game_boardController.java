@@ -7,6 +7,8 @@ package com.mycompany.tictactoeclient.presentation.features.game_board;
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.core.RecordingSettings;
 import com.mycompany.tictactoeclient.data.dataSource.RecordedGamesJson;
+import com.mycompany.tictactoeclient.data.models.GameSession;
+import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine.Player;
 import com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController;
 import com.mycompany.tictactoeclient.data.models.MoveRecord;
@@ -77,6 +79,9 @@ public class Game_boardController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         engine = new GameEngine();
+        playerNameX.setText(GameSession.playerX);
+        playerNameO.setText(GameSession.playerO);
+        
         linePane.prefWidthProperty().bind(gameGrid.widthProperty());
         linePane.prefHeightProperty().bind(gameGrid.heightProperty());
         for (int row = 0; row < 3; row++) {
@@ -300,7 +305,6 @@ public class Game_boardController implements Initializable {
         }
         return false;
     }
-
     private void showEndGamePopup(String message, ActionEvent event) {
         PauseTransition delay = new PauseTransition(Duration.seconds(1));
         delay.setOnFinished(e -> {
@@ -372,7 +376,7 @@ public class Game_boardController implements Initializable {
 
     @FXML
     private void onBackClicked(ActionEvent event) {
-        Navigation.navigateTo(Navigation.homePage);
+        GameSessionManager.getInstance().clearSession();
+            Navigation.navigateTo(Navigation.homePage);
     }
-    
 }
