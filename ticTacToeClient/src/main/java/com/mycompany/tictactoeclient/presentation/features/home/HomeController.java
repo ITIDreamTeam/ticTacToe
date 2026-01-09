@@ -69,7 +69,19 @@ public class HomeController implements Initializable {
             return;
         }
 
-        Navigation.navigateTo(Navigation.playersBoardPage);
+        client.sendFindMatchRequest();
+
+        Alert waitingAlert = new Alert(Alert.AlertType.INFORMATION);
+        waitingAlert.setTitle("Matchmaking");
+        waitingAlert.setHeaderText(null);
+        waitingAlert.setContentText("Waiting for an opponent...");
+        waitingAlert.show();
+        
+        // The alert will be closed when the game starts.
+        // We need a way to close it from outside.
+        // A better approach would be to have a dedicated waiting screen.
+        // For now, we can store the alert and close it later.
+        App.setWaitingAlert(waitingAlert);
     }
 
     @FXML

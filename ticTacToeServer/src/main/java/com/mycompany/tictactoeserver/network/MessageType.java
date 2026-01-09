@@ -31,5 +31,18 @@ public enum MessageType {
     GAME_END,
     
     // General
-    ERROR
+    ERROR,
+    
+    // Phase 1
+    FIND_MATCH,
+    GAME_START,
+    MAKE_MOVE,
+    UPDATE_BOARD,
+    GAME_OVER,
+    OPPONENT_LEFT,
+
+    // Phase 2
+    INVITE_PLAYER,
+    GAME_INVITATION,
+    INVITE_RESPONSE,
 }

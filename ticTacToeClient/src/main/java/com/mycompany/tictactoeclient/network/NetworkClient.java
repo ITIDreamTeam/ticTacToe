@@ -6,6 +6,7 @@ package com.mycompany.tictactoeclient.network;
 
 import com.google.gson.Gson;
 import com.mycompany.tictactoeclient.network.dtos.ErrorPayload;
+import com.mycompany.tictactoeclient.network.dtos.GameMoveDto;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -87,6 +88,27 @@ public class NetworkClient {
             out.write(gson.toJson(msg));
             out.write("\n");
             out.flush();
+        }
+    }
+
+    public void sendFindMatchRequest() {
+        try {
+            send(new NetworkMessage(MessageType.FIND_MATCH, com.mycompany.tictactoeclient.data.models.userSession.UserSession.getInstance().getUsername(), null, null));
+        } catch (Exception e) {
+            if (globalErrorHandler != null) {
+                globalErrorHandler.accept("Failed to send find match request: " + e.getMessage());
+            }
+        }
+    }
+    
+    public void sendGameMove(GameMoveDto move) {
+        try {
+            NetworkMessage msg = new NetworkMessage(MessageType.GAME_MOVE, com.mycompany.tictactoeclient.data.models.userSession.UserSession.getInstance().getUsername(), null, gson.toJsonTree(move));
+            send(msg);
+        } catch (Exception e) {
+            if (globalErrorHandler != null) {
+                globalErrorHandler.accept("Failed to send game move: " + e.getMessage());
+            }
         }
     }
     

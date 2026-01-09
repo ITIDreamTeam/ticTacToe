@@ -7,6 +7,7 @@ package com.mycompany.tictactoeserver.network;
 import com.google.gson.Gson;
 import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import com.mycompany.tictactoeserver.network.dtos.ErrorPayload;
+import com.mycompany.tictactoeserver.network.dtos.GameMoveDto;
 import com.mycompany.tictactoeserver.network.request.RegisterRequest;
 import com.mycompany.tictactoeserver.network.response.ResultPayload;
 import java.util.List;
@@ -40,6 +41,10 @@ public final class MessageRouter {
                 case GET_ONLINE_PLAYERS:
                     handleGetOnlinePlayers(session);
                     break;
+                
+                case FIND_MATCH:
+                    handleFindMatch(session);
+                    break;
 
                 case SEND_REQUEST:
                     handleGameInvite(session, msg);
@@ -66,6 +71,7 @@ public final class MessageRouter {
     public void onDisconnect(ClientSession session) {
         String username = session.getUsername();
         if (username != null) {
+            auth.handlePlayerDisconnect(session);
             auth.updatePlayerState(username, 0);
             registry.remove(session);
             System.out.println("User disconnected: " + username);
@@ -179,6 +185,12 @@ public final class MessageRouter {
             gson.toJsonTree(update)
         ));
     }
+    
+    private void handleFindMatch(ClientSession session) {
+        if (!isAuthenticated(session)) return;
+        auth.findMatch(session);
+        System.out.println("User " + session.getUsername() + " is looking for a match.");
+    }
 
     private void handleGameInvite(ClientSession session, NetworkMessage msg) {
         if (!isAuthenticated(session)) return;
@@ -206,26 +218,9 @@ public final class MessageRouter {
 
     private void handleGameMove(ClientSession session, NetworkMessage msg) {
         if (!isAuthenticated(session)) return;
-        
-        String opponentUsername = msg.getReceiver();
-        if (opponentUsername == null || opponentUsername.trim().isEmpty()) {
-            sendError(session, "INVALID_INPUT", "Opponent username is required");
-            return;
-        }
 
-        ClientSession opponentSession = registry.get(opponentUsername);
-        if (opponentSession == null || !opponentSession.isConnected()) {
-            sendError(session, "USER_OFFLINE", "Opponent is not online");
-            return;
-        }
-        
-        // Forward the move to opponent
-        opponentSession.send(new NetworkMessage(
-            MessageType.GAME_MOVE,
-            session.getUsername(),
-            opponentUsername,
-            msg.getPayload()
-        ));
+        GameMoveDto move = gson.fromJson(msg.getPayload(), GameMoveDto.class);
+        auth.handleGameMove(session, move);
     }
 
     private void broadcastOnlinePlayers() {

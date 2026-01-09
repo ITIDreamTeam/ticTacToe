@@ -5,6 +5,7 @@
 package com.mycompany.tictactoeserver.network;
 
 import com.google.gson.Gson;
+import com.mycompany.tictactoeserver.data.dataSource.dao.GameDAO;
 import com.mycompany.tictactoeserver.data.dataSource.dao.PlayerDaoImpl;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -21,12 +22,13 @@ public final class GameServer {
     private final int port = 5005;
     private final Gson gson = new Gson();
     private final PlayerDaoImpl playerDao = new PlayerDaoImpl();
+    private final GameDAO gameDao = new GameDAO();
     
     private ServerSocket serverSocket;
     private volatile boolean running;
     
     private final ClientRegistry registry = new ClientRegistry();
-    private final GameService auth = new GameService(playerDao);
+    private final GameService auth = new GameService(playerDao, gameDao);
     private final MessageRouter router = new MessageRouter(gson, registry, auth);
     private final javafx.collections.ObservableList<String> logs = javafx.collections.FXCollections.observableArrayList();    public javafx.collections.ObservableList<String> getLogs() { return logs; }
     private GameServer() {}
