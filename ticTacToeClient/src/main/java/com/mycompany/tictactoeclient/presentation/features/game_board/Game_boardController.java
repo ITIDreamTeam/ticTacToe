@@ -202,15 +202,10 @@ public class Game_boardController implements Initializable {
 
     private void startNewGame() {
         engine.resetGame(nextStarter);
-        if (currentMode == GameMode.vsComputer) {
-            if (nextStarter == Player.X) {
-                statusLabel.setText(playerNameX.getText() + " Turn");
-            }
-            if (this.currentMode == GameMode.withFriend) {
-                setupOnlineGame();
-            } else {
-                setupLocalOrComputerGame();
-            }
+        if (currentMode == GameMode.withFriend) {
+            setupOnlineGame();
+        } else { // Covers vsComputer and twoPlayer
+            setupLocalOrComputerGame();
         }
     }
 
@@ -467,14 +462,10 @@ public class Game_boardController implements Initializable {
             client.off(MessageType.OPPONENT_LEFT, this::onOpponentLeft);
         }
         sessionManager.clearSession();
-        try {
-            if (currentMode == GameMode.withFriend) {
-                App.setRoot("players_board");
-            } else {
-                App.setRoot("home");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (currentMode == GameMode.withFriend) {
+            Navigation.navigateTo(Navigation.playersBoardPage);
+        } else {
+            Navigation.navigateTo(Navigation.homePage);
         }
     }
 

@@ -54,28 +54,13 @@ public class TwoPlayerPopupController implements Initializable {
     }
 
     private void handleStartButton(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/game_board.fxml"));
-            Parent root = loader.load();
-            Game_boardController gameController = loader.getController();
-            String p1 = player1Field.getText().isEmpty() ? "Player 1" : player1Field.getText();
-            String p2 = player2Field.getText().isEmpty() ? "Player 2" : player2Field.getText();
-            gameController.setPlayersName(p1, p2);
-            gameController.setGameMode(Game_boardController.GameMode.twoPlayer);
-            GameSessionManager.getInstance().setLocalPvpSession(p1, p2, recordButton.isSelected());
-            player1Field.setText("Player1");
-            player2Field.setText("Player2");
-            startButton.setOnAction(e -> {
-                handleStartButton(e);
-            });
-            Stage mainStage = (Stage) this.stage.getOwner();
-            Scene scene = new Scene(root);
-            mainStage.setScene(scene);
-            mainStage.show();
-            stage.close();
-            Navigation.navigateTo(Navigation.gameBoardPage);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        String p1 = player1Field.getText().isEmpty() ? "Player 1" : player1Field.getText();
+        String p2 = player2Field.getText().isEmpty() ? "Player 2" : player2Field.getText();
+
+        GameSessionManager.getInstance().setLocalPvpSession(p1, p2, recordButton.isSelected());
+        Game_boardController.setGameMode(Game_boardController.GameMode.twoPlayer);
+
+        stage.close();
+        Navigation.navigateTo(Navigation.gameBoardPage);
     }
 }
