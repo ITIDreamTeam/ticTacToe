@@ -4,11 +4,13 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.game_board;
 
+import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.core.RecordingSettings;
 import com.mycompany.tictactoeclient.data.dataSource.RecordedGamesJson;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine.Player;
 import com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController;
 import com.mycompany.tictactoeclient.data.models.MoveRecord;
+import com.mycompany.tictactoeclient.data.models.PlayerType;
 import com.mycompany.tictactoeclient.data.models.RecordedGame;
 import com.mycompany.tictactoeclient.shared.Navigation;
 import java.io.IOException;
@@ -97,8 +99,46 @@ public class Game_boardController implements Initializable {
                     });
             updateRecordingState(RecordingSettings.isRecordingEnabled());
         });
-        startNewGame();
+
+        RecordedGameDetails recordedGameDetails = App.getRecordedGameDetails();
+        if (recordedGameDetails != null) {
+            startReplay(recordedGameDetails);
+            App.setRecordedGameDetails(null); // Clear after use
+        } else {
+            startNewGame();
+        }
     }
+
+    private void startReplay(RecordedGameDetails recordedGame) {
+        setPlayersName(recordedGame.getPlayerXName(), recordedGame.getPlayerOName());
+        setBoardDisabled(true);
+        statusLabel.setText("Replaying game...");
+
+        // Clear the board
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                buttons[i][j].setText("");
+                buttons[i][j].getStyleClass().removeAll("tile-x", "tile-o", "tile-winning");
+                buttons[i][j].setDisable(true); // Disable buttons during replay
+            }
+        }
+        winningLine.setVisible(false);
+
+        Timeline timeline = new Timeline();
+        for (int i = 0; i < recordedGame.getMoves().size(); i++) {
+            final MoveRecord currentMove = recordedGame.getMoves().get(i);
+            Duration time = Duration.seconds(i + 1);
+            KeyFrame keyFrame = new KeyFrame(time, e -> {
+                Button btn = buttons[currentMove.getRow()][currentMove.getCol()];
+                updateButton(btn, currentMove.getPlayer() == PlayerType.X ? Player.X : Player.O);
+            });
+            timeline.getKeyFrames().add(keyFrame);
+        }
+
+        timeline.setOnFinished(e -> statusLabel.setText("Replay finished."));
+        timeline.play();
+    }
+
 
     public void setPlayersName(String playerX, String PlayerO) {
         playerNameX.setText(playerX);

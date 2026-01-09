@@ -1,6 +1,8 @@
 package com.mycompany.tictactoeclient.presentation.features.saved_replays;
 
+import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.models.RecordedGame;
+import com.mycompany.tictactoeclient.shared.Navigation;
 import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -43,6 +45,13 @@ public class GameListCell extends ListCell<RecordedGame> {
             dateLabel.setText(game.getFormattedDate());
             playBtn.setOnAction(event -> {
                 System.out.println("Playing game against: " + getItem().getPlayerInfo());
+                App.setRecordedGameDetails(new com.mycompany.tictactoeclient.presentation.features.game_board.RecordedGameDetails(
+                        game.getPlayerXName(),
+                        game.getPlayerOName(),
+                        game.getFormattedDate(),
+                        game.getMoves()
+                ));
+                Navigation.navigateTo(Navigation.gameBoardPage);
             });
 
             deleteBtn.setOnAction(event -> {

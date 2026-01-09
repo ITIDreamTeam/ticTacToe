@@ -8,6 +8,9 @@ package com.mycompany.tictactoeclient;
  *
  * @author Basmala
  */
+import com.mycompany.tictactoeclient.data.dataSource.RecordedGamesJson;
+import com.mycompany.tictactoeclient.data.models.RecordedGame;
+import java.util.List;
 import javafx.scene.control.*;
 import java.sql.*;
 
@@ -29,5 +32,7 @@ public class DataAccessLayer {
         }
     }
 
-   
+    public List<RecordedGame> getRecordedGames() {
+        return RecordedGamesJson.loadGames();
+    }
 }
