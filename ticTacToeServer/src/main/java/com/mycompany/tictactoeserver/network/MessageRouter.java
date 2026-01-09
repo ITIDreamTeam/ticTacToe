@@ -5,10 +5,12 @@
 package com.mycompany.tictactoeserver.network;
 
 import com.google.gson.Gson;
+import static com.mycompany.tictactoeserver.network.MessageType.ACCEPT_REQUEST;
 import com.mycompany.tictactoeserver.network.dtos.PlayerStatsDto;
 import com.mycompany.tictactoeserver.network.dtos.ErrorPayload;
 import com.mycompany.tictactoeserver.network.request.InviteRequest;
 import com.mycompany.tictactoeserver.network.request.RegisterRequest;
+import com.mycompany.tictactoeserver.network.response.InviteResponse;
 import com.mycompany.tictactoeserver.network.response.ResultPayload;
 import java.util.List;
 
@@ -55,7 +57,9 @@ public final class MessageRouter {
                     onDisconnect(session);
                     break;
                 case ACCEPT_REQUEST:
-                    handleAcceptRequest(session,msg);
+                    handleAcceptRequest(session, msg);
+                case DECLINE_REQUEST:
+                    handleDeclineRequest(session, msg);
 
                 default:
                     sendError(session, "UNKNOWN_TYPE", "Unknown message type: " + msg.getType());
@@ -272,35 +276,62 @@ public final class MessageRouter {
     }
 
     private void handleAcceptRequest(ClientSession session, NetworkMessage msg) {
-         if (!isAuthenticated(session)) return;
-    
-    InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
-    String senderUsername = response.getSenderUsername();
-    
-    if (senderUsername == null || senderUsername.trim().isEmpty()) {
-        sendError(session, "INVALID_INPUT", "Sender username is required");
-        return;
+        if (!isAuthenticated(session)) {
+            return;
+        }
+
+        InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
+        String senderUsername = response.getSenderUsername();
+
+        if (senderUsername == null || senderUsername.trim().isEmpty()) {
+            sendError(session, "INVALID_INPUT", "Sender username is required");
+            return;
+        }
+
+        ClientSession senderSession = registry.get(senderUsername);
+        if (senderSession == null || !senderSession.isConnected()) {
+            sendError(session, "USER_OFFLINE", "User '" + senderUsername + "' is not online");
+            return;
+        }
+        gameService.updatePlayerState(session.getUsername(), 2);
+        gameService.updatePlayerState(senderUsername, 2);
+
+        senderSession.send(new NetworkMessage(
+                MessageType.ACCEPT_REQUEST,
+                session.getUsername(),
+                senderUsername,
+                msg.getPayload()
+        ));
+        System.out.println(session.getUsername() + " accepted invite from " + senderUsername);
+        broadcastOnlinePlayers();
     }
 
-    ClientSession senderSession = registry.get(senderUsername);
-    if (senderSession == null || !senderSession.isConnected()) {
-        sendError(session, "USER_OFFLINE", "User '" + senderUsername + "' is not online");
-        return;
-    }
-    gameService.updatePlayerState(session.getUsername(), 3);
-    gameService.updatePlayerState(senderUsername, 3);
-    
-    // Forward accept response to sender
-    senderSession.send(new NetworkMessage(
-        MessageType.ACCEPT_REQUEST,
-        session.getUsername(),
-        senderUsername,
-        msg.getPayload()
-    ));
-    
-    System.out.println(session.getUsername() + " accepted invite from " + senderUsername);
-    
-    // Broadcast updated player states
-    broadcastOnlinePlayers();
+    private void handleDeclineRequest(ClientSession session, NetworkMessage msg) {
+        if (!isAuthenticated(session)) {
+            return;
+        }
+
+        InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
+        String senderUsername = response.getSenderUsername();
+
+        if (senderUsername == null || senderUsername.trim().isEmpty()) {
+            sendError(session, "INVALID_INPUT", "Sender username is required");
+            return;
+        }
+
+        ClientSession senderSession = registry.get(senderUsername);
+        if (senderSession == null || !senderSession.isConnected()) {
+            return;
+        }
+
+        senderSession.send(new NetworkMessage(
+                MessageType.DECLINE_REQUEST,
+                session.getUsername(),
+                senderUsername,
+                msg.getPayload()
+        ));
+        gameService.updatePlayerState(session.getUsername(), 1);
+        gameService.updatePlayerState(senderUsername, 1);
+        System.out.println(session.getUsername());
     }
 }
