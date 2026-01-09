@@ -165,7 +165,8 @@ public class Game_boardController implements Initializable {
         
         if (engine.makeMove(coords[0], coords[1])) {
             updateButton(clickedButton, engine.getCurrentPlayer());
-            
+            engine.switchTurn(); // Switch turn locally for all modes
+
             if (currentMode == GameMode.withFriend) {
                 client.sendGameMove(new GameMoveDto(coords[0], coords[1]));
                 setBoardDisabled(true);
@@ -174,8 +175,6 @@ public class Game_boardController implements Initializable {
             }
 
             if (checkGameStatus(event)) return;
-            
-            engine.switchTurn();
             
             if (currentMode == GameMode.vsComputer && engine.getCurrentPlayer() == GameEngine.Player.O) {
                 setBoardDisabled(true);
