@@ -84,5 +84,289 @@
       }
     ],
     "userId": "yassen"
+  },
+  {
+    "playerXName": "yassen",
+    "playerOName": "Computer",
+    "gameDate": "2026-01-10T17:34:00.368502",
+    "moves": [
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "X"
+      }
+    ],
+    "userId": "yassen"
+  },
+  {
+    "playerXName": "yassen",
+    "playerOName": "Computer",
+    "gameDate": "2026-01-10T17:34:18.813315800",
+    "moves": [
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "player": "O"
+      }
+    ],
+    "userId": "yassen"
+  },
+  {
+    "playerXName": "hamada",
+    "playerOName": "miada",
+    "gameDate": "2026-01-10T17:34:42.864283600",
+    "moves": [
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "player": "X"
+      }
+    ],
+    "userId": "yassen"
+  },
+  {
+    "playerXName": "Player",
+    "playerOName": "Computer",
+    "gameDate": "2026-01-10T18:43:14.681999600",
+    "moves": [
+      {
+        "row": 0,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      }
+    ]
+  },
+  {
+    "playerXName": "Player",
+    "playerOName": "Computer",
+    "gameDate": "2026-01-10T18:43:30.618027600",
+    "moves": [
+      {
+        "row": 0,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 0,
+        "player": "O"
+      }
+    ]
+  },
+  {
+    "playerXName": "Player1",
+    "playerOName": "Player2",
+    "gameDate": "2026-01-10T18:43:43.205663100",
+    "moves": [
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "X"
+      }
+    ]
+  },
+  {
+    "playerXName": "Player1",
+    "playerOName": "Player2",
+    "gameDate": "2026-01-10T18:43:53.440523900",
+    "moves": [
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "X"
+      }
+    ]
+  },
+  {
+    "playerXName": "Player1",
+    "playerOName": "Player2",
+    "gameDate": "2026-01-10T18:45:00.698706200",
+    "moves": [
+      {
+        "row": 0,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "O"
+      }
+    ]
   }
 ]
