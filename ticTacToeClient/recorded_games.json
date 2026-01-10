@@ -86,13 +86,92 @@
     "userId": "yassen"
   },
   {
+<<<<<<< HEAD
     "playerXName": "Player",
     "playerOName": "Computer",
     "gameDate": "2026-01-10T18:11:09.296134400",
     "moves": [
       {
         "row": 1,
+=======
+    "playerXName": "yassen",
+    "playerOName": "Computer",
+    "gameDate": "2026-01-10T17:34:00.368502",
+    "moves": [
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 2,
         "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "X"
+      }
+    ],
+    "userId": "yassen"
+  },
+  {
+    "playerXName": "yassen",
+    "playerOName": "Computer",
+    "gameDate": "2026-01-10T17:34:18.813315800",
+    "moves": [
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "player": "O"
+      }
+    ],
+    "userId": "yassen"
+  },
+  {
+    "playerXName": "hamada",
+    "playerOName": "miada",
+    "gameDate": "2026-01-10T17:34:42.864283600",
+    "moves": [
+      {
+        "row": 0,
+        "col": 0,
         "player": "X"
       },
       {
@@ -106,17 +185,7 @@
         "player": "X"
       },
       {
-        "row": 0,
-        "col": 0,
-        "player": "O"
-      },
-      {
-        "row": 0,
-        "col": 1,
-        "player": "X"
-      },
-      {
-        "row": 2,
+        "row": 1,
         "col": 1,
         "player": "O"
       },
@@ -124,6 +193,140 @@
         "row": 1,
         "col": 0,
         "player": "X"
+      }
+    ],
+    "userId": "yassen"
+  },
+  {
+    "playerXName": "Player",
+    "playerOName": "Computer",
+    "gameDate": "2026-01-10T18:43:14.681999600",
+    "moves": [
+      {
+        "row": 0,
+>>>>>>> Basmala
+        "col": 1,
+        "player": "X"
+      },
+      {
+<<<<<<< HEAD
+=======
+        "row": 1,
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      }
+    ]
+  },
+  {
+    "playerXName": "Player",
+    "playerOName": "Computer",
+    "gameDate": "2026-01-10T18:43:30.618027600",
+    "moves": [
+      {
+        "row": 0,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 0,
+        "player": "O"
+      }
+    ]
+  },
+  {
+    "playerXName": "Player1",
+    "playerOName": "Player2",
+    "gameDate": "2026-01-10T18:43:43.205663100",
+    "moves": [
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      },
+      {
+>>>>>>> Basmala
+        "row": 0,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 2,
+<<<<<<< HEAD
+        "col": 0,
+=======
+        "col": 2,
+>>>>>>> Basmala
+        "player": "X"
+      },
+      {
+        "row": 0,
+<<<<<<< HEAD
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 2,
+=======
+>>>>>>> Basmala
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 1,
+<<<<<<< HEAD
+        "col": 0,
+        "player": "X"
       },
       {
         "row": 1,
@@ -133,6 +336,9 @@
       {
         "row": 2,
         "col": 2,
+=======
+        "col": 1,
+>>>>>>> Basmala
         "player": "X"
       }
     ]
@@ -140,7 +346,11 @@
   {
     "playerXName": "Player1",
     "playerOName": "Player2",
+<<<<<<< HEAD
     "gameDate": "2026-01-10T18:18:59.132300",
+=======
+    "gameDate": "2026-01-10T18:43:53.440523900",
+>>>>>>> Basmala
     "moves": [
       {
         "row": 0,
@@ -149,6 +359,7 @@
       },
       {
         "row": 0,
+<<<<<<< HEAD
         "col": 1,
         "player": "O"
       },
@@ -160,33 +371,66 @@
       {
         "row": 1,
         "col": 1,
+=======
+        "col": 2,
+>>>>>>> Basmala
         "player": "O"
       },
       {
         "row": 2,
+<<<<<<< HEAD
         "col": 0,
         "player": "X"
       }
     ],
     "userId": "basmala"
+=======
+        "col": 2,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "X"
+      }
+    ]
+>>>>>>> Basmala
   },
   {
     "playerXName": "Player1",
     "playerOName": "Player2",
+<<<<<<< HEAD
     "gameDate": "2026-01-10T18:19:45.354806300",
     "moves": [
       {
         "row": 0,
         "col": 0,
+=======
+    "gameDate": "2026-01-10T18:45:00.698706200",
+    "moves": [
+      {
+        "row": 0,
+        "col": 2,
+>>>>>>> Basmala
         "player": "X"
       },
       {
         "row": 0,
+<<<<<<< HEAD
         "col": 1,
+=======
+        "col": 0,
+>>>>>>> Basmala
         "player": "O"
       },
       {
         "row": 1,
+<<<<<<< HEAD
         "col": 1,
         "player": "X"
       },
@@ -194,13 +438,33 @@
         "row": 0,
         "col": 2,
         "player": "O"
+=======
+        "col": 2,
+        "player": "X"
+>>>>>>> Basmala
       },
       {
         "row": 2,
         "col": 2,
+<<<<<<< HEAD
         "player": "X"
       }
     ],
     "userId": "basmala"
+=======
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "O"
+      }
+    ]
+>>>>>>> Basmala
   }
 ]
