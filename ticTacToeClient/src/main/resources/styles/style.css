@@ -387,3 +387,50 @@
 .check-box:selected .mark {
     -fx-background-color: #FF00FF;
 }
+.player-icon-x-circle {
+    -fx-background-color: radial-gradient(center 50% 50%, radius 80%, #ff00ff, #990099);
+    -fx-background-radius: 50%;
+    -fx-border-color: #ff00ff;
+    -fx-border-width: 3px;
+    -fx-border-radius: 50%;
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 255, 0.8), 15, 0.7, 0, 2);
+    -fx-padding: 5px;
+}
+
+.player-icon-x-circle:hover {
+    -fx-background-color: radial-gradient(center 50% 50%, radius 80%, #ff33ff, #aa00aa);
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 255, 1.0), 20, 0.9, 0, 2);
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+/* Player O Circle Icon */
+.player-icon-o-circle {
+    -fx-background-color: radial-gradient(center 50% 50%, radius 80%, #00ffff, #009999);
+    -fx-background-radius: 50%;
+    -fx-border-color: #00ffff;
+    -fx-border-width: 3px;
+    -fx-border-radius: 50%;
+    -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 0.8), 15, 0.7, 0, 2);
+    -fx-padding: 5px;
+}
+
+.player-icon-o-circle:hover {
+    -fx-background-color: radial-gradient(center 50% 50%, radius 80%, #33ffff, #00aaaa);
+    -fx-effect: dropshadow(gaussian, rgba(0, 255, 255, 1.0), 20, 0.9, 0, 2);
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+/* Icon Labels */
+.icon-label-x,
+.icon-label-o {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 6, 0.7, 0, 2);
+}
+
+/* Score Label Styling */
+.label-score-label {
+    -fx-font-style: italic;
+}
