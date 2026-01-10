@@ -1,6 +1,6 @@
 package com.mycompany.tictactoeclient.presentation.features.profile;
 
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
+import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.shared.Navigation;
 import java.net.URL;
 import java.util.ResourceBundle;

@@ -4,6 +4,8 @@
  */
 package com.mycompany.tictactoeclient.network;
 
+import com.mycompany.tictactoeclient.data.models.Player;
+
 /**
  *
  * @author yasse
@@ -11,8 +13,9 @@ package com.mycompany.tictactoeclient.network;
 public final class UserSession {
      private static final UserSession INSTANCE = new UserSession();
     
-    private volatile String username;
+    private volatile String username ;
     private volatile String email;
+    private volatile int score;
     private volatile boolean isOnline;
     
     private UserSession() {}
@@ -33,6 +36,22 @@ public final class UserSession {
         return email;
     }
     
+    public int getScore() {
+        return score;
+    }
+    
+    public void setUsername(String username) { 
+        this.username = username; 
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public void setScore(int score) {
+        this.score=score;
+    }
+    
     public boolean isOnline() {
         return isOnline && NetworkClient.getInstance().isConnected();
     }
@@ -42,25 +61,31 @@ public final class UserSession {
         this.email = email;
         this.isOnline = true;
     }
-    
+        public void login(Player player) {
+        this.username = player.getName();
+        this.email = player.getEmail();
+        this.score = player.getScore();
+        this.isOnline = true;
+    }
+
     public void logout() {
+        this.username = null;
+        this.email = null;
+        this.isOnline = false;
         NetworkClient client = NetworkClient.getInstance();
-        if (client.isConnected() && username != null) {
+        if (client.isConnected()) {
             try {
                 NetworkMessage logoutMsg = new NetworkMessage(
                     MessageType.DISCONNECT,
-                    this.username,
+                    username,
                     "Server",
                     null
                 );
                 client.send(logoutMsg);
             } catch (Exception ignored) {}
+            
             client.disconnect();
         }
-
-        this.username = null;
-        this.email = null;
-        this.isOnline = false;
         client.clearListeners();
     }
     

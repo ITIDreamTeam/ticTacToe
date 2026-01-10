@@ -6,7 +6,7 @@ package com.mycompany.tictactoeclient.presentation.features.login;
 
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.models.Player;
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
+import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.NetworkClient;
@@ -171,9 +171,11 @@ public class LoginController implements Initializable {
             if (result.getJsonPayload() != null && !result.getJsonPayload().isEmpty()) {
                 Player player = client.getGson().fromJson(result.getJsonPayload(), Player.class);
                 session.login(player);
+                
             } else {
                 String username = nameTextField.getText().trim();
                 session.login(username, null);
+                session.setUsername(username);
             }
             App.showInfo("Login Successful", "Welcome back, " + session.getUsername() + "!");
             cleanup();

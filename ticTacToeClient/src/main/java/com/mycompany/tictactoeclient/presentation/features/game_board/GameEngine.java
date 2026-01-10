@@ -8,6 +8,9 @@ package com.mycompany.tictactoeclient.presentation.features.game_board;
  *
  * @author yasse
  */
+import com.mycompany.tictactoeclient.data.models.MoveRecord;
+import com.mycompany.tictactoeclient.data.models.PlayerType;
+import com.mycompany.tictactoeclient.data.models.RecordedGame;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -23,6 +26,11 @@ public class GameEngine {
     private Random random;
     private int[] winningCoords = null;
     private MinimaxAlgorithm minimax;
+    private boolean isRecorded;
+    private String playerXName;
+    private String playerOName;
+    MoveRecord moveRecord;
+    RecordedGame recordedGame;
 
     public static enum gameDifficulty {
         Easy, Medium, Hard
@@ -54,6 +62,15 @@ public class GameEngine {
             return false;
         }
         board[row][col] = currentPlayer;
+        PlayerType type
+                = currentPlayer == Player.X
+                        ? PlayerType.X
+                        : PlayerType.O;
+        if (isRecorded && recordedGame != null) {
+            MoveRecord moveRecord = new MoveRecord(row, col, type);
+            System.out.println("Recorded move: " + row + col + type);
+            recordedGame.addMove(moveRecord);
+        }
         return true;
     }
 
@@ -71,6 +88,33 @@ public class GameEngine {
 
     public void setGameOver(boolean state) {
         this.gameOver = state;
+        if (state) {
+            stopRecording();
+        }
+    }
+
+    public void startRecording(String playerXName, String playerOName, String userId) {
+        this.isRecorded = true;
+        this.playerXName = playerXName;
+        this.playerOName = playerOName;
+        recordedGame = new RecordedGame(playerXName, playerOName, userId);
+        System.out.println("start hash: " + hashCode());
+    }
+
+    public void stopRecording() {
+        this.isRecorded = false;
+        if (recordedGame == null) {
+            return;
+        }
+        System.out.println("list before save");
+        System.out.println("stop hash: " + hashCode());
+        for (MoveRecord e : recordedGame.getMoves()) {
+            System.out.println("col: " + e.getCol() + " row: " + e.getRow() + " player symoble: " + e.getPlayer());
+        }
+        if (recordedGame != null && !recordedGame.getMoves().isEmpty()) {
+            recordedGame.saveRecord();
+            recordedGame = null;
+        }
     }
 
     public int[] getWinningCoords() {

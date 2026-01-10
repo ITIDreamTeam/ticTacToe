@@ -7,12 +7,18 @@ public class ActiveGame {
     private final ClientSession playerX;
     private final ClientSession playerO;
     private final GameEngine gameEngine;
+    private final boolean isRecorded;
 
-    public ActiveGame(ClientSession player1, ClientSession player2) {
+    public ActiveGame(ClientSession player1, ClientSession player2, boolean isRecorded) {
         // For simplicity, player1 is always X
         this.playerX = player1;
         this.playerO = player2;
         this.gameEngine = new GameEngine();
+        this.isRecorded = isRecorded;
+    }
+
+    public boolean isRecorded() {
+        return isRecorded;
     }
 
     public ClientSession getPlayerX() {

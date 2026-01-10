@@ -16,6 +16,7 @@ public class Game {
     private Player playerTwo;
     private LocalDateTime gameDate;
     private GameState gameState;
+    private boolean isRecorded;
 
     public enum GameState {
         ONGOING(0),
@@ -47,15 +48,17 @@ public class Game {
     }
 
     public Game(Player playerOne, Player playerTwo,
-            LocalDateTime gameDate, GameState gameState) {
+            LocalDateTime gameDate, GameState gameState, boolean isRecorded) {
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
         this.gameDate = gameDate;
         this.gameState = gameState;
+        this.isRecorded = isRecorded;
     }
 
     public Player getPlayerOne(){return playerOne;}
     public Player getPlayerTwo(){return playerTwo;}
     public LocalDateTime getGameDate(){return gameDate;}
     public GameState getGameState(){return gameState;}
+    public boolean isRecorded(){return isRecorded;}
 }

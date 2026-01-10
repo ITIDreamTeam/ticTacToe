@@ -6,7 +6,7 @@ package com.mycompany.tictactoeclient.presentation.features.register;
 
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.models.Player;
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
+import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.NetworkClient;
@@ -193,9 +193,13 @@ public class RegisterController implements Initializable {
             if (result.getJsonPayload() != null && !result.getJsonPayload().isEmpty()) {
                 Player player = client.getGson().fromJson(result.getJsonPayload(), Player.class);
                 session.login(player);
+                UserSession.getInstance().setUsername(player.getName());
+                UserSession.getInstance().setEmail(player.getEmail());
+                UserSession.getInstance().setScore(player.getScore());
             } else {
                 String username = userNameTextField.getText().trim();
                 String email = emailTextField.getText().trim();
+                UserSession.getInstance().setUsername(username);
                 session.login(username, email);
             }
             App.showInfo("Registration Successful",

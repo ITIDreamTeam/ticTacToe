@@ -35,6 +35,7 @@
             <artifactId>derbyclient</artifactId>
             <version>10.17.1.0</version>
         </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -49,7 +50,7 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.4</version>
+                <version>0.0.8</version>
                 <configuration>
                     <mainClass>com.mycompany.tictactoeclient.App</mainClass>
                 </configuration>

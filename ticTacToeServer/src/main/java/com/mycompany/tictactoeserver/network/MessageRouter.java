@@ -326,7 +326,7 @@ public final class MessageRouter {
 
         gameService.updatePlayerState(session.getUsername(), 3);
         gameService.updatePlayerState(senderUsername, 3);
-        gameService.startPrivateGame(senderSession, session);
+        gameService.startPrivateGame(senderSession, session, response.isRecordGame());
         senderSession.send(new NetworkMessage(
                 MessageType.ACCEPT_REQUEST,
                 session.getUsername(),
