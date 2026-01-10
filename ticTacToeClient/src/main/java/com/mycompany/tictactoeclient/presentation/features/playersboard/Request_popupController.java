@@ -38,7 +38,7 @@ import javafx.util.Duration;
  */
 public class Request_popupController implements Initializable {
 
-      @FXML
+    @FXML
     private Label statusLabel;
     @FXML
     private Label playerNameLabel;
@@ -59,22 +59,13 @@ public class Request_popupController implements Initializable {
     private Stage stage;
     private InviteRequest invite;
     private boolean responded = false;
+    private boolean isNavigating = false;
 
     private Timeline timeoutTimeline;
     private Timeline progressTimeline;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        try {
-            client.send(new NetworkMessage(
-                MessageType.UPDATE_STATUS,
-                UserSession.getInstance().getUsername(),
-                "Server",
-                client.getGson().toJsonTree("WAITING") 
-            ));
-        } catch (Exception e) {
-            System.err.println("Failed to revert status to WAITING");
-        }
         timeProgressBar.setProgress(1.0);
     }
 
@@ -162,7 +153,7 @@ public class Request_popupController implements Initializable {
 
     @FXML
     private void onAcceptClick(ActionEvent event) {
-        if (responded) {
+        if (responded || isNavigating) {
             return;
         }
         responded = true;
@@ -191,7 +182,7 @@ public class Request_popupController implements Initializable {
 
     @FXML
     private void onCancelClick(ActionEvent event) {
-        // Optional cancel button - just close the popup
+        // Optional cancel button - decline
         if (responded) {
             return;
         }
@@ -204,6 +195,7 @@ public class Request_popupController implements Initializable {
 
     private void handleAccept() {
         statusLabel.setText("Accepting invitation...");
+        isNavigating = true;
 
         new Thread(() -> {
             try {
@@ -225,6 +217,7 @@ public class Request_popupController implements Initializable {
                 Platform.runLater(() -> {
                     App.showError("Network Error",
                             "Failed to accept invite: " + e.getMessage());
+                    isNavigating = false;
                     closePopup();
                 });
             }
@@ -255,6 +248,9 @@ public class Request_popupController implements Initializable {
     }
 
     private void handleTimeout() {
+        if (responded) {
+            return;
+        }
         responded = true;
         cleanup();
         
@@ -296,7 +292,7 @@ public class Request_popupController implements Initializable {
     }
 
     private void closePopup() {
-        if (stage != null) {
+        if (stage != null && stage.isShowing()) {
             stage.close();
         }
     }

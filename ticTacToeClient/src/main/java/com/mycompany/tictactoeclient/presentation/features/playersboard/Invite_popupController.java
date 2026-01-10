@@ -14,7 +14,6 @@ import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.network.response.InviteResponse;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameSessionManager;
-import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -24,7 +23,6 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -40,7 +38,6 @@ import javafx.util.Duration;
  */
 public class Invite_popupController implements Initializable {
 
-    
     @FXML
     private Label playerNameLabel;
     @FXML
@@ -67,23 +64,13 @@ public class Invite_popupController implements Initializable {
     private boolean responseReceived = false;
     private boolean inviteSent = false;
     private boolean cancelled = false;
+    private boolean isCleanedUp = false;
+    private boolean isNavigating = false;
     @FXML
     private Button cancel_button;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
-        try {
-                client.send(new NetworkMessage(
-                    MessageType.UPDATE_STATUS,
-                    UserSession.getInstance().getUsername(),
-                    "Server",
-                    client.getGson().toJsonTree("WAITING") // Sets status back to 3
-                ));
-            } catch (Exception e) {
-                System.err.println("Failed to revert status to WAITING");
-            }
-    
         setupListeners();
         recordCheckBox.selectedProperty().bindBidirectional(
                 RecordingSettings.recordingEnabledProperty()
@@ -101,6 +88,11 @@ public class Invite_popupController implements Initializable {
     }
 
     public void cleanup() {
+        if (isCleanedUp) {
+            return;
+        }
+        isCleanedUp = true;
+
         client.off(MessageType.ACCEPT_REQUEST, acceptListener);
         client.off(MessageType.DECLINE_REQUEST, declineListener);
 
@@ -120,15 +112,15 @@ public class Invite_popupController implements Initializable {
 
     @FXML
     private void onCancelClick(ActionEvent event) {
-        if (responseReceived || cancelled) {
+        if (responseReceived || cancelled || isCleanedUp) {
             return;
         }
-        
+
         cancelled = true;
         responseReceived = true;
-        
+
         cleanup();
-        
+
         if (inviteSent) {
             sendCancelNotification();
         } else {
@@ -138,16 +130,16 @@ public class Invite_popupController implements Initializable {
 
     private void sendCancelNotification() {
         statusLabel.setText("Cancelling invitation...");
-        
+
         new Thread(() -> {
             try {
                 gameApi.declineInvite(opponent.getName());
                 System.out.println("Cancel notification sent for invite to: " + opponent.getName());
-                
+
                 Platform.runLater(() -> {
                     closePopup();
                 });
-                
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Platform.runLater(() -> {
@@ -161,7 +153,7 @@ public class Invite_popupController implements Initializable {
         this.opponent = player;
         this.stage = stage;
         playerNameLabel.setText(player.getName());
-        
+
         setupWindowFollowing();
         startBufferPhase();
     }
@@ -172,7 +164,7 @@ public class Invite_popupController implements Initializable {
         }
 
         Stage ownerStage = (Stage) stage.getOwner();
-        
+
         javafx.beans.value.ChangeListener<Number> positionListener = (obs, oldVal, newVal) -> {
             if (stage.isShowing() && !Double.isNaN(stage.getWidth()) && !Double.isNaN(stage.getHeight())) {
                 double x = ownerStage.getX() + (ownerStage.getWidth() - stage.getWidth()) / 2;
@@ -200,7 +192,7 @@ public class Invite_popupController implements Initializable {
     private void startBufferPhase() {
         statusLabel.setText("Preparing to send invite...");
         timeProgressBar.setProgress(1.0);
-        
+
         delayTimeline = new Timeline(
                 new KeyFrame(Duration.seconds(2), e -> sendInviteRequest())
         );
@@ -208,7 +200,7 @@ public class Invite_popupController implements Initializable {
     }
 
     private void sendInviteRequest() {
-        if (inviteSent || responseReceived || cancelled) {
+        if (inviteSent || responseReceived || cancelled || isCleanedUp) {
             return;
         }
 
@@ -220,7 +212,7 @@ public class Invite_popupController implements Initializable {
                 gameApi.sendGameInvite(opponent.getName(), recordGame);
 
                 Platform.runLater(() -> {
-                    if (!responseReceived && !cancelled) {
+                    if (!responseReceived && !cancelled && !isCleanedUp) {
                         statusLabel.setText("Waiting for " + opponent.getName() + "'s response...");
                         recordCheckBox.setDisable(true);
                         startTimeoutPhase();
@@ -231,7 +223,7 @@ public class Invite_popupController implements Initializable {
 
             } catch (Exception e) {
                 Platform.runLater(() -> {
-                    if (!responseReceived && !cancelled) {
+                    if (!responseReceived && !cancelled && !isCleanedUp) {
                         responseReceived = true;
                         App.showError("Network Error", "Failed to send invite: " + e.getMessage());
                         cleanup();
@@ -244,10 +236,10 @@ public class Invite_popupController implements Initializable {
 
     private void startTimeoutPhase() {
         final double totalSeconds = 30.0;
-        
+
         progressTimeline = new Timeline(
                 new KeyFrame(Duration.millis(100), e -> {
-                    if (!responseReceived && !cancelled) {
+                    if (!responseReceived && !cancelled && !isCleanedUp) {
                         double current = timeProgressBar.getProgress();
                         double decrement = 0.1 / totalSeconds;
                         timeProgressBar.setProgress(Math.max(0, current - decrement));
@@ -259,7 +251,7 @@ public class Invite_popupController implements Initializable {
 
         timeoutTimeline = new Timeline(
                 new KeyFrame(Duration.seconds(totalSeconds), e -> {
-                    if (!responseReceived && !cancelled) {
+                    if (!responseReceived && !cancelled && !isCleanedUp) {
                         handleTimeout();
                     }
                 })
@@ -268,14 +260,18 @@ public class Invite_popupController implements Initializable {
     }
 
     private void handleAcceptResponse(NetworkMessage msg) {
-        if (responseReceived || cancelled) {
+        // CRITICAL: Only process if this is from the opponent we invited
+        if (responseReceived || cancelled || isCleanedUp || isNavigating) {
             return;
         }
+
         if (!msg.getUsername().equalsIgnoreCase(opponent.getName())) {
+            System.out.println("Ignoring accept from " + msg.getUsername() + " (expecting " + opponent.getName() + ")");
             return;
         }
-        
+
         responseReceived = true;
+        isNavigating = true;
         cleanup();
 
         Platform.runLater(() -> {
@@ -287,26 +283,28 @@ public class Invite_popupController implements Initializable {
                         true,
                         response.isRecordGame()
                 );
-                
-                App.showInfo("Invitation Accepted",
-                        opponent.getName() + " accepted your invitation!");
 
                 closePopup();
-                
+
+                // Navigate directly - no dialog
                 App.setRoot("game_board");
-                
+
             } catch (IOException e) {
                 e.printStackTrace();
                 App.showError("Navigation Error", "Cannot start game.");
+                isNavigating = false;
             }
         });
     }
 
     private void handleDeclineResponse(NetworkMessage msg) {
-        if (responseReceived || cancelled) {
+        // CRITICAL: Only process if this is from the opponent we invited
+        if (responseReceived || cancelled || isCleanedUp) {
             return;
         }
+
         if (!msg.getUsername().equalsIgnoreCase(opponent.getName())) {
+            System.out.println("Ignoring decline from " + msg.getUsername() + " (expecting " + opponent.getName() + ")");
             return;
         }
 
@@ -320,9 +318,13 @@ public class Invite_popupController implements Initializable {
     }
 
     private void handleTimeout() {
+        if (responseReceived || cancelled || isCleanedUp) {
+            return;
+        }
+
         responseReceived = true;
         cleanup();
-        
+
         Platform.runLater(() -> {
             App.showWarning("No Response", opponent.getName() + " did not respond to your invitation.");
             closePopup();
@@ -330,7 +332,7 @@ public class Invite_popupController implements Initializable {
     }
 
     private void closePopup() {
-        if (stage != null) {
+        if (stage != null && stage.isShowing()) {
             stage.close();
         }
     }
