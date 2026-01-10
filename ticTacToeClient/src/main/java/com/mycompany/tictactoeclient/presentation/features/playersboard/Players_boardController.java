@@ -79,8 +79,9 @@ public class Players_boardController implements Initializable {
                 client.getGson().toJsonTree("ONLINE")
             ));
         } catch (Exception e) {
-            System.err.println("Failed to revert status to WAITING");
+            System.err.println("Failed to update status to ONLINE");
         }
+        
         setupListView();
         setupSearchFilter();
         setupAllListeners();
@@ -109,17 +110,18 @@ public class Players_boardController implements Initializable {
     private void setupAllListeners() {
         onlinePlayersListener = this::handleOnlinePlayersUpdate;
         client.on(MessageType.ONLINE_PLAYERS_UPDATE, onlinePlayersListener);
+        
         receiveInviteListener = this::handleReceiveInvite;
         client.on(MessageType.SEND_REQUEST, receiveInviteListener);
-        client.on(MessageType.ACCEPT_REQUEST, this::handleAcceptResponse);
-        client.on(MessageType.DECLINE_REQUEST, this::handleDeclineResponse);
     }
 
     public void cleanup() {
         client.off(MessageType.ONLINE_PLAYERS_UPDATE, onlinePlayersListener);
         client.off(MessageType.SEND_REQUEST, receiveInviteListener);
+        
         if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
             currentInvitePopup.close();
+            currentInvitePopup = null;
         }
     }
 
@@ -200,9 +202,11 @@ public class Players_boardController implements Initializable {
     }
 
     private void showInviteRequestPopup(InviteRequest invite) {
-if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
+        if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
+            System.out.println("Popup already showing, ignoring new invite");
             return;
         }
+        
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/com/mycompany/tictactoeclient/request_popup.fxml")
@@ -219,6 +223,7 @@ if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
             if (playersListView.getScene() != null && playersListView.getScene().getWindow() != null) {
                 Stage ownerStage = (Stage) playersListView.getScene().getWindow();
                 popupStage.initOwner(ownerStage);
+                
                 javafx.beans.value.ChangeListener<Number> centerListener = (obs, oldVal, newVal) -> {
                     if (popupStage.isShowing() && !Double.isNaN(popupStage.getWidth())) {
                         double x = ownerStage.getX() + (ownerStage.getWidth() - popupStage.getWidth()) / 2;
@@ -240,7 +245,6 @@ if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
                     ownerStage.xProperty().removeListener(centerListener);
                     ownerStage.yProperty().removeListener(centerListener);
                 });
-                
             }
 
             currentInvitePopup = popupStage;
@@ -253,68 +257,7 @@ if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
         } catch (IOException e) {
             e.printStackTrace();
             App.showError("Error", "Cannot show invite popup.");
-        }
-    }
-
-    private void handleAcceptResponse(NetworkMessage msg) {
-        try {
-            InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
-
-            if (response == null || response.getSenderUsername() == null) {
-                System.err.println("Invalid accept response");
-                return;
-            }
-
-            String opponentName = response.getSenderUsername();
-
-            System.out.println(opponentName + " accepted your invite!");
-
-            Platform.runLater(() -> {
-                gameSession.setOnlineSession(opponentName, true, response.isRecordGame());
-                App.showInfo("Invitation Accepted",
-                        opponentName + " accepted your invitation!");
-                navigateToGameBoard();
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Platform.runLater(() -> {
-                App.showError("Error", "Failed to process accept response: " + e.getMessage());
-            });
-        }
-    }
-
-    private void handleDeclineResponse(NetworkMessage msg) {
-        try {
-            InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
-
-            if (response == null || response.getSenderUsername() == null) {
-                System.err.println("Invalid decline response");
-                return;
-            }
-
-            String opponentName = response.getSenderUsername();
-
-            System.out.println(opponentName + " declined your invite.");
-
-            Platform.runLater(() -> {
-                App.showWarning("Invitation Declined",
-                        opponentName + " declined your invitation.");
-                requestOnlinePlayers();
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void navigateToGameBoard() {
-        try {
-            cleanup();
-            App.setRoot("game_board");
-        } catch (IOException e) {
-            e.printStackTrace();
-            App.showError("Navigation Error", "Cannot navigate to game board.");
+            currentInvitePopup = null;
         }
     }
 
@@ -327,7 +270,6 @@ if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
             ex.printStackTrace();
             App.showError("Navigation Error", "Cannot navigate to home.");
         }
-        
     }
 
     @FXML
