@@ -47,14 +47,22 @@ import javafx.util.Duration;
 
 public class Game_boardController implements Initializable {
 
-    @FXML private Label scoreXLabel, scoreOLabel, statusLabel, playerNameX, playerNameO;
-    @FXML private GridPane gameGrid;
-    @FXML private Line winningLine;
-    @FXML private Pane linePane;
-    @FXML private Circle recordingDot;
-    @FXML private HBox recordingBox;
+    @FXML
+    private Label scoreXLabel, scoreOLabel, statusLabel, playerNameX, playerNameO;
+    @FXML
+    private GridPane gameGrid;
+    @FXML
+    private Line winningLine;
+    @FXML
+    private Pane linePane;
+    @FXML
+    private Circle recordingDot;
+    @FXML
+    private HBox recordingBox;
 
-    public static enum GameMode { vsComputer, twoPlayer, withFriend }
+    public static enum GameMode {
+        vsComputer, twoPlayer, withFriend
+    }
 
     private Button[][] buttons = new Button[3][3];
     private GameEngine engine;
@@ -79,7 +87,9 @@ public class Game_boardController implements Initializable {
         setupGrid();
 
         this.currentMode = sessionManager.getGameMode();
-        if (this.currentMode == null) this.currentMode = GameMode.vsComputer;
+        if (this.currentMode == null) {
+            this.currentMode = GameMode.vsComputer;
+        }
 
         Platform.runLater(() -> {
             RecordingSettings.recordingEnabledProperty().addListener((obs, oldV, newV) -> updateRecordingState(newV));
@@ -104,9 +114,10 @@ public class Game_boardController implements Initializable {
     }
 
     // --- MOVE ROUTING ---
-
     private void handlePlayerMove(ActionEvent event) {
-        if (engine.isGameOver()) return;
+        if (engine.isGameOver()) {
+            return;
+        }
 
         Button clickedButton = (Button) event.getSource();
         int[] coords = (int[]) clickedButton.getUserData();
@@ -125,7 +136,9 @@ public class Game_boardController implements Initializable {
     }
 
     private void handleVsComputerMove(Button btn, int[] coords) {
-        if (engine.getCurrentPlayer() != Player.X) return;
+        if (engine.getCurrentPlayer() != Player.X) {
+            return;
+        }
 
         if (engine.makeMove(coords[0], coords[1])) {
             updateButton(btn, Player.X);
@@ -140,7 +153,7 @@ public class Game_boardController implements Initializable {
         Player p = engine.getCurrentPlayer();
         if (engine.makeMove(coords[0], coords[1])) {
             updateButton(btn, p);
-            
+
             if (!checkLocalGameStatus()) {
                 engine.switchTurn();
                 updateStatusLabelForLocal();
@@ -149,7 +162,9 @@ public class Game_boardController implements Initializable {
     }
 
     private void handleWithFriendMove(Button btn, int[] coords) {
-        if (engine.getCurrentPlayer() != mySymbol) return;
+        if (engine.getCurrentPlayer() != mySymbol) {
+            return;
+        }
 
         if (engine.makeMove(coords[0], coords[1])) {
             updateButton(btn, mySymbol);
@@ -178,40 +193,38 @@ public class Game_boardController implements Initializable {
 
     private boolean checkLocalGameStatus() {
         Player winner = engine.getWinner();
-        
         if (winner != Player.NONE) {
             engine.setGameOver(true);
             updateScore(winner);
             int[] coords = engine.getWinningCoords();
-            if (coords != null) drawWinningLine(coords[0], coords[1]);
-
-            String wName = (winner == Player.X) ? playerNameX.getText() : playerNameO.getText();
-            
-            boolean playWinVideo = false;
-            
-            if (currentMode == GameMode.vsComputer) {
-                playWinVideo = (winner == Player.X);
-            } else if (currentMode == GameMode.twoPlayer) {
-                playWinVideo = true;
+            if (coords != null) {
+                drawWinningLine(coords[0], coords[1]);
             }
 
-            playVideoAndThen(playWinVideo, () -> showPlayAgainPopup(wName + " Wins!"));
-            return true;
-        } 
+            String wName = (winner == Player.X) ? playerNameX.getText() : playerNameO.getText();
 
-        if (engine.isBoardFull()) {
-            engine.setGameOver(true);
-            
-            // Play draw video (null = draw)
-            playDrawVideoAndThen(() -> showPlayAgainPopup("It's a Draw!"));
+            if (currentMode == GameMode.twoPlayer) {
+                playVideoAndThen(true, () -> showPlayAgainPopup(wName + " Wins!"));
+            } else if (currentMode == GameMode.vsComputer) {
+                boolean humanWon = (winner == Player.X);
+                playVideoAndThen(humanWon, () -> showPlayAgainPopup(wName + " Wins!"));
+            }
+
             return true;
         }
 
+        if (engine.isBoardFull()) {
+            engine.setGameOver(true);
+            playDrawVideoAndThen(() -> showPlayAgainPopup("It's a Draw!"));
+            return true;
+        }
         return false;
     }
 
     private void playVideoAndThen(boolean isWin, Runnable onFinished) {
-        if (videoIsShowing) return;
+        if (videoIsShowing) {
+            return;
+        }
         videoIsShowing = true;
 
         String videoFile = isWin ? "/videos/win.mp4" : "/videos/lose.mp4";
@@ -228,7 +241,9 @@ public class Game_boardController implements Initializable {
     }
 
     private void playDrawVideoAndThen(Runnable onFinished) {
-        if (videoIsShowing) return;
+        if (videoIsShowing) {
+            return;
+        }
         videoIsShowing = true;
 
         String videoFile = "/videos/draw.mp4";
@@ -285,7 +300,11 @@ public class Game_boardController implements Initializable {
         });
 
         PauseTransition watchdog = new PauseTransition(Duration.seconds(6));
-        watchdog.setOnFinished(e -> { if(videoIsShowing) cleanUp.run(); });
+        watchdog.setOnFinished(e -> {
+            if (videoIsShowing) {
+                cleanUp.run();
+            }
+        });
         watchdog.play();
     }
 
@@ -298,8 +317,8 @@ public class Game_boardController implements Initializable {
         for (int i = 0; i < recordedGame.getMoves().size(); i++) {
             final MoveRecord move = recordedGame.getMoves().get(i);
             timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(i + 1), e -> {
-                updateButton(buttons[move.getRow()][move.getCol()], 
-                    move.getPlayer() == com.mycompany.tictactoeclient.data.models.PlayerType.X ? Player.X : Player.O);
+                updateButton(buttons[move.getRow()][move.getCol()],
+                        move.getPlayer() == com.mycompany.tictactoeclient.data.models.PlayerType.X ? Player.X : Player.O);
             }));
         }
         timeline.setOnFinished(e -> statusLabel.setText("Replay finished."));
@@ -314,14 +333,19 @@ public class Game_boardController implements Initializable {
             return;
         }
 
-        if (currentMode == GameMode.withFriend) setupOnlineGame();
-        else setupLocalOrComputerGame();
+        if (currentMode == GameMode.withFriend) {
+            setupOnlineGame();
+        } else {
+            setupLocalOrComputerGame();
+        }
     }
 
     private void setupLocalOrComputerGame() {
         playerNameX.setText(sessionManager.getUserName());
         playerNameO.setText(sessionManager.getOpponentName());
-        if (currentMode == GameMode.vsComputer) engine.difficulty = OnePlayerPopupController.difficulty;
+        if (currentMode == GameMode.vsComputer) {
+            engine.difficulty = OnePlayerPopupController.difficulty;
+        }
         engine.resetGame(Player.X);
         resetBoardUI();
         setBoardDisabled(false);
@@ -332,13 +356,13 @@ public class Game_boardController implements Initializable {
         client.on(MessageType.UPDATE_BOARD, this::onBoardUpdate);
         client.on(MessageType.GAME_OVER, this::onGameOver);
         client.on(MessageType.OPPONENT_LEFT, this::onOpponentLeft);
-        
+
         this.opponentName = sessionManager.getOpponentName();
         this.mySymbol = sessionManager.isMyTurnFirst() ? Player.X : Player.O;
-        
+
         playerNameX.setText(mySymbol == Player.X ? sessionManager.getUserName() : opponentName);
         playerNameO.setText(mySymbol == Player.O ? sessionManager.getUserName() : opponentName);
-        
+
         engine.resetGame(Player.X);
         resetBoardUI();
         setBoardDisabled(engine.getCurrentPlayer() != mySymbol);
@@ -362,21 +386,23 @@ public class Game_boardController implements Initializable {
     }
 
     private void updateScore(Player w) {
-        if (w == Player.X) scoreXLabel.setText(String.valueOf(++xScore));
-        else if (w == Player.O) scoreOLabel.setText(String.valueOf(++oScore));
+        if (w == Player.X) {
+            scoreXLabel.setText(String.valueOf(++xScore));
+        } else if (w == Player.O) {
+            scoreOLabel.setText(String.valueOf(++oScore));
+        }
     }
 
     private void updateStatusLabelForLocal() {
         statusLabel.setText((engine.getCurrentPlayer() == Player.X ? playerNameX.getText() : playerNameO.getText()) + "'s Turn");
     }
 
-    // --- NETWORK HANDLERS ---
     private void handleOnlineMove(int[] coords) {
         try {
             gameApi.sendGameMove(opponentName, coords[0], coords[1]);
             setBoardDisabled(true);
             statusLabel.setText(opponentName + "'s Turn");
-        } catch (Exception ex) { 
+        } catch (Exception ex) {
             ex.printStackTrace();
             App.showError("Network Error", "Failed to send move");
         }
@@ -396,24 +422,32 @@ public class Game_boardController implements Initializable {
 
     private void onGameOver(NetworkMessage msg) {
         String result = client.getGson().fromJson(msg.getPayload(), String.class);
+
         Platform.runLater(() -> {
             engine.setGameOver(true);
             setBoardDisabled(true);
-            
-            String lowerResult = result.toLowerCase();
-            boolean isWin = lowerResult.contains("win");
-            boolean isDraw = lowerResult.contains("draw") || lowerResult.contains("tie");
 
-            if (isWin) {
-                updateScore(mySymbol);
-                playVideoAndThen(true, () -> navigateToPlayersBoard());
-                
-            } else if (isDraw) {
+            Player winner = engine.getWinner();
+            boolean isLocalDraw = engine.isBoardFull();
+
+            if (winner != Player.NONE) {
+                int[] coords = engine.getWinningCoords();
+                if (coords != null) {
+                    drawWinningLine(coords[0], coords[1]);
+                }
+
+                boolean iWon = (winner == mySymbol);
+                if (winner == Player.X) {
+                    scoreXLabel.setText(String.valueOf(++xScore));
+                } else {
+                    scoreOLabel.setText(String.valueOf(++oScore));
+                }
+                playVideoAndThen(iWon, () -> navigateToPlayersBoard());
+
+            } else if (isLocalDraw || (result != null && result.toLowerCase().contains("draw"))) {
                 playDrawVideoAndThen(() -> navigateToPlayersBoard());
-                
             } else {
-                updateScore(mySymbol == Player.X ? Player.O : Player.X);
-                playVideoAndThen(false, () -> navigateToPlayersBoard());
+                navigateToPlayersBoard();
             }
         });
     }
@@ -423,7 +457,7 @@ public class Game_boardController implements Initializable {
         Platform.runLater(() -> {
             engine.setGameOver(true);
             updateScore(mySymbol);
-            
+
             playVideoAndThen(true, () -> {
                 App.showInfo("You Win!", message);
                 navigateToPlayersBoard();
@@ -459,12 +493,12 @@ public class Game_boardController implements Initializable {
             controller.setWinnerName(message);
             controller.setOnPlayAgain(() -> setupLocalOrComputerGame());
             controller.setOnBack(this::quitGame);
-            
+
             Stage stage = new Stage(StageStyle.TRANSPARENT);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(new Scene(root, Color.TRANSPARENT));
             stage.showAndWait();
-        } catch (IOException ex) { 
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
@@ -481,30 +515,32 @@ public class Game_boardController implements Initializable {
 
     public void updateRecordingState(boolean recording) {
         if (recording) {
-            recordingBox.setVisible(true); 
+            recordingBox.setVisible(true);
             recordingBox.setManaged(true);
             blinkingTimeline = new Timeline(new KeyFrame(Duration.seconds(0.5), e -> recordingDot.setVisible(!recordingDot.isVisible())));
-            blinkingTimeline.setCycleCount(Timeline.INDEFINITE); 
+            blinkingTimeline.setCycleCount(Timeline.INDEFINITE);
             blinkingTimeline.play();
             engine.startRecording(playerNameX.getText(), playerNameO.getText(), UserSession.getInstance().getUsername());
         } else {
-            if (blinkingTimeline != null) blinkingTimeline.stop();
-            recordingBox.setVisible(false); 
+            if (blinkingTimeline != null) {
+                blinkingTimeline.stop();
+            }
+            recordingBox.setVisible(false);
             recordingBox.setManaged(false);
             engine.stopRecording();
         }
     }
 
-    @FXML 
+    @FXML
     private void onBackClicked(ActionEvent event) {
         if (!engine.isGameOver() && currentMode == GameMode.withFriend) {
             Optional<ButtonType> result = App.showConfirmation(
-                "Surrender Game?", 
-                "Are you sure you want to leave? You will lose this game."
+                    "Surrender Game?",
+                    "Are you sure you want to leave? You will lose this game."
             );
-            
+
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                try { 
+                try {
                     gameApi.sendSurrender();
                     System.out.println("Surrender sent to server");
                 } catch (Exception e) {
@@ -517,12 +553,12 @@ public class Game_boardController implements Initializable {
         }
     }
 
-    private void setBoardDisabled(boolean disabled) { 
-        gameGrid.setDisable(disabled); 
+    private void setBoardDisabled(boolean disabled) {
+        gameGrid.setDisable(disabled);
     }
-    
-    public void setPlayersName(String x, String o) { 
-        playerNameX.setText(x); 
-        playerNameO.setText(o); 
+
+    public void setPlayersName(String x, String o) {
+        playerNameX.setText(x);
+        playerNameO.setText(o);
     }
 }
