@@ -1,10 +1,13 @@
 package com.mycompany.tictactoeclient.presentation.features.saved_replays;
 
 import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.data.dataSource.RecordedGamesJson;
 import com.mycompany.tictactoeclient.data.models.RecordedGame;
+import com.mycompany.tictactoeclient.presentation.features.game_board.RecordedGameDetails;
 import com.mycompany.tictactoeclient.shared.Navigation;
 import java.io.IOException;
-import javafx.fxml.FXML;
+import java.time.format.DateTimeFormatter;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,36 +16,39 @@ import javafx.scene.layout.AnchorPane;
 
 public class GameListCell extends ListCell<RecordedGame> {
 
-    @FXML
     private Label playerLabel;
-    @FXML
     private Label dateLabel;
-    @FXML
     private Button playBtn;
-    @FXML
     private Button deleteBtn;
-    private FXMLLoader mLLoader;
-    private AnchorPane rootAnchorPane; 
+    private AnchorPane anchorPane;
+    private ObservableList<RecordedGame> gameList;
+
+    public GameListCell(ObservableList<RecordedGame> gameList) {
+        super();
+        this.gameList = gameList;
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/RecordedGameCell.fxml"));
+            anchorPane = loader.load();
+            playerLabel = (Label) anchorPane.lookup("#playerLabel");
+            dateLabel = (Label) anchorPane.lookup("#dateLabel");
+            playBtn = (Button) anchorPane.lookup("#playBtn");
+            deleteBtn = (Button) anchorPane.lookup("#deleteBtn");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void updateItem(RecordedGame game, boolean empty) {
         super.updateItem(game, empty);
-
         if (empty || game == null) {
             setText(null);
             setGraphic(null);
         } else {
-            if (mLLoader == null) {
-                mLLoader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/recordedGameCell.fxml"));
-                mLLoader.setController(this);
-                try {
-                    rootAnchorPane = mLLoader.load();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            playerLabel.setText(game.getPlayerInfo());
-            dateLabel.setText(game.getFormattedDate());
+            playerLabel.setText(game.getPlayerXName() + " vs " + game.getPlayerOName());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            dateLabel.setText(game.getGameDate().format(formatter));
+
             playBtn.setOnAction(event -> {
                 System.out.println("Playing game against: " + getItem().getPlayerInfo());
                 App.setRecordedGameDetails(new com.mycompany.tictactoeclient.presentation.features.game_board.RecordedGameDetails(
@@ -55,11 +61,11 @@ public class GameListCell extends ListCell<RecordedGame> {
             });
 
             deleteBtn.setOnAction(event -> {
-                System.out.println("Deleting game from: " + getItem().getFormattedDate());
-                getListView().getItems().remove(getItem());
+                RecordedGamesJson.deleteGame(game);
+                gameList.remove(game);
             });
-            setText(null);
-            setGraphic(rootAnchorPane);
+
+            setGraphic(anchorPane);
         }
     }
 }
