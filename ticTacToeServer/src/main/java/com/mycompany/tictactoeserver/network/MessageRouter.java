@@ -22,14 +22,14 @@ import java.util.List;
  */
 public final class MessageRouter {
 
-    private final Gson gson;
+       private final Gson gson;
     private final ClientRegistry registry;
     private final GameService gameService;
 
-    public MessageRouter(Gson gson, ClientRegistry registry, GameService auth) {
+    public MessageRouter(Gson gson, ClientRegistry registry, GameService gameService) {
         this.gson = gson;
         this.registry = registry;
-        this.gameService = auth;
+        this.gameService = gameService;
     }
 
     public void handle(ClientSession session, NetworkMessage msg) {
@@ -62,14 +62,17 @@ public final class MessageRouter {
                 case DISCONNECT:
                     onDisconnect(session);
                     break;
+
                 case ACCEPT_REQUEST:
                     handleAcceptRequest(session, msg);
                     break;
+
                 case DECLINE_REQUEST:
                     handleDeclineRequest(session, msg);
                     break;
+
                 case SURRENDER:
-                    gameService.handleSurrender(session);
+                    handleSurrender(session);
                     break;
 
                 case CHANGE_PASSWORD:
@@ -82,6 +85,7 @@ public final class MessageRouter {
             }
         } catch (Exception e) {
             System.err.println("Error handling message: " + e.getMessage());
+            e.printStackTrace();
             sendError(session, "SERVER_ERROR", "Internal server error");
         }
     }
@@ -89,10 +93,12 @@ public final class MessageRouter {
     public void onDisconnect(ClientSession session) {
         String username = session.getUsername();
         if (username != null) {
-            gameService.updatePlayerState(username, 0);
+            System.out.println("User disconnecting: " + username);
+            
             gameService.handlePlayerDisconnect(session);
             gameService.updatePlayerState(username, 0);
             registry.remove(session);
+            
             System.out.println("User disconnected: " + username);
             broadcastOnlinePlayers();
             gameService.updateStats();
@@ -107,6 +113,7 @@ public final class MessageRouter {
 
         if (result.isSuccess()) {
             String username = request.getUsername();
+            
             if (registry.isOnline(username)) {
                 ClientSession existingSession = registry.get(username);
                 if (existingSession != null) {
@@ -115,15 +122,19 @@ public final class MessageRouter {
                     existingSession.close();
                 }
             }
+            
             session.setUsername(username);
             registry.addOnline(username, session);
+            
             System.out.println("User registered and logged in: " + username);
+            
             session.send(new NetworkMessage(
                     MessageType.REGISTER_RESULT,
                     "Server",
                     username,
                     gson.toJsonTree(result)
             ));
+            
             broadcastOnlinePlayers();
 
         } else {
@@ -170,7 +181,7 @@ public final class MessageRouter {
                 MessageType.LOGIN_RESULT,
                 "Server",
                 username,
-                gson.toJsonTree(new ResultPayload(true, "OK", "Login successful"))
+                gson.toJsonTree(authResult)
         ));
 
         System.out.println("User logged in: " + username);
@@ -182,27 +193,18 @@ public final class MessageRouter {
             return;
         }
 
-//        OnlinePlayersUpdate update = new OnlinePlayersUpdate(registry.onlineUsernames());
-//        session.send(new NetworkMessage(
-//            MessageType.ONLINE_PLAYERS_UPDATE,
-//            "Server",
-//            session.getUsername(),
-//            gson.toJsonTree(update)
-//        ));
-        broadcastOnlinePlayers();
-
-        System.out.println("Handled GET_ONLINE_PLAYERS for: " + session.getUsername());
-
-        System.out.print("get online players");
         String userName = session.getUsername();
         List<PlayerStatsDto> players = gameService.getOnlineAndInGamePlayers(userName);
         OnlinePlayersUpdate update = new OnlinePlayersUpdate(players);
+        
         session.send(new NetworkMessage(
                 MessageType.ONLINE_PLAYERS_UPDATE,
                 "Server",
                 userName,
                 gson.toJsonTree(update)
         ));
+        
+        System.out.println("Sent online players to: " + userName);
     }
 
     private void handleFindMatch(ClientSession session) {
@@ -217,8 +219,11 @@ public final class MessageRouter {
         if (!isAuthenticated(session)) {
             return;
         }
+        
         InviteRequest inviteRequest = gson.fromJson(msg.getPayload(), InviteRequest.class);
         String targetUsername = inviteRequest.getTargetUsername();
+        String senderUsername = session.getUsername();
+        
         if (targetUsername == null || targetUsername.trim().isEmpty()) {
             sendError(session, "INVALID_INPUT", "Target username is required");
             return;
@@ -227,17 +232,22 @@ public final class MessageRouter {
         ClientSession targetSession = registry.get(targetUsername);
         if (targetSession == null || !targetSession.isConnected()) {
             sendError(session, "USER_OFFLINE", "User '" + targetUsername + "' is not online");
+            gameService.updatePlayerState(senderUsername, 1);
+            broadcastOnlinePlayers();
             return;
         }
+
+        gameService.updatePlayerState(targetUsername, 3);
+        gameService.updatePlayerState(senderUsername, 3);
+
         targetSession.send(new NetworkMessage(
                 MessageType.SEND_REQUEST,
-                session.getUsername(),
+                senderUsername,
                 targetUsername,
                 gson.toJsonTree(inviteRequest)
         ));
-        gameService.updatePlayerState(targetUsername, 3);
-        gameService.updatePlayerState(inviteRequest.getSenderUsername(), 3);
-        System.out.println("Game invite from " + session.getUsername() + " to " + targetUsername);
+
+        System.out.println("Game invite from " + senderUsername + " to " + targetUsername);
         broadcastOnlinePlayers();
     }
 
@@ -246,30 +256,116 @@ public final class MessageRouter {
             return;
         }
 
-        String opponentUsername = msg.getReceiver();
-        if (opponentUsername == null || opponentUsername.trim().isEmpty()) {
-            sendError(session, "INVALID_INPUT", "Opponent username is required");
-            return;
-        }
+        GameMoveDto move = gson.fromJson(msg.getPayload(), GameMoveDto.class);
+        gameService.handleGameMove(session, move);
+    }
 
-        ClientSession opponentSession = registry.get(opponentUsername);
-        if (opponentSession == null || !opponentSession.isConnected()) {
-            sendError(session, "USER_OFFLINE", "Opponent is not online");
-            return;
-        }
-
-        opponentSession.send(new NetworkMessage(
-                MessageType.GAME_MOVE,
-                session.getUsername(),
-                opponentUsername,
-                msg.getPayload()
-        ));
+    private void handleAcceptRequest(ClientSession session, NetworkMessage msg) {
         if (!isAuthenticated(session)) {
             return;
         }
 
-        GameMoveDto move = gson.fromJson(msg.getPayload(), GameMoveDto.class);
-        gameService.handleGameMove(session, move);
+        InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
+        String senderUsername = response.getSenderUsername();
+        String receiverUsername = session.getUsername();
+
+        if (senderUsername == null || senderUsername.trim().isEmpty()) {
+            sendError(session, "INVALID_INPUT", "Sender username is required");
+            gameService.updatePlayerState(receiverUsername, 1);
+            broadcastOnlinePlayers();
+            return;
+        }
+
+        ClientSession senderSession = registry.get(senderUsername);
+        if (senderSession == null || !senderSession.isConnected()) {
+            sendError(session, "USER_OFFLINE", "User '" + senderUsername + "' is not online");
+            gameService.updatePlayerState(receiverUsername, 1);
+            broadcastOnlinePlayers();
+            return;
+        }
+
+        gameService.updatePlayerState(receiverUsername, 2);
+        gameService.updatePlayerState(senderUsername, 2);
+
+        senderSession.send(new NetworkMessage(
+                MessageType.ACCEPT_REQUEST,
+                receiverUsername,
+                senderUsername,
+                msg.getPayload()
+        ));
+
+        gameService.startPrivateGame(senderSession, session, response.isRecordGame());
+
+        System.out.println(receiverUsername + " accepted invite from " + senderUsername);
+        broadcastOnlinePlayers();
+    }
+
+    private void handleDeclineRequest(ClientSession session, NetworkMessage msg) {
+        if (!isAuthenticated(session)) {
+            return;
+        }
+
+        InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
+        String senderUsername = response.getSenderUsername();
+        String receiverUsername = session.getUsername();
+
+        if (senderUsername == null || senderUsername.trim().isEmpty()) {
+            sendError(session, "INVALID_INPUT", "Sender username is required");
+            gameService.updatePlayerState(receiverUsername, 1);
+            broadcastOnlinePlayers();
+            return;
+        }
+
+        ClientSession senderSession = registry.get(senderUsername);
+        
+        gameService.updatePlayerState(receiverUsername, 1);
+        gameService.updatePlayerState(senderUsername, 1);
+
+        if (senderSession != null && senderSession.isConnected()) {
+            senderSession.send(new NetworkMessage(
+                    MessageType.DECLINE_REQUEST,
+                    receiverUsername,
+                    senderUsername,
+                    msg.getPayload()
+            ));
+        }
+
+        System.out.println(receiverUsername + " declined/cancelled invite from " + senderUsername);
+        broadcastOnlinePlayers();
+    }
+
+    private void handleSurrender(ClientSession session) {
+        if (!isAuthenticated(session)) {
+            return;
+        }
+
+        String username = session.getUsername();
+        System.out.println(username + " surrendered");
+
+        gameService.handleSurrender(session);
+        
+        gameService.updatePlayerState(username, 1);
+        
+        broadcastOnlinePlayers();
+        gameService.updateStats();
+    }
+
+    private void handleChangePassword(ClientSession session, NetworkMessage msg) {
+        ChangePasswordRequest request = gson.fromJson(msg.getPayload(), ChangePasswordRequest.class);
+
+        if (!session.getUsername().equals(request.getUsername())) {
+            sendError(session, "UNAUTHORIZED", "You cannot change another user's password.");
+            return;
+        }
+
+        ResultPayload result = gameService.changePassword(request);
+
+        session.send(new NetworkMessage(
+                MessageType.CHANGE_PASSWORD_RESULT,
+                "Server",
+                session.getUsername(),
+                gson.toJsonTree(result)
+        ));
     }
 
     private void broadcastOnlinePlayers() {
@@ -304,91 +400,4 @@ public final class MessageRouter {
                 gson.toJsonTree(new ErrorPayload(code, message))
         ));
     }
-
-    private void handleAcceptRequest(ClientSession session, NetworkMessage msg) {
-        if (!isAuthenticated(session)) {
-            return;
-        }
-
-        InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
-        String senderUsername = response.getSenderUsername();
-
-        if (senderUsername == null || senderUsername.trim().isEmpty()) {
-            sendError(session, "INVALID_INPUT", "Sender username is required");
-            return;
-        }
-
-        ClientSession senderSession = registry.get(senderUsername);
-        if (senderSession == null || !senderSession.isConnected()) {
-            sendError(session, "USER_OFFLINE", "User '" + senderUsername + "' is not online");
-            return;
-        }
-
-        gameService.updatePlayerState(session.getUsername(), 3);
-        gameService.updatePlayerState(senderUsername, 3);
-        gameService.startPrivateGame(senderSession, session, response.isRecordGame());
-        senderSession.send(new NetworkMessage(
-                MessageType.ACCEPT_REQUEST,
-                session.getUsername(),
-                senderUsername,
-                msg.getPayload()
-        ));
-
-        System.out.println(session.getUsername() + " accepted invite from " + senderUsername);
-
-        broadcastOnlinePlayers();
-    }
-
-    private void handleDeclineRequest(ClientSession session, NetworkMessage msg) {
-        if (!isAuthenticated(session)) {
-            return;
-        }
-
-        InviteResponse response = gson.fromJson(msg.getPayload(), InviteResponse.class);
-        String senderUsername = response.getSenderUsername();
-
-        if (senderUsername == null || senderUsername.trim().isEmpty()) {
-            sendError(session, "INVALID_INPUT", "Sender username is required");
-            return;
-        }
-
-        ClientSession senderSession = registry.get(senderUsername);
-        if (senderSession == null || !senderSession.isConnected()) {
-            gameService.updatePlayerState(session.getUsername(), 1);
-            return;
-        }
-
-        senderSession.send(new NetworkMessage(
-                MessageType.DECLINE_REQUEST,
-                session.getUsername(),
-                senderUsername,
-                msg.getPayload()
-        ));
-
-        gameService.updatePlayerState(session.getUsername(), 1);
-        gameService.updatePlayerState(senderUsername, 1);
-
-        System.out.println(session.getUsername() + " declined invite from " + senderUsername);
-
-        broadcastOnlinePlayers();
-    }
-
-    private void handleChangePassword(ClientSession session, NetworkMessage msg) {
-        ChangePasswordRequest request = gson.fromJson(msg.getPayload(), ChangePasswordRequest.class);
-
-        if (!session.getUsername().equals(request.getUsername())) {
-            sendError(session, "UNAUTHORIZED", "You cannot change another user's password.");
-            return;
-        }
-
-        ResultPayload result = gameService.changePassword(request);
-
-        session.send(new NetworkMessage(
-                MessageType.CHANGE_PASSWORD_RESULT,
-                "Server",
-                session.getUsername(),
-                gson.toJsonTree(result)
-        ));
-    }
-
 }

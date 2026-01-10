@@ -11,8 +11,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Optional;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 public class App extends Application {
 
@@ -129,6 +131,17 @@ public class App extends Application {
     public static void setRecordedGameDetails(RecordedGameDetails recordedGameDetails) {
         App.recordedGameDetails = recordedGameDetails;
     }
+    
+     public static Optional<ButtonType> showConfirmation(String title, String message) {
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    
+    alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+    
+    return alert.showAndWait();
+}
     public static void main(String[] args) {
         launch();
     }

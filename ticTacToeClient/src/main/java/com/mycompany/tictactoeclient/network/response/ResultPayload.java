@@ -4,6 +4,8 @@
  */
 package com.mycompany.tictactoeclient.network.response;
 
+import com.google.gson.JsonElement;
+
 /**
  *
  * @author yasse
@@ -13,7 +15,7 @@ public final class ResultPayload {
     private boolean success;
     private String code;
     private Object message;
-    private String jsonPayload;
+    private JsonElement jsonPayload;
 
     public ResultPayload() {
     }
@@ -23,13 +25,19 @@ public final class ResultPayload {
         this.code = code;
         this.message = message;
     }
+        public ResultPayload(boolean success, String code, Object message,JsonElement jsonPayload) {
+        this.success = success;
+        this.code = code;
+        this.message = message;
+        this.jsonPayload = jsonPayload;
+    }
 
     // 2. Add Getter and Setter
-    public String getJsonPayload() {
+    public JsonElement getJsonPayload() {
         return jsonPayload;
     }
 
-    public void setJsonPayload(String jsonPayload) {
+    public void setJsonPayload(JsonElement jsonPayload) {
         this.jsonPayload = jsonPayload;
     }
 

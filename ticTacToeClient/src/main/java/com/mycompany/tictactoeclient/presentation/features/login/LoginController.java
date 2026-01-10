@@ -168,7 +168,8 @@ public class LoginController implements Initializable {
         disableForm(false);
         ResultPayload result = client.getGson().fromJson(msg.getPayload(), ResultPayload.class);
         if (result.isSuccess()) {
-            if (result.getJsonPayload() != null && !result.getJsonPayload().isEmpty()) {
+            System.out.print("\n------------------------------------- payload"+client.getGson().fromJson(result.getJsonPayload(), Player.class));
+            if (result.getJsonPayload() != null && !result.getJsonPayload().toString().isEmpty()) {
                 Player player = client.getGson().fromJson(result.getJsonPayload(), Player.class);
                 session.login(player);
                 

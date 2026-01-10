@@ -16,7 +16,10 @@ public class Player {
     private String password;
     private int score;
     private PlayerState playerState;
-    
+    private String avatarUrl = "..\\..\\..\\avatar.png";
+    private int wins;
+    private int losses;
+
     public static enum PlayerState {
         OFFLINE(0),
         ONLINE(1),
@@ -46,6 +49,13 @@ public class Player {
     public Player() {
     }
 
+    public Player(int id, String name, String email, PlayerState playerState, int score) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.playerState = playerState;
+        this.score = score;
+    }
     public Player(int id, String name, String email, String password, PlayerState playerState, int score) {
         this.id = id;
         this.name = name;
@@ -54,61 +64,124 @@ public class Player {
         this.playerState = playerState;
         this.score = score;
     }
-    public Player(int id, String name, String email, PlayerState playerState, int score) {
-        this.id = id;
+    public Player(String name, int score, int wins, int losses, PlayerState status) {
         this.name = name;
-        this.email = email;
-        this.playerState = playerState;
         this.score = score;
+        this.wins = wins;
+        this.losses = losses;
+        this.playerState = status;
+        this.avatarUrl = "..\\..\\..\\avatar.png";
     }
 
-        public Player( String name, String email, String password, PlayerState playerState, int score) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.playerState = playerState;
-        this.score = score;
-    }
-      public Player( String name, String email, String password) {
+    public Player(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
     }
 
-    public int getId() {
-        return id;
+    public Player(String name, PlayerState status) {
+        this.name = name;
+        this.playerState = status;
+        this.score = 0;
+        this.wins = 0;
+        this.losses = 0;
+        this.avatarUrl = "..\\..\\..\\avatar.png";
+    }
+
+    public Player(String name, int score, PlayerState status) {
+        this.name = name;
+        this.score = score;
+        this.playerState = status;
+        this.avatarUrl = "..\\..\\..\\avatar.png";
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getWins() {
+        return wins;
+    }
+
+    public void setWins(int wins) {
+        this.wins = wins;
+    }
+
+    public int getLosses() {
+        return losses;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public int getScore() {
-        return score;
-    }
-    public void setScore(int score) {
-        this.score= score;
-    }
-
     public PlayerState getPlayerState() {
         return playerState;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setLosses(int losses) {
+        this.losses = losses;
+    }
+
+    public PlayerState getStatus() {
+        return playerState;
+    }
+
+    public void setStatus(PlayerState status) {
+        this.playerState = status;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public static PlayerState fromStateCode(int stateCode) {
+        switch (stateCode) {
+            case 1:
+                return PlayerState.ONLINE;
+            case 0:
+                return PlayerState.OFFLINE;
+            case 2:
+                return PlayerState.IN_GAME;
+            case 3:
+                return PlayerState.WAITING;
+            default:
+                return PlayerState.OFFLINE;
+        }
+    }
+
     @Override
     public String toString() {
-        return "Player{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", score=" + score +
-                ", playerState=" + playerState +
-                '}';
+        return "Player{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + ", email='" + email + '\''
+                + ", score=" + score
+                + ", playerState=" + playerState
+                + '}';
     }
 }

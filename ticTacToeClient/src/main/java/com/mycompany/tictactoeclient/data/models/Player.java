@@ -16,7 +16,7 @@ public class Player {
     private String password;
     private int score;
     private PlayerState playerState;
-    private String avatarUrl;
+    private String avatarUrl = "..\\..\\..\\avatar.png" ;
     private int wins;
     private int losses;
 
@@ -138,5 +138,15 @@ public class Player {
             default:
                 return PlayerState.OFFLINE;
         }
+    }
+    @Override
+    public String toString() {
+        return "Player{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", score=" + score +
+                ", playerState=" + playerState +
+                '}';
     }
 }

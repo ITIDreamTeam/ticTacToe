@@ -2,8 +2,6 @@ package com.mycompany.tictactoeclient.presentation.features.game_board;
 
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.core.RecordingSettings;
-import com.mycompany.tictactoeclient.data.dataSource.RecordedGamesJson;
-import com.mycompany.tictactoeclient.data.models.GameSession;
 import com.mycompany.tictactoeclient.data.dataSource.GameApi;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
@@ -13,13 +11,11 @@ import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine
 import com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupController;
 import com.mycompany.tictactoeclient.data.models.MoveRecord;
 import com.mycompany.tictactoeclient.data.models.PlayerType;
-import com.mycompany.tictactoeclient.data.models.RecordedGame;
 import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.shared.Navigation;
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
@@ -32,8 +28,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -51,41 +47,23 @@ import javafx.util.Duration;
 
 public class Game_boardController implements Initializable {
 
-    @FXML
-    private Label scoreXLabel;
-    @FXML
-    private Label scoreOLabel;
-    @FXML
-    private Label statusLabel;
-    @FXML
-    private GridPane gameGrid;
-    @FXML
-    private Line winningLine;
-    @FXML
-    private Pane linePane;
-    @FXML
-    private Label playerNameX;
-    @FXML
-    private Label playerNameO;
-    @FXML
-    private Circle recordingDot;
-    @FXML
-    private HBox recordingBox;
-    private boolean videoIsShowing = false;
+    @FXML private Label scoreXLabel, scoreOLabel, statusLabel, playerNameX, playerNameO;
+    @FXML private GridPane gameGrid;
+    @FXML private Line winningLine;
+    @FXML private Pane linePane;
+    @FXML private Circle recordingDot;
+    @FXML private HBox recordingBox;
 
-    public static enum GameMode {
-        vsComputer, twoPlayer, withFriend
-    };
+    public static enum GameMode { vsComputer, twoPlayer, withFriend }
 
     private Button[][] buttons = new Button[3][3];
     private GameEngine engine;
-    private int xScore = 0;
-    private int oScore = 0;
+    private int xScore = 0, oScore = 0;
     private Timeline blinkingTimeline;
+    private boolean videoIsShowing = false;
 
     public GameMode currentMode;
-    private GameEngine.Player nextStarter = GameEngine.Player.X;
-    private GameEngine.Player mySymbol;
+    private Player mySymbol;
     private String opponentName;
 
     private final NetworkClient client = NetworkClient.getInstance();
@@ -95,10 +73,23 @@ public class Game_boardController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         engine = new GameEngine();
-
         linePane.prefWidthProperty().bind(gameGrid.widthProperty());
         linePane.prefHeightProperty().bind(gameGrid.heightProperty());
 
+        setupGrid();
+
+        this.currentMode = sessionManager.getGameMode();
+        if (this.currentMode == null) this.currentMode = GameMode.vsComputer;
+
+        Platform.runLater(() -> {
+            RecordingSettings.recordingEnabledProperty().addListener((obs, oldV, newV) -> updateRecordingState(newV));
+            updateRecordingState(RecordingSettings.isRecordingEnabled());
+        });
+
+        startNewGame();
+    }
+
+    private void setupGrid() {
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 Button btn = new Button("");
@@ -110,232 +101,284 @@ public class Game_boardController implements Initializable {
                 gameGrid.add(btn, col, row);
             }
         }
-        this.currentMode = sessionManager.getGameMode();
+    }
 
-        Platform.runLater(() -> {
-            RecordingSettings.recordingEnabledProperty()
-                    .addListener((obs, oldVal, newVal) -> {
-                        updateRecordingState(newVal);
-                    });
-            updateRecordingState(RecordingSettings.isRecordingEnabled());
+    // --- MOVE ROUTING ---
+
+    private void handlePlayerMove(ActionEvent event) {
+        if (engine.isGameOver()) return;
+
+        Button clickedButton = (Button) event.getSource();
+        int[] coords = (int[]) clickedButton.getUserData();
+
+        switch (currentMode) {
+            case vsComputer:
+                handleVsComputerMove(clickedButton, coords);
+                break;
+            case twoPlayer:
+                handleTwoPlayerMove(clickedButton, coords);
+                break;
+            case withFriend:
+                handleWithFriendMove(clickedButton, coords);
+                break;
+        }
+    }
+
+    private void handleVsComputerMove(Button btn, int[] coords) {
+        if (engine.getCurrentPlayer() != Player.X) return;
+
+        if (engine.makeMove(coords[0], coords[1])) {
+            updateButton(btn, Player.X);
+            if (!checkLocalGameStatus()) {
+                engine.switchTurn();
+                triggerComputerThinking();
+            }
+        }
+    }
+
+    private void handleTwoPlayerMove(Button btn, int[] coords) {
+        Player p = engine.getCurrentPlayer();
+        if (engine.makeMove(coords[0], coords[1])) {
+            updateButton(btn, p);
+            
+            if (!checkLocalGameStatus()) {
+                engine.switchTurn();
+                updateStatusLabelForLocal();
+            }
+        }
+    }
+
+    private void handleWithFriendMove(Button btn, int[] coords) {
+        if (engine.getCurrentPlayer() != mySymbol) return;
+
+        if (engine.makeMove(coords[0], coords[1])) {
+            updateButton(btn, mySymbol);
+            engine.switchTurn();
+            handleOnlineMove(coords);
+        }
+    }
+
+    private void triggerComputerThinking() {
+        setBoardDisabled(true);
+        statusLabel.setText("Computer is thinking...");
+        PauseTransition pause = new PauseTransition(Duration.seconds(0.7));
+        pause.setOnFinished(e -> {
+            int[] move = engine.getComputerMove();
+            if (move != null && engine.makeMove(move[0], move[1])) {
+                updateButton(buttons[move[0]][move[1]], Player.O);
+                if (!checkLocalGameStatus()) {
+                    engine.switchTurn();
+                    setBoardDisabled(false);
+                    updateStatusLabelForLocal();
+                }
+            }
+        });
+        pause.play();
+    }
+
+    private boolean checkLocalGameStatus() {
+        Player winner = engine.getWinner();
+        
+        if (winner != Player.NONE) {
+            engine.setGameOver(true);
+            updateScore(winner);
+            int[] coords = engine.getWinningCoords();
+            if (coords != null) drawWinningLine(coords[0], coords[1]);
+
+            String wName = (winner == Player.X) ? playerNameX.getText() : playerNameO.getText();
+            
+            boolean playWinVideo = false;
+            
+            if (currentMode == GameMode.vsComputer) {
+                playWinVideo = (winner == Player.X);
+            } else if (currentMode == GameMode.twoPlayer) {
+                playWinVideo = true;
+            }
+
+            playVideoAndThen(playWinVideo, () -> showPlayAgainPopup(wName + " Wins!"));
+            return true;
+        } 
+
+        if (engine.isBoardFull()) {
+            engine.setGameOver(true);
+            
+            // Play draw video (null = draw)
+            playDrawVideoAndThen(() -> showPlayAgainPopup("It's a Draw!"));
+            return true;
+        }
+
+        return false;
+    }
+
+    private void playVideoAndThen(boolean isWin, Runnable onFinished) {
+        if (videoIsShowing) return;
+        videoIsShowing = true;
+
+        String videoFile = isWin ? "/videos/win.mp4" : "/videos/lose.mp4";
+        URL resource = getClass().getResource(videoFile);
+
+        if (resource == null) {
+            System.err.println("Video file not found: " + videoFile);
+            videoIsShowing = false;
+            onFinished.run();
+            return;
+        }
+
+        playVideo(resource, onFinished);
+    }
+
+    private void playDrawVideoAndThen(Runnable onFinished) {
+        if (videoIsShowing) return;
+        videoIsShowing = true;
+
+        String videoFile = "/videos/draw.mp4";
+        URL resource = getClass().getResource(videoFile);
+
+        if (resource == null) {
+            System.err.println("Draw video not found, using lose video as fallback");
+            resource = getClass().getResource("/videos/lose.mp4");
+        }
+
+        if (resource == null) {
+            System.err.println("No video available");
+            videoIsShowing = false;
+            onFinished.run();
+            return;
+        }
+
+        playVideo(resource, onFinished);
+    }
+
+    private void playVideo(URL videoResource, Runnable onFinished) {
+        Media media = new Media(videoResource.toExternalForm());
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        MediaView mediaView = new MediaView(mediaPlayer);
+        mediaView.setFitWidth(400);
+        mediaView.setFitHeight(250);
+
+        StackPane root = new StackPane(mediaView);
+        root.setStyle("-fx-background-color: black; -fx-border-color: #3fefef; -fx-border-width: 2;");
+
+        Stage videoStage = new Stage(StageStyle.UNDECORATED);
+        videoStage.initModality(Modality.APPLICATION_MODAL);
+        Stage owner = (Stage) gameGrid.getScene().getWindow();
+        videoStage.initOwner(owner);
+        videoStage.setScene(new Scene(root, 400, 250));
+
+        Runnable cleanUp = () -> {
+            if (videoStage.isShowing()) {
+                mediaPlayer.stop();
+                mediaPlayer.dispose();
+                videoStage.close();
+                videoIsShowing = false;
+                Platform.runLater(onFinished);
+            }
+        };
+
+        mediaPlayer.setOnEndOfMedia(cleanUp);
+        mediaPlayer.setOnError(cleanUp);
+        mediaPlayer.setOnReady(() -> {
+            videoStage.setX(owner.getX() + (owner.getWidth() / 2) - 200);
+            videoStage.setY(owner.getY() + (owner.getHeight() / 2) - 125);
+            videoStage.show();
+            mediaPlayer.play();
         });
 
-        if (this.currentMode == null) {
-            this.currentMode = GameMode.vsComputer;
-        }
-
-        if (this.currentMode == GameMode.withFriend) {
-            setupOnlineGame();
-        } else {
-            setupLocalOrComputerGame();
-        }
-
-        RecordedGameDetails recordedGameDetails = App.getRecordedGameDetails();
-        if (recordedGameDetails != null) {
-            startReplay(recordedGameDetails);
-            App.setRecordedGameDetails(null);
-        } else {
-            startNewGame();
-        }
+        PauseTransition watchdog = new PauseTransition(Duration.seconds(6));
+        watchdog.setOnFinished(e -> { if(videoIsShowing) cleanUp.run(); });
+        watchdog.play();
     }
 
     private void startReplay(RecordedGameDetails recordedGame) {
         setPlayersName(recordedGame.getPlayerXName(), recordedGame.getPlayerOName());
         setBoardDisabled(true);
         statusLabel.setText("Replaying game...");
-
-        // Clear the board
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                buttons[i][j].setText("");
-                buttons[i][j].getStyleClass().removeAll("tile-x", "tile-o", "tile-winning");
-                buttons[i][j].setDisable(true); // Disable buttons during replay
-            }
-        }
-        winningLine.setVisible(false);
-
+        resetBoardUI();
         Timeline timeline = new Timeline();
         for (int i = 0; i < recordedGame.getMoves().size(); i++) {
-            final MoveRecord currentMove = recordedGame.getMoves().get(i);
-            Duration time = Duration.seconds(i + 1);
-            KeyFrame keyFrame = new KeyFrame(time, e -> {
-                Button btn = buttons[currentMove.getRow()][currentMove.getCol()];
-                updateButton(btn, currentMove.getPlayer() == PlayerType.X ? Player.X : Player.O);
-            });
-            timeline.getKeyFrames().add(keyFrame);
+            final MoveRecord move = recordedGame.getMoves().get(i);
+            timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(i + 1), e -> {
+                updateButton(buttons[move.getRow()][move.getCol()], 
+                    move.getPlayer() == com.mycompany.tictactoeclient.data.models.PlayerType.X ? Player.X : Player.O);
+            }));
         }
-
         timeline.setOnFinished(e -> statusLabel.setText("Replay finished."));
         timeline.play();
     }
 
-    public void setPlayersName(String playerX, String PlayerO) {
-        playerNameX.setText(playerX);
-        playerNameO.setText(PlayerO);
-        statusLabel.setText(playerNameX.getText() + " Turn");
-    }
-
-    public void updateRecordingState(boolean isRecorded) {
-        System.out.println("is Recorded = " + isRecorded);
-
-        if (isRecorded) {
-            startRecordingUI();
-            engine.startRecording(playerNameX.getText(), playerNameO.getText(), UserSession.getInstance().getUsername());
-
-        } else {
-            stopRecordingUI();
-            engine.stopRecording();
-        }
-    }
-
-    private void startRecordingUI() {
-        recordingBox.setVisible(true);
-        recordingBox.setManaged(true);
-
-        blinkingTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(0.5),
-                        e -> recordingDot.setVisible(!recordingDot.isVisible()))
-        );
-        blinkingTimeline.setCycleCount(Timeline.INDEFINITE);
-        blinkingTimeline.play();
-    }
-
-    private void stopRecordingUI() {
-        if (blinkingTimeline != null) {
-            blinkingTimeline.stop();
-        }
-
-        recordingBox.setVisible(false);
-        recordingBox.setManaged(false);
-    }
-
     private void startNewGame() {
-        engine.resetGame(nextStarter);
-        if (currentMode == GameMode.withFriend) {
-            setupOnlineGame();
-        } else {
-            setupLocalOrComputerGame();
+        RecordedGameDetails replay = App.getRecordedGameDetails();
+        if (replay != null) {
+            startReplay(replay);
+            App.setRecordedGameDetails(null);
+            return;
         }
+
+        if (currentMode == GameMode.withFriend) setupOnlineGame();
+        else setupLocalOrComputerGame();
+    }
+
+    private void setupLocalOrComputerGame() {
+        playerNameX.setText(sessionManager.getUserName());
+        playerNameO.setText(sessionManager.getOpponentName());
+        if (currentMode == GameMode.vsComputer) engine.difficulty = OnePlayerPopupController.difficulty;
+        engine.resetGame(Player.X);
+        resetBoardUI();
+        setBoardDisabled(false);
+        updateStatusLabelForLocal();
     }
 
     private void setupOnlineGame() {
         client.on(MessageType.UPDATE_BOARD, this::onBoardUpdate);
         client.on(MessageType.GAME_OVER, this::onGameOver);
         client.on(MessageType.OPPONENT_LEFT, this::onOpponentLeft);
-
+        
         this.opponentName = sessionManager.getOpponentName();
-        boolean isMyTurnFirst = sessionManager.isMyTurnFirst();
-        updateRecordingState(sessionManager.isRecorded());
-
-        this.mySymbol = isMyTurnFirst ? GameEngine.Player.X : GameEngine.Player.O;
-        String myName = UserSession.getInstance().getUsername();
-
-        if (mySymbol == GameEngine.Player.X) {
-            playerNameX.setText(myName);
-            playerNameO.setText(opponentName);
-        } else {
-            playerNameX.setText(opponentName);
-            playerNameO.setText(myName);
-        }
-
-        engine.resetGame(GameEngine.Player.X);
+        this.mySymbol = sessionManager.isMyTurnFirst() ? Player.X : Player.O;
+        
+        playerNameX.setText(mySymbol == Player.X ? sessionManager.getUserName() : opponentName);
+        playerNameO.setText(mySymbol == Player.O ? sessionManager.getUserName() : opponentName);
+        
+        engine.resetGame(Player.X);
         resetBoardUI();
+        setBoardDisabled(engine.getCurrentPlayer() != mySymbol);
+        statusLabel.setText(engine.getCurrentPlayer() == mySymbol ? "Your Turn" : opponentName + "'s Turn");
+    }
 
-        if (engine.getCurrentPlayer() != mySymbol) {
+    private void resetBoardUI() {
+        winningLine.setVisible(false);
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                buttons[i][j].setText("");
+                buttons[i][j].getStyleClass().removeAll("tile-x", "tile-o", "tile-winning");
+                buttons[i][j].setDisable(false);
+            }
+        }
+    }
+
+    private void updateButton(Button btn, Player p) {
+        btn.setText(p.toString());
+        btn.getStyleClass().add(p == Player.X ? "tile-x" : "tile-o");
+    }
+
+    private void updateScore(Player w) {
+        if (w == Player.X) scoreXLabel.setText(String.valueOf(++xScore));
+        else if (w == Player.O) scoreOLabel.setText(String.valueOf(++oScore));
+    }
+
+    private void updateStatusLabelForLocal() {
+        statusLabel.setText((engine.getCurrentPlayer() == Player.X ? playerNameX.getText() : playerNameO.getText()) + "'s Turn");
+    }
+
+    // --- NETWORK HANDLERS ---
+    private void handleOnlineMove(int[] coords) {
+        try {
+            gameApi.sendGameMove(opponentName, coords[0], coords[1]);
             setBoardDisabled(true);
             statusLabel.setText(opponentName + "'s Turn");
-        } else {
-            setBoardDisabled(false);
-            statusLabel.setText("Your Turn");
-        }
-    }
-
-    private void setupLocalOrComputerGame() {
-        playerNameX.setText(sessionManager.getUserName());
-        playerNameO.setText(sessionManager.getOpponentName());
-
-        if (currentMode == GameMode.vsComputer) {
-            engine.difficulty = OnePlayerPopupController.difficulty;
-        }
-
-        startNewLocalGame(GameEngine.Player.X);
-    }
-
-    private void startNewLocalGame(GameEngine.Player starter) {
-        engine.resetGame(starter);
-        resetBoardUI();
-        setBoardDisabled(false);
-        updateStatusLabelForLocal();
-
-        if (currentMode == GameMode.vsComputer && starter == GameEngine.Player.O) {
-            setBoardDisabled(true);
-            statusLabel.setText("Computer is thinking...");
-            PauseTransition pause = new PauseTransition(Duration.seconds(0.7));
-            pause.setOnFinished(e -> performComputerMove());
-            pause.play();
-        }
-    }
-
-    private void handlePlayerMove(ActionEvent event) {
-        if (engine.isGameOver()) {
-            return;
-        }
-
-        if (currentMode == GameMode.withFriend) {
-            if (engine.getCurrentPlayer() != mySymbol) {
-                return;
-            }
-        }
-
-        Button clickedButton = (Button) event.getSource();
-        int[] coords = (int[]) clickedButton.getUserData();
-
-        if (engine.makeMove(coords[0], coords[1])) {
-            updateButton(clickedButton, engine.getCurrentPlayer());
-            engine.switchTurn();
-
-            if (currentMode == GameMode.withFriend) {
-                try {
-                    gameApi.sendGameMove(opponentName, coords[0], coords[1]);
-                    setBoardDisabled(true);
-                    statusLabel.setText(opponentName + "'s Turn");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                return;
-            }
-
-            if (checkLocalGameStatus()) {
-                return;
-            }
-
-            if (currentMode == GameMode.vsComputer && engine.getCurrentPlayer() == GameEngine.Player.O) {
-                setBoardDisabled(true);
-                statusLabel.setText("Computer is thinking...");
-                PauseTransition pause = new PauseTransition(Duration.seconds(0.7));
-                pause.setOnFinished(e -> performComputerMove());
-                pause.play();
-            } else {
-                updateStatusLabelForLocal();
-            }
-        }
-    }
-
-    private void performComputerMove() {
-        if (engine.isGameOver()) {
-            return;
-        }
-        int[] move = engine.getComputerMove();
-        if (move != null) {
-            if (engine.makeMove(move[0], move[1])) {
-                updateButton(buttons[move[0]][move[1]], engine.getCurrentPlayer());
-                engine.switchTurn();
-
-                if (!checkLocalGameStatus()) {
-                    setBoardDisabled(false);
-                    updateStatusLabelForLocal();
-                }
-            }
+        } catch (Exception ex) { 
+            ex.printStackTrace();
+            App.showError("Network Error", "Failed to send move");
         }
     }
 
@@ -356,244 +399,130 @@ public class Game_boardController implements Initializable {
         Platform.runLater(() -> {
             engine.setGameOver(true);
             setBoardDisabled(true);
-            statusLabel.setText(result);
+            
+            String lowerResult = result.toLowerCase();
+            boolean isWin = lowerResult.contains("win");
+            boolean isDraw = lowerResult.contains("draw") || lowerResult.contains("tie");
 
-            boolean isWin = result.toLowerCase().contains("win");
             if (isWin) {
                 updateScore(mySymbol);
-                updateUserSessionScore(100);
+                playVideoAndThen(true, () -> navigateToPlayersBoard());
+                
+            } else if (isDraw) {
+                playDrawVideoAndThen(() -> navigateToPlayersBoard());
+                
             } else {
                 updateScore(mySymbol == Player.X ? Player.O : Player.X);
-                updateUserSessionScore(-50);
+                playVideoAndThen(false, () -> navigateToPlayersBoard());
             }
-            PauseTransition delay = new PauseTransition(Duration.millis(500));
-            delay.setOnFinished(event -> {
-                playVideoAndThen(isWin, () -> {
-                    quitGame();
-                });
-            });
-            delay.play();
         });
     }
 
     private void onOpponentLeft(NetworkMessage msg) {
+        String message = client.getGson().fromJson(msg.getPayload(), String.class);
         Platform.runLater(() -> {
             engine.setGameOver(true);
-            setBoardDisabled(true);
             updateScore(mySymbol);
-            updateUserSessionScore(50);
+            
             playVideoAndThen(true, () -> {
-                App.showInfo("You Win!", "Opponent Surrendered");
-                quitGame();
+                App.showInfo("You Win!", message);
+                navigateToPlayersBoard();
             });
         });
     }
 
-    private boolean checkLocalGameStatus() {
-        GameEngine.Player winner = engine.getWinner();
-        if (winner != GameEngine.Player.NONE) {
-            updateScore(winner);
-            int[] coords = engine.getWinningCoords();
-            if (coords != null) {
-                drawWinningLine(coords[0], coords[1]);
-            }
-
-            String wName = (winner == Player.X) ? playerNameX.getText() : playerNameO.getText();
-            boolean isComputerWin = (currentMode == GameMode.vsComputer && winner == Player.O);
-            boolean isDraw = false;
-            playVideoAndThen(!isComputerWin, () -> {
-                showPlayAgainPopup(wName + " Wins!");
-            });
-            return true;
-        } else if (engine.isBoardFull()) {
-            playVideoAndThen(false, () -> {
-                showPlayAgainPopup("It's a Draw!");
-            });
-            return true;
-        }
-        return false;
-    }
-
-    private void playVideoAndThen(boolean isWin, Runnable onFinished) {
-        if (engine.isGameOver() && videoIsShowing) {
-            return;
-        }
-        videoIsShowing = true;
-
-        String videoPath = isWin ? "/videos/win.mp4" : "/videos/lose.mp4";
-        URL resource = getClass().getResource(videoPath);
-
-        if (resource == null) {
-            onFinished.run();
-            return;
-        }
-
-        Media media = new Media(resource.toExternalForm());
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
-        MediaView mediaView = new MediaView(mediaPlayer);
-
-        mediaView.setFitWidth(400);
-        mediaView.setFitHeight(250);
-
-        StackPane root = new StackPane(mediaView);
-        // Add a black background to make it look like a professional player
-        root.setStyle("-fx-background-color: black; -fx-border-color: #3fefef; -fx-border-width: 2;");
-
-        Scene scene = new Scene(root, 400, 250);
-        Stage videoStage = new Stage();
-        videoStage.initStyle(StageStyle.UNDECORATED); // Makes it look better
-        videoStage.initModality(Modality.APPLICATION_MODAL);
-        videoStage.setScene(scene);
-
-        // Clean up function to ensure it only runs ONCE
-        Runnable cleanUp = () -> {
-            if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
-                mediaPlayer.stop();
-            }
-            mediaPlayer.dispose();
-            videoStage.close();
-            videoIsShowing = false;
-            Platform.runLater(onFinished);
-        };
-
-        mediaPlayer.setOnEndOfMedia(cleanUp);
-        videoStage.setOnCloseRequest(e -> cleanUp.run());
-
-        // Fallback timer just in case the video file fails to signal 'EndOfMedia'
-        PauseTransition safetyTimeout = new PauseTransition(Duration.seconds(5));
-        safetyTimeout.setOnFinished(e -> {
-            if (videoStage.isShowing()) {
-                cleanUp.run();
-            }
-        });
-
-        videoStage.show();
-        mediaPlayer.play();
-        safetyTimeout.play();
-    }
-
-    private void showPlayAgainPopup(String message) {
-        Scene scene = gameGrid.getScene();
-        if (scene == null || scene.getWindow() == null) {
-            System.out.println("Warning: Scene is null, skipping popup.");
-            return;
-        }
-        Stage owner = (Stage) scene.getWindow();
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/PlayAgainPopup.fxml"));
-            Parent root = loader.load();
-            PlayAgainPopupController popup = loader.getController();
-
-            popup.setWinnerName(message);
-            popup.setOnPlayAgain(() -> startNewLocalGame(GameEngine.Player.X));
-            popup.setOnBack(() -> quitGame());
-
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initStyle(StageStyle.TRANSPARENT);
-            stage.setScene(new Scene(root, Color.TRANSPARENT));
-
-            stage.initOwner(owner);
-            stage.setX(owner.getX() + (owner.getWidth() / 2) - 175);
-            stage.setY(owner.getY() + (owner.getHeight() / 2) - 125);
-            stage.showAndWait();
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void onBackClicked(ActionEvent event) {
-        if (currentMode == GameMode.withFriend && !engine.isGameOver()) {
-            try {
-                gameApi.sendSurrender();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        quitGame();
+    private void navigateToPlayersBoard() {
+        cleanupOnlineListeners();
+        sessionManager.clearSession();
+        Navigation.navigateTo(Navigation.playersBoardPage);
     }
 
     private void quitGame() {
+        cleanupOnlineListeners();
+        sessionManager.clearSession();
+        Navigation.navigateTo(currentMode == GameMode.withFriend ? Navigation.playersBoardPage : Navigation.homePage);
+    }
+
+    private void cleanupOnlineListeners() {
         if (currentMode == GameMode.withFriend) {
             client.off(MessageType.UPDATE_BOARD, this::onBoardUpdate);
             client.off(MessageType.GAME_OVER, this::onGameOver);
             client.off(MessageType.OPPONENT_LEFT, this::onOpponentLeft);
         }
-        sessionManager.clearSession();
-        if (currentMode == GameMode.withFriend) {
-            Navigation.navigateTo(Navigation.playersBoardPage);
-        } else {
-            Navigation.navigateTo(Navigation.homePage);
-        }
     }
 
-    private void updateStatusLabelForLocal() {
-        if (engine.getCurrentPlayer() == Player.X) {
-            statusLabel.setText(playerNameX.getText() + "'s Turn");
-        } else {
-            statusLabel.setText(playerNameO.getText() + "'s Turn");
-        }
-    }
-
-    private void resetBoardUI() {
-        winningLine.setVisible(false);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                buttons[i][j].setText("");
-                buttons[i][j].getStyleClass().removeAll("tile-x", "tile-o", "tile-winning");
-                buttons[i][j].setDisable(false);
-            }
-        }
-    }
-
-    private void updateButton(Button btn, GameEngine.Player player) {
-        btn.setText(player.toString());
-        btn.getStyleClass().add(player == GameEngine.Player.X ? "tile-x" : "tile-o");
-    }
-
-    private void setBoardDisabled(boolean disable) {
-        gameGrid.setDisable(disable);
-    }
-
-    private void updateScore(GameEngine.Player winner) {
-        if (winner == GameEngine.Player.X) {
-            xScore++;
-            scoreXLabel.setText(String.valueOf(xScore));
-        } else if (winner == GameEngine.Player.O) {
-            oScore++;
-            scoreOLabel.setText(String.valueOf(oScore));
+    private void showPlayAgainPopup(String message) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/PlayAgainPopup.fxml"));
+            Parent root = loader.load();
+            PlayAgainPopupController controller = loader.getController();
+            controller.setWinnerName(message);
+            controller.setOnPlayAgain(() -> setupLocalOrComputerGame());
+            controller.setOnBack(this::quitGame);
+            
+            Stage stage = new Stage(StageStyle.TRANSPARENT);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root, Color.TRANSPARENT));
+            stage.showAndWait();
+        } catch (IOException ex) { 
+            ex.printStackTrace();
         }
     }
 
     private void drawWinningLine(int startIdx, int endIdx) {
-        int startRow = startIdx / 3;
-        int startCol = startIdx % 3;
-        int endRow = endIdx / 3;
-        int endCol = endIdx % 3;
-        Button startButton = buttons[startRow][startCol];
-        Button endButton = buttons[endRow][endCol];
-
-        double startX = startButton.getLayoutX() + startButton.getWidth() / 2;
-        double startY = startButton.getLayoutY() + startButton.getHeight() / 2;
-        double endX = endButton.getLayoutX() + endButton.getWidth() / 2;
-        double endY = endButton.getLayoutY() + endButton.getHeight() / 2;
-
-        winningLine.setStartX(startX);
-        winningLine.setStartY(startY);
-        winningLine.setEndX(endX);
-        winningLine.setEndY(endY);
+        Button start = buttons[startIdx / 3][startIdx % 3];
+        Button end = buttons[endIdx / 3][endIdx % 3];
+        winningLine.setStartX(start.getLayoutX() + start.getWidth() / 2);
+        winningLine.setStartY(start.getLayoutY() + start.getHeight() / 2);
+        winningLine.setEndX(end.getLayoutX() + end.getWidth() / 2);
+        winningLine.setEndY(end.getLayoutY() + end.getHeight() / 2);
         winningLine.setVisible(true);
     }
 
-    private void updateUserSessionScore(int pointsToAdd) {
-        if (sessionManager.isOnlineGame()) {
-            UserSession session = UserSession.getInstance();
-            int currentScore = session.getScore();
-            session.setScore(currentScore + pointsToAdd);
-            System.out.println("Local Session Updated: New Score = " + session.getScore());
+    public void updateRecordingState(boolean recording) {
+        if (recording) {
+            recordingBox.setVisible(true); 
+            recordingBox.setManaged(true);
+            blinkingTimeline = new Timeline(new KeyFrame(Duration.seconds(0.5), e -> recordingDot.setVisible(!recordingDot.isVisible())));
+            blinkingTimeline.setCycleCount(Timeline.INDEFINITE); 
+            blinkingTimeline.play();
+            engine.startRecording(playerNameX.getText(), playerNameO.getText(), UserSession.getInstance().getUsername());
+        } else {
+            if (blinkingTimeline != null) blinkingTimeline.stop();
+            recordingBox.setVisible(false); 
+            recordingBox.setManaged(false);
+            engine.stopRecording();
         }
+    }
+
+    @FXML 
+    private void onBackClicked(ActionEvent event) {
+        if (!engine.isGameOver() && currentMode == GameMode.withFriend) {
+            Optional<ButtonType> result = App.showConfirmation(
+                "Surrender Game?", 
+                "Are you sure you want to leave? You will lose this game."
+            );
+            
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                try { 
+                    gameApi.sendSurrender();
+                    System.out.println("Surrender sent to server");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                navigateToPlayersBoard();
+            }
+        } else {
+            quitGame();
+        }
+    }
+
+    private void setBoardDisabled(boolean disabled) { 
+        gameGrid.setDisable(disabled); 
+    }
+    
+    public void setPlayersName(String x, String o) { 
+        playerNameX.setText(x); 
+        playerNameO.setText(o); 
     }
 }
