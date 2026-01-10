@@ -25,6 +25,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Modality;
@@ -46,7 +50,7 @@ public class Game_boardController implements Initializable {
     
     // Add a pane in your FXML to hold the video, or just pop up a new stage
     // For this example, I assume you might want to show it on top of the board
-    // @FXML private StackPane videoContainer; 
+    //@FXML private StackPane videoContainer; 
 
     public static enum GameMode { vsComputer, twoPlayer, withFriend };
     
@@ -215,28 +219,30 @@ public class Game_boardController implements Initializable {
         });
     }
 
-private void onGameOver(NetworkMessage msg) {
+    private void onGameOver(NetworkMessage msg) {
         String result = client.getGson().fromJson(msg.getPayload(), String.class);
         Platform.runLater(() -> {
             engine.setGameOver(true);
             setBoardDisabled(true);
             statusLabel.setText(result);
-            
+
             boolean isWin = result.toLowerCase().contains("win");
             boolean isLose = result.toLowerCase().contains("lose");
-            
+
             if (isWin) {
                 updateScore(mySymbol);
                 updateUserSessionScore(100); 
             } else if (isLose) {
                 updateScore(mySymbol == Player.X ? Player.O : Player.X);
                 updateUserSessionScore(-50);
-            } else {
-                 updateUserSessionScore(10);
-            }            
-            playVideoAndThen(isWin, () -> {
-                quitGame(); 
+            }
+            PauseTransition delay = new PauseTransition(Duration.millis(500));
+            delay.setOnFinished(event -> {
+                playVideoAndThen(isWin, () -> {
+                    quitGame(); 
+                });
             });
+            delay.play();
         });
     }
 
@@ -277,14 +283,43 @@ private void onOpponentLeft(NetworkMessage msg) {
     }
 
     private void playVideoAndThen(boolean isWin, Runnable onFinished) {
-        // we will add video here 
         System.out.println(isWin ? "Playing WIN video..." : "Playing LOSE/DRAW video...");
+        String videoPath = isWin ? "/videos/win.mp4" : "/videos/lose.mp4";
+        URL resource = getClass().getResource(videoPath);
+        if (resource == null) {
+            System.err.println("Video not found: " + videoPath);
+            onFinished.run();
+            return;
+        }
+        Media media = new Media(resource.toExternalForm());
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        MediaView mediaView = new MediaView(mediaPlayer);
         
-        PauseTransition videoDuration = new PauseTransition(Duration.seconds(3)); 
-        videoDuration.setOnFinished(e -> {
+        mediaView.setFitWidth(400);
+        mediaView.setFitHeight(250);
+        
+        
+        StackPane root = new StackPane(mediaView);
+        Scene scene = new Scene(root, 400, 250);
+
+        Stage videoStage = new Stage();
+        videoStage.initModality(Modality.APPLICATION_MODAL);
+        videoStage.setScene(scene);
+        videoStage.setResizable(false);
+
+        mediaPlayer.setOnEndOfMedia(() -> {
+            mediaPlayer.stop();
+            mediaPlayer.dispose();
+            videoStage.close();
+            Platform.runLater(onFinished);
+        });
+        videoStage.setOnCloseRequest(event -> {
+            mediaPlayer.stop();
+            mediaPlayer.dispose(); 
             Platform.runLater(onFinished); 
         });
-        videoDuration.play();
+        videoStage.show();
+        mediaPlayer.play();
     }
 
     private void showPlayAgainPopup(String message) {

@@ -35,6 +35,11 @@
             <artifactId>derbyclient</artifactId>
             <version>10.17.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>13</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

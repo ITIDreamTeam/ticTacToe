@@ -4,6 +4,8 @@ module com.mycompany.tictactoeclient {
     requires java.base;
     requires java.sql;
     requires com.google.gson;
+    requires javafx.graphics;
+    requires javafx.media;
     opens com.mycompany.tictactoeclient.presentation.features.playersboard to javafx.fxml;
     opens com.mycompany.tictactoeclient.presentation.features.home to javafx.fxml;
 
