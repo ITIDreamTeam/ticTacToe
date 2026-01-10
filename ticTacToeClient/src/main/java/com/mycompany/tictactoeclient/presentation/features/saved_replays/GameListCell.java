@@ -1,6 +1,8 @@
 package com.mycompany.tictactoeclient.presentation.features.saved_replays;
 
+import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.models.RecordedGame;
+import com.mycompany.tictactoeclient.shared.Navigation;
 import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,7 +22,7 @@ public class GameListCell extends ListCell<RecordedGame> {
     @FXML
     private Button deleteBtn;
     private FXMLLoader mLLoader;
-    private AnchorPane rootAnchorPane;
+    private AnchorPane rootAnchorPane; 
 
     @Override
     protected void updateItem(RecordedGame game, boolean empty) {
@@ -40,13 +42,20 @@ public class GameListCell extends ListCell<RecordedGame> {
                 }
             }
             playerLabel.setText(game.getPlayerInfo());
-            dateLabel.setText(game.getDate() + " " + game.getTime());
+            dateLabel.setText(game.getFormattedDate());
             playBtn.setOnAction(event -> {
                 System.out.println("Playing game against: " + getItem().getPlayerInfo());
+                App.setRecordedGameDetails(new com.mycompany.tictactoeclient.presentation.features.game_board.RecordedGameDetails(
+                        game.getPlayerXName(),
+                        game.getPlayerOName(),
+                        game.getFormattedDate(),
+                        game.getMoves()
+                ));
+                Navigation.navigateTo(Navigation.gameBoardPage);
             });
 
             deleteBtn.setOnAction(event -> {
-                System.out.println("Deleting game from: " + getItem().getDate());
+                System.out.println("Deleting game from: " + getItem().getFormattedDate());
                 getListView().getItems().remove(getItem());
             });
             setText(null);

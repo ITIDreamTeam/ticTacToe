@@ -15,6 +15,8 @@ public enum MessageType {
     LOGIN,
     LOGIN_RESULT,
     DISCONNECT,
+    CHANGE_PASSWORD,
+    CHANGE_PASSWORD_RESULT,
     
     // Players
     GET_ONLINE_PLAYERS,

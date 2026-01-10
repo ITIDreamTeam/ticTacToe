@@ -5,12 +5,13 @@
 package com.mycompany.tictactoeclient.presentation.features.playersboard;
 
 import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.core.RecordingSettings;
 import com.mycompany.tictactoeclient.data.dataSource.GameApi;
 import com.mycompany.tictactoeclient.data.models.Player;
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
+import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.network.response.InviteResponse;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameSessionManager;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
@@ -65,6 +66,9 @@ public class Invite_popupController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         setupListeners();
+        recordCheckBox.selectedProperty().bindBidirectional(
+                RecordingSettings.recordingEnabledProperty()
+        );
     }
 
     private void setupListeners() {
@@ -85,10 +89,6 @@ public class Invite_popupController implements Initializable {
         if (timeoutTimeline != null) {
             timeoutTimeline.stop();
         }
-    }
-
-    @FXML
-    private void onClickCheckBox(ActionEvent event) {
     }
 
     @FXML
@@ -150,7 +150,9 @@ public class Invite_popupController implements Initializable {
     }
 
     private void handleAcceptResponse(NetworkMessage msg) {
-if (responseReceived) return;
+        if (responseReceived) {
+            return;
+        }
         if (!msg.getUsername().equalsIgnoreCase(opponent.getName())) {
             return;
         }
@@ -159,16 +161,16 @@ if (responseReceived) return;
 
         Platform.runLater(() -> {
             InviteResponse response = client.getGson().fromJson(msg.getPayload(), InviteResponse.class);
-            
+
             GameSessionManager.getInstance().setOnlineSession(
-                opponent.getName(), 
-                recordCheckBox.isSelected(),
-                true
+                    opponent.getName(),
+                    true,
+                    response.isRecordGame()
             );
-            App.showInfo("Invitation Accepted", 
-                opponent.getName() + " accepted your invitation!");
-            
-            closePopup(); 
+            App.showInfo("Invitation Accepted",
+                    opponent.getName() + " accepted your invitation!");
+
+            closePopup();
             try {
                 App.setRoot("game_board");
             } catch (IOException e) {
@@ -179,21 +181,21 @@ if (responseReceived) return;
     }
 
     private void handleDeclineResponse(NetworkMessage msg) {
-if (responseReceived) {
-        return;
-    }
+        if (responseReceived) {
+            return;
+        }
 
-    if (!msg.getUsername().equalsIgnoreCase(opponent.getName())) {
-        return;
-    }
+        if (!msg.getUsername().equalsIgnoreCase(opponent.getName())) {
+            return;
+        }
 
-    responseReceived = true;
-    cleanup();
-    
-    Platform.runLater(() -> {
-        App.showWarning("Invitation Declined", opponent.getName() + " declined your invitation.");
-        closePopup();
-    });
+        responseReceived = true;
+        cleanup();
+
+        Platform.runLater(() -> {
+            App.showWarning("Invitation Declined", opponent.getName() + " declined your invitation.");
+            closePopup();
+        });
     }
 
     private void handleTimeout() {
