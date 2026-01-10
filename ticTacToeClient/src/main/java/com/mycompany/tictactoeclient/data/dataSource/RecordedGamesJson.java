@@ -75,4 +75,10 @@ public class RecordedGamesJson {
             e.printStackTrace();
         }
     }
+
+    public static void deleteGame(RecordedGame gameToDelete) {
+        List<RecordedGame> games = loadGames();
+        games.removeIf(game -> game.getGameDate().equals(gameToDelete.getGameDate()));
+        saveGames(games);
+    }
 }
