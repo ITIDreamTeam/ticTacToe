@@ -4,10 +4,10 @@
  */
 package com.mycompany.tictactoeclient.data.dataSource;
 
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
+import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.network.dtos.GameMoveDto;
 import com.mycompany.tictactoeclient.network.request.InviteRequest;
 import com.mycompany.tictactoeclient.network.response.InviteResponse;

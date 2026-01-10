@@ -4,11 +4,16 @@
  */
 package com.mycompany.tictactoeclient.presentation.features.game_board;
 
+import com.mycompany.tictactoeclient.core.RecordingSettings;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
@@ -19,15 +24,20 @@ import javafx.stage.Stage;
  */
 public class PlayAgainPopupController implements Initializable {
 
-    @FXML private Label winnerLabel;
-    
+    @FXML
+    private Label winnerLabel;
+
+    @FXML
+    private CheckBox recordButton;
     // Simple interface to communicate back to the main controller
     private Runnable onPlayAgain;
     private Runnable onBack;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Init logic if needed
+        recordButton.selectedProperty().bindBidirectional(
+                RecordingSettings.recordingEnabledProperty()
+        );
     }
 
     public void setWinnerName(String text) {
@@ -50,7 +60,9 @@ public class PlayAgainPopupController implements Initializable {
 
     @FXML
     private void onBackClicked() {
-        if (onBack != null) onBack.run();
+        if (onBack != null) {
+            onBack.run();
+        }
         closeWindow();
     }
 

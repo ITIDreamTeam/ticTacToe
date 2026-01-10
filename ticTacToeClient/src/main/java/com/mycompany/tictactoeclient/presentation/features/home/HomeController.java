@@ -12,9 +12,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.network.NetworkClient;
+import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.shared.Navigation;
 
 /**

@@ -1,11 +1,9 @@
 package com.mycompany.tictactoeclient;
 
 import com.google.gson.Gson;
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.network.NetworkClient;
-import com.mycompany.tictactoeclient.network.MessageType;
-import com.mycompany.tictactoeclient.network.dtos.GameStartDto;
-import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
+import com.mycompany.tictactoeclient.presentation.features.game_board.RecordedGameDetails;
+import com.mycompany.tictactoeclient.network.UserSession;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,6 +18,8 @@ public class App extends Application {
 
     private static Scene scene;
     private static Stage primaryStage;
+    private static RecordedGameDetails recordedGameDetails;
+
     private static Alert waitingAlert;
 
     public static void setWaitingAlert(Alert alert) {
@@ -122,6 +122,13 @@ public class App extends Application {
         return primaryStage;
     }
 
+    public static RecordedGameDetails getRecordedGameDetails() {
+        return recordedGameDetails;
+    }
+
+    public static void setRecordedGameDetails(RecordedGameDetails recordedGameDetails) {
+        App.recordedGameDetails = recordedGameDetails;
+    }
     public static void main(String[] args) {
         launch();
     }

@@ -60,7 +60,7 @@
    </GridPane>
    
    <HBox alignment="CENTER" spacing="40">
-      <CheckBox fx:id="recordButton" mnemonicParsing="false" onAction="#onRecordButton" prefHeight="18.0" prefWidth="207.0" text="Record" textFill="WHITE">
+      <CheckBox fx:id="recordButton" mnemonicParsing="false" prefHeight="18.0" prefWidth="207.0" text="Record" textFill="WHITE">
          <font>
             <Font size="16.0" />
          </font></CheckBox>

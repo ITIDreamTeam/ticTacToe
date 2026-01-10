@@ -366,6 +366,12 @@
 #loadingSpinner .progress {
     -fx-background-color: #490585;
 }
+
+/* Red blinking dot */
+.recording-dot {
+    -fx-fill: #FF004C;
+    -fx-effect: dropshadow(gaussian, #FF004C, 8, 0.6, 0, 0);
+}
 .check-box .box {
     -fx-background-color: black;
     -fx-border-color: #FF00FF;

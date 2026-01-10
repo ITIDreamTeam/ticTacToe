@@ -4,31 +4,66 @@
  */
 package com.mycompany.tictactoeclient.data.models;
 
+import com.mycompany.tictactoeclient.data.dataSource.RecordedGamesJson;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Mina Wagdy
  */
 public class RecordedGame {
 
-    private String playerInfo;
-    private String date;
-    private String time;
+    public String playerXName;
+    public String playerOName;
+    public LocalDateTime gameDate;
+    public List<MoveRecord> moves = new ArrayList<>();
+    public String userId;
 
-    public RecordedGame(String playerInfo, String date, String time) {
-        this.playerInfo = playerInfo;
-        this.date = date;
-        this.time = time;
+    public RecordedGame(String playerXName, String playerOName, String userId) {
+        this.playerXName = playerXName;
+        this.playerOName = playerOName;
+        this.gameDate = LocalDateTime.now();
+        this.userId = userId;
+    }
+
+    public void addMove(MoveRecord move) {
+        moves.add(move);
+    }
+    
+    public void saveRecord() {
+        RecordedGamesJson.saveGame(this);
+    }
+
+    public List<MoveRecord> getMoves() {
+        return moves;
+    }
+
+    public String getPlayerXName() {
+        return playerXName;
+    }
+
+    public String getPlayerOName() {
+        return playerOName;
     }
 
     public String getPlayerInfo() {
-        return playerInfo;
+        return playerXName + " vs " + playerOName;
     }
 
-    public String getDate() {
-        return date;
+    public LocalDateTime getGameDate() {
+        return gameDate;
+    }
+    
+    public String getUserId() {
+        return userId;
     }
 
-    public String getTime() {
-        return time;
+    public String getFormattedDate() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+        return gameDate.format(formatter);
     }
+
 }
