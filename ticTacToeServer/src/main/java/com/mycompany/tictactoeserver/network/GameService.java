@@ -62,8 +62,7 @@ public final class GameService {
         
         try {
             playerDao.register(player);
-            ResultPayload response = new ResultPayload(true, "OK", "Registered successfully.");
-            response.setJsonPayload(gson.toJson(player));
+            ResultPayload response = new ResultPayload(true, "OK", "Registered successfully.",gson.toJsonTree(player));
             return response;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -92,8 +91,8 @@ public final class GameService {
             } else {
                 playerDao.updatePlayerState(userName, 1);
                 updateStats();
-                ResultPayload response = new ResultPayload(true, "OK", "Login successful.");
-                response.setJsonPayload(gson.toJson(player));
+                ResultPayload response = new ResultPayload(true, "OK", "Login successful.",gson.toJsonTree(player));
+                
                 return response;
             }
 

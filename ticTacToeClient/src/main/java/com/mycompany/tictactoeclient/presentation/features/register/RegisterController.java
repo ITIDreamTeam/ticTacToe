@@ -190,7 +190,7 @@ public class RegisterController implements Initializable {
         disableForm(false);
         ResultPayload result = client.getGson().fromJson(msg.getPayload(), ResultPayload.class);
         if (result.isSuccess()) {
-            if (result.getJsonPayload() != null && !result.getJsonPayload().isEmpty()) {
+            if (result.getJsonPayload() != null && !result.getJsonPayload().toString().isEmpty()) {
                 Player player = client.getGson().fromJson(result.getJsonPayload(), Player.class);
                 session.login(player);
                 UserSession.getInstance().setUsername(player.getName());
