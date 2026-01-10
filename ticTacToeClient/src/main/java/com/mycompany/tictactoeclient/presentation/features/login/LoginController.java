@@ -5,10 +5,10 @@
 package com.mycompany.tictactoeclient.presentation.features.login;
 
 import com.mycompany.tictactoeclient.App;
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.NetworkClient;
+import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.network.request.RegisterRequest;
 import com.mycompany.tictactoeclient.network.response.ResultPayload;
 import com.mycompany.tictactoeclient.shared.Navigation;

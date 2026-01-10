@@ -67,4 +67,12 @@ public class RecordedGamesJson {
             e.printStackTrace();
         }
     }
+    
+    public static void saveGames(List<RecordedGame> games) {
+        try (Writer writer = new FileWriter(FILE_PATH)) {
+            gson.toJson(games, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

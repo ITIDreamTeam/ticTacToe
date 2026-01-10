@@ -93,11 +93,11 @@ public class GameEngine {
         }
     }
 
-    public void startRecording(String playerXName, String playerOName) {
+    public void startRecording(String playerXName, String playerOName, String userId) {
         this.isRecorded = true;
         this.playerXName = playerXName;
         this.playerOName = playerOName;
-        recordedGame = new RecordedGame(playerXName, playerOName);
+        recordedGame = new RecordedGame(playerXName, playerOName, userId);
         System.out.println("start hash: " + hashCode());
     }
 

@@ -8,10 +8,10 @@ import com.google.gson.Gson;
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.dataSource.GameApi;
 import com.mycompany.tictactoeclient.data.models.Player;
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
+import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.network.dtos.OnlinePlayersUpdate;
 import com.mycompany.tictactoeclient.network.dtos.PlayerStatsDto;
 import com.mycompany.tictactoeclient.network.request.InviteRequest;
@@ -258,7 +258,7 @@ if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
             System.out.println(opponentName + " accepted your invite!");
 
             Platform.runLater(() -> {
-                gameSession.setOnlineSession(opponentName, true);
+                gameSession.setOnlineSession(opponentName, true, response.isRecordGame());
                 App.showInfo("Invitation Accepted",
                         opponentName + " accepted your invitation!");
                 navigateToGameBoard();

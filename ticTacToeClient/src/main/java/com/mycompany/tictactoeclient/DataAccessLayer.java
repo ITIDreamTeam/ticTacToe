@@ -35,4 +35,10 @@ public class DataAccessLayer {
     public List<RecordedGame> getRecordedGames() {
         return RecordedGamesJson.loadGames();
     }
+    
+    public void deleteUserRecordings(String userId) {
+        List<RecordedGame> allGames = RecordedGamesJson.loadGames();
+        allGames.removeIf(game -> game.getUserId() != null && game.getUserId().equals(userId));
+        RecordedGamesJson.saveGames(allGames);
+    }
 }

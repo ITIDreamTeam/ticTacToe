@@ -8,10 +8,10 @@ import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.core.RecordingSettings;
 import com.mycompany.tictactoeclient.data.dataSource.GameApi;
 import com.mycompany.tictactoeclient.data.models.Player;
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
+import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.network.response.InviteResponse;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameSessionManager;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
@@ -164,7 +164,8 @@ public class Invite_popupController implements Initializable {
 
             GameSessionManager.getInstance().setOnlineSession(
                     opponent.getName(),
-                    true
+                    true,
+                    response.isRecordGame()
             );
             App.showInfo("Invitation Accepted",
                     opponent.getName() + " accepted your invitation!");

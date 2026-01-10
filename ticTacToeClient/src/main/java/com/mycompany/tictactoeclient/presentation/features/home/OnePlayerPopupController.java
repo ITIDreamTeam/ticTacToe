@@ -11,7 +11,7 @@ package com.mycompany.tictactoeclient.presentation.features.home;
  */
 import com.mycompany.tictactoeclient.core.RecordingSettings;
 import com.mycompany.tictactoeclient.data.models.GameSession;
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
+import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameEngine;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameSessionManager;

@@ -133,11 +133,11 @@ public final class GameService {
         if (matchmakingQueue.size() >= 2) {
             ClientSession player1 = matchmakingQueue.poll();
             ClientSession player2 = matchmakingQueue.poll();
-            ActiveGame game = new ActiveGame(player1, player2);
+            ActiveGame game = new ActiveGame(player1, player2, false);
             activeGames.put(player1.getUsername(), game);
             activeGames.put(player2.getUsername(), game);
-            player1.send(new NetworkMessage(MessageType.GAME_START, "server", player1.getUsername(), gson.toJsonTree(new GameStartDto(player2.getUsername(), true))));
-            player2.send(new NetworkMessage(MessageType.GAME_START, "server", player2.getUsername(), gson.toJsonTree(new GameStartDto(player1.getUsername(), false))));
+            player1.send(new NetworkMessage(MessageType.GAME_START, "server", player1.getUsername(), gson.toJsonTree(new GameStartDto(player2.getUsername(), true, false))));
+            player2.send(new NetworkMessage(MessageType.GAME_START, "server", player2.getUsername(), gson.toJsonTree(new GameStartDto(player1.getUsername(), false, false))));
         }
     }
 
@@ -225,10 +225,12 @@ public final class GameService {
             cleanupGame(game, winner);
         }
     }
-    public void startPrivateGame(ClientSession player1, ClientSession player2) {
-    ActiveGame game = new ActiveGame(player1, player2);
+    public void startPrivateGame(ClientSession player1, ClientSession player2, boolean isRecorded) {
+    ActiveGame game = new ActiveGame(player1, player2, isRecorded);
     activeGames.put(player1.getUsername(), game);
     activeGames.put(player2.getUsername(), game);
+    player1.send(new NetworkMessage(MessageType.GAME_START, "server", player1.getUsername(), gson.toJsonTree(new GameStartDto(player2.getUsername(), true, isRecorded))));
+    player2.send(new NetworkMessage(MessageType.GAME_START, "server", player2.getUsername(), gson.toJsonTree(new GameStartDto(player1.getUsername(), false, isRecorded))));
     System.out.println("Private game started: " + player1.getUsername() + " vs " + player2.getUsername());
 }
 }

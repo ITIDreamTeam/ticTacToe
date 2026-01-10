@@ -20,11 +20,13 @@ public class RecordedGame {
     public String playerOName;
     public LocalDateTime gameDate;
     public List<MoveRecord> moves = new ArrayList<>();
+    public String userId;
 
-    public RecordedGame(String playerXName, String playerOName) {
+    public RecordedGame(String playerXName, String playerOName, String userId) {
         this.playerXName = playerXName;
         this.playerOName = playerOName;
         this.gameDate = LocalDateTime.now();
+        this.userId = userId;
     }
 
     public void addMove(MoveRecord move) {
@@ -53,6 +55,10 @@ public class RecordedGame {
 
     public LocalDateTime getGameDate() {
         return gameDate;
+    }
+    
+    public String getUserId() {
+        return userId;
     }
 
     public String getFormattedDate() {

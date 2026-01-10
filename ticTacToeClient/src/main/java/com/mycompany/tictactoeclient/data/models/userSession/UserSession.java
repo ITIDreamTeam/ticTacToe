@@ -4,6 +4,7 @@
  */
 package com.mycompany.tictactoeclient.data.models.userSession;
 
+import com.mycompany.tictactoeclient.DataAccessLayer;
 import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
@@ -19,6 +20,8 @@ public class UserSession {
     private volatile String email;
     private volatile int score;
     private volatile boolean isOnline;
+    
+    private final DataAccessLayer dataAccessLayer = new DataAccessLayer();
     
     private UserSession() {}
     
@@ -65,6 +68,7 @@ public class UserSession {
     }
     
     public void logout() {
+        dataAccessLayer.deleteUserRecordings(this.username);
         this.username = null;
         this.email = null;
         this.isOnline = false;

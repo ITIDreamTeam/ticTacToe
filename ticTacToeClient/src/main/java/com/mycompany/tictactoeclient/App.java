@@ -1,7 +1,6 @@
 package com.mycompany.tictactoeclient;
 
 import com.google.gson.Gson;
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.presentation.features.game_board.RecordedGameDetails;
 import java.io.IOException;
@@ -9,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import com.mycompany.tictactoeclient.presentation.features.game_board.RecordedGameDetails;
 import com.mycompany.tictactoeclient.network.MessageType;
+import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.network.dtos.GameStartDto;
 import com.mycompany.tictactoeclient.presentation.features.game_board.Game_boardController;
 import javafx.application.Application;

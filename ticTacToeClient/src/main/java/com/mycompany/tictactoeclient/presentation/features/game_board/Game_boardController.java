@@ -5,7 +5,6 @@ import com.mycompany.tictactoeclient.core.RecordingSettings;
 import com.mycompany.tictactoeclient.data.dataSource.RecordedGamesJson;
 import com.mycompany.tictactoeclient.data.models.GameSession;
 import com.mycompany.tictactoeclient.data.dataSource.GameApi;
-import com.mycompany.tictactoeclient.data.models.userSession.UserSession;
 import com.mycompany.tictactoeclient.network.NetworkClient;
 import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.MessageType;
@@ -15,6 +14,7 @@ import com.mycompany.tictactoeclient.presentation.features.home.OnePlayerPopupCo
 import com.mycompany.tictactoeclient.data.models.MoveRecord;
 import com.mycompany.tictactoeclient.data.models.PlayerType;
 import com.mycompany.tictactoeclient.data.models.RecordedGame;
+import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.shared.Navigation;
 import java.io.IOException;
 import java.net.URL;
@@ -178,7 +178,7 @@ public class Game_boardController implements Initializable {
 
         if (isRecorded) {
             startRecordingUI();
-            engine.startRecording(playerNameX.getText(), playerNameO.getText());
+            engine.startRecording(playerNameX.getText(), playerNameO.getText(), UserSession.getInstance().getUsername());
 
         } else {
             stopRecordingUI();
@@ -223,6 +223,7 @@ public class Game_boardController implements Initializable {
 
         this.opponentName = sessionManager.getOpponentName();
         boolean isMyTurnFirst = sessionManager.isMyTurnFirst();
+        updateRecordingState(sessionManager.isRecorded());
 
         this.mySymbol = isMyTurnFirst ? GameEngine.Player.X : GameEngine.Player.O;
         String myName = UserSession.getInstance().getUsername();
