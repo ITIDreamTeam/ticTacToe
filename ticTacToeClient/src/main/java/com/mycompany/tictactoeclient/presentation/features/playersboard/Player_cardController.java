@@ -100,18 +100,23 @@ public class Player_cardController implements Initializable {
             case ONLINE:
                 player_state.setStyle("-fx-text-fill: #2ecc71;");
                 player_state.setText("ONLINE");
+                send_request_button.setDisable(false);
                 break;
+                
             case OFFLINE:
                 player_state.setStyle("-fx-text-fill: #95a5a6;");
                 player_state.setText("OFFLINE");
+                send_request_button.setDisable(true);
                 break;
             case IN_GAME:
                 player_state.setStyle("-fx-text-fill: #f1c40f;");
                 player_state.setText("IN GAME");
+                send_request_button.setDisable(true);
                 break;
             case WAITING:
                 player_state.setStyle("-fx-text-fill: #f1c40f;");
                 player_state.setText("WAITING");
+                send_request_button.setDisable(true);
         }
     }
 }
