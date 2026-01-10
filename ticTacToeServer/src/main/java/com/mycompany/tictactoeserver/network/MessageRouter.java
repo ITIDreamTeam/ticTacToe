@@ -181,7 +181,7 @@ public final class MessageRouter {
                 MessageType.LOGIN_RESULT,
                 "Server",
                 username,
-                gson.toJsonTree(new ResultPayload(true, "OK", "Login successful"))
+                gson.toJsonTree(authResult)
         ));
 
         System.out.println("User logged in: " + username);
