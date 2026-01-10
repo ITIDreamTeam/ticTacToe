@@ -78,6 +78,10 @@ public final class MessageRouter {
                 case CHANGE_PASSWORD:
                     handleChangePassword(session, msg);
                     break;
+                
+                 case UPDATE_STATUS:
+                    updateState(msg);
+                    break;
 
                 default:
                     sendError(session, "UNKNOWN_TYPE", "Unknown message type: " + msg.getType());
@@ -399,5 +403,17 @@ public final class MessageRouter {
                 session.getUsername(),
                 gson.toJsonTree(new ErrorPayload(code, message))
         ));
+    }
+    
+    private void updateState(NetworkMessage msg){
+        String newStatus = msg.getPayload().getAsString();
+        int stateValue = 1;
+
+        if(newStatus.equals("WAITING")) stateValue = 3; 
+        if(newStatus.equals("IN_GAME")) stateValue = 2;
+        if(newStatus.equals("ONLINE"))  stateValue = 1;
+
+        gameService.updatePlayerState(msg.getUsername(), stateValue);
+        gameService.updateStats();
     }
 }

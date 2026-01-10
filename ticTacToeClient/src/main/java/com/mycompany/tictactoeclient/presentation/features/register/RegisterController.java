@@ -183,36 +183,53 @@ public class RegisterController implements Initializable {
     }
 
     private void handleRegisterResult(NetworkMessage msg) {
-        if (!isProcessing) {
-            return;
-        }
-        isProcessing = false;
-        disableForm(false);
-        ResultPayload result = client.getGson().fromJson(msg.getPayload(), ResultPayload.class);
-        if (result.isSuccess()) {
-            if (result.getJsonPayload() != null && !result.getJsonPayload().toString().isEmpty()) {
-                Player player = client.getGson().fromJson(result.getJsonPayload(), Player.class);
-                session.login(player);
-                UserSession.getInstance().setUsername(player.getName());
-                UserSession.getInstance().setEmail(player.getEmail());
-                UserSession.getInstance().setScore(player.getScore());
-            } else {
-                String username = userNameTextField.getText().trim();
-                String email = emailTextField.getText().trim();
-                UserSession.getInstance().setUsername(username);
-                session.login(username, email);
-            }
-            App.showInfo("Registration Successful",
-                    "Welcome " + session.getUsername() + "! You have been registered and logged in.");
-
-            cleanup();
-            Navigation.navigateTo(Navigation.homePage);
-
-        } else {
-            App.showError("Registration Failed", (String) result.getMessage());
-            client.disconnect();
-        }
+    if (!isProcessing) {
+        return;
     }
+    isProcessing = false;
+    disableForm(false);
+    
+    ResultPayload result = client.getGson().fromJson(msg.getPayload(), ResultPayload.class);
+    
+    if (result.isSuccess()) {
+        // 1. First, store the player data in the session
+        if (result.getJsonPayload() != null && !result.getJsonPayload().toString().isEmpty()) {
+            Player player = client.getGson().fromJson(result.getJsonPayload(), Player.class);
+            session.login(player);
+            UserSession.getInstance().setUsername(player.getName());
+            UserSession.getInstance().setEmail(player.getEmail());
+            UserSession.getInstance().setScore(player.getScore());
+        } else {
+            String username = userNameTextField.getText().trim();
+            String email = emailTextField.getText().trim();
+            UserSession.getInstance().setUsername(username);
+            session.login(username, email);
+        }
+
+        // 2. NOW notify the server to set state to WAITING
+        // This ensures session.getUsername() is not null
+        try {
+            client.send(new NetworkMessage(
+                MessageType.UPDATE_STATUS,
+                session.getUsername(),
+                "Server",
+                client.getGson().toJsonTree("WAITING") 
+            ));
+        } catch (Exception e) {
+            System.err.println("Failed to notify server of WAITING status: " + e.getMessage());
+        }
+
+        App.showInfo("Registration Successful",
+                "Welcome " + session.getUsername() + "! You have been registered and logged in.");
+
+        cleanup();
+        Navigation.navigateTo(Navigation.homePage);
+
+    } else {
+        App.showError("Registration Failed", (String) result.getMessage());
+        client.disconnect();
+    }
+}
 
     private void toggleVisibility(ToggleButton toggleButton, PasswordField passwordField,
             TextField textField, ImageView eyeIcon) {

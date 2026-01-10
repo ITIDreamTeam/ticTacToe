@@ -13,7 +13,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import com.mycompany.tictactoeclient.App;
+import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
+import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.shared.Navigation;
 
@@ -40,6 +42,16 @@ public class HomeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        try {
+            client.send(new NetworkMessage(
+                MessageType.UPDATE_STATUS,
+                UserSession.getInstance().getUsername(),
+                "Server",
+                client.getGson().toJsonTree("WAITING")
+            ));
+        } catch (Exception e) {
+            System.err.println("Failed to revert status to WAITING");
+        }
         setupButtonHoverEffects();
         updateUI();
     }

@@ -71,6 +71,16 @@ public class Players_boardController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        try {
+            client.send(new NetworkMessage(
+                MessageType.UPDATE_STATUS,
+                UserSession.getInstance().getUsername(),
+                "Server",
+                client.getGson().toJsonTree("ONLINE")
+            ));
+        } catch (Exception e) {
+            System.err.println("Failed to revert status to WAITING");
+        }
         setupListView();
         setupSearchFilter();
         setupAllListeners();
@@ -101,6 +111,8 @@ public class Players_boardController implements Initializable {
         client.on(MessageType.ONLINE_PLAYERS_UPDATE, onlinePlayersListener);
         receiveInviteListener = this::handleReceiveInvite;
         client.on(MessageType.SEND_REQUEST, receiveInviteListener);
+        client.on(MessageType.ACCEPT_REQUEST, this::handleAcceptResponse);
+        client.on(MessageType.DECLINE_REQUEST, this::handleDeclineResponse);
     }
 
     public void cleanup() {
@@ -315,6 +327,7 @@ if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
             ex.printStackTrace();
             App.showError("Navigation Error", "Cannot navigate to home.");
         }
+        
     }
 
     @FXML

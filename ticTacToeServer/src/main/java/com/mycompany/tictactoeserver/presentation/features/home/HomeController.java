@@ -15,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ToggleButton;
@@ -55,7 +56,11 @@ public class HomeController implements Initializable {
         server.getGameService().setOnStatsChanged(() -> {
             loadPlayerStats(); 
         });
-        
+        NumberAxis yAxis = (NumberAxis) barChart.getYAxis();
+        yAxis.setAutoRanging(false); 
+        yAxis.setLowerBound(0);      
+        yAxis.setUpperBound(10);     
+        yAxis.setTickUnit(1);
         barChart.setLegendVisible(false);
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 

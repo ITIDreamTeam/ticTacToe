@@ -72,6 +72,18 @@ public class Invite_popupController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+        try {
+                client.send(new NetworkMessage(
+                    MessageType.UPDATE_STATUS,
+                    UserSession.getInstance().getUsername(),
+                    "Server",
+                    client.getGson().toJsonTree("WAITING") // Sets status back to 3
+                ));
+            } catch (Exception e) {
+                System.err.println("Failed to revert status to WAITING");
+            }
+    
         setupListeners();
         recordCheckBox.selectedProperty().bindBidirectional(
                 RecordingSettings.recordingEnabledProperty()

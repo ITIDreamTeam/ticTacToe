@@ -80,6 +80,16 @@ public class Game_boardController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        try {
+            client.send(new NetworkMessage(
+                MessageType.UPDATE_STATUS,
+                UserSession.getInstance().getUsername(),
+                "Server",
+                client.getGson().toJsonTree("IN_GAME") // Sets status back to 3
+            ));
+        } catch (Exception e) {
+            System.err.println("Failed to revert status to WAITING");
+        }
         engine = new GameEngine();
         linePane.prefWidthProperty().bind(gameGrid.widthProperty());
         linePane.prefHeightProperty().bind(gameGrid.heightProperty());
@@ -92,6 +102,7 @@ public class Game_boardController implements Initializable {
         }
 
         Platform.runLater(() -> {
+            
             RecordingSettings.recordingEnabledProperty().addListener((obs, oldV, newV) -> updateRecordingState(newV));
             updateRecordingState(RecordingSettings.isRecordingEnabled());
         });
@@ -548,9 +559,13 @@ public class Game_boardController implements Initializable {
                 }
                 navigateToPlayersBoard();
             }
+            
         } else {
             quitGame();
+           
+            
         }
+        
     }
 
     private void setBoardDisabled(boolean disabled) {

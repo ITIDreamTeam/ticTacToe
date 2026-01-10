@@ -84,5 +84,123 @@
       }
     ],
     "userId": "yassen"
+  },
+  {
+    "playerXName": "Player",
+    "playerOName": "Computer",
+    "gameDate": "2026-01-10T18:11:09.296134400",
+    "moves": [
+      {
+        "row": 1,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 0,
+        "player": "O"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "X"
+      }
+    ]
+  },
+  {
+    "playerXName": "Player1",
+    "playerOName": "Player2",
+    "gameDate": "2026-01-10T18:18:59.132300",
+    "moves": [
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 0,
+        "player": "X"
+      }
+    ],
+    "userId": "basmala"
+  },
+  {
+    "playerXName": "Player1",
+    "playerOName": "Player2",
+    "gameDate": "2026-01-10T18:19:45.354806300",
+    "moves": [
+      {
+        "row": 0,
+        "col": 0,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 1,
+        "player": "O"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "player": "X"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "player": "O"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "player": "X"
+      }
+    ],
+    "userId": "basmala"
   }
 ]

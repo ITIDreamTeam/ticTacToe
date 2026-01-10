@@ -20,7 +20,8 @@ public enum MessageType {
     
     // Players
     GET_ONLINE_PLAYERS,
-    ONLINE_PLAYERS_UPDATE,  
+    ONLINE_PLAYERS_UPDATE, 
+    UPDATE_STATUS,
     
     // Game Invites
     SEND_REQUEST,

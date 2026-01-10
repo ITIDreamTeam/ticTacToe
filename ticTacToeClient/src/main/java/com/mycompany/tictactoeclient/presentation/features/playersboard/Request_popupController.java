@@ -7,7 +7,9 @@ package com.mycompany.tictactoeclient.presentation.features.playersboard;
 import com.mycompany.tictactoeclient.data.models.GameSession;
 import com.mycompany.tictactoeclient.App;
 import com.mycompany.tictactoeclient.data.dataSource.GameApi;
+import com.mycompany.tictactoeclient.network.MessageType;
 import com.mycompany.tictactoeclient.network.NetworkClient;
+import com.mycompany.tictactoeclient.network.NetworkMessage;
 import com.mycompany.tictactoeclient.network.UserSession;
 import com.mycompany.tictactoeclient.network.request.InviteRequest;
 import com.mycompany.tictactoeclient.presentation.features.game_board.GameSessionManager;
@@ -63,6 +65,16 @@ public class Request_popupController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        try {
+            client.send(new NetworkMessage(
+                MessageType.UPDATE_STATUS,
+                UserSession.getInstance().getUsername(),
+                "Server",
+                client.getGson().toJsonTree("WAITING") 
+            ));
+        } catch (Exception e) {
+            System.err.println("Failed to revert status to WAITING");
+        }
         timeProgressBar.setProgress(1.0);
     }
 

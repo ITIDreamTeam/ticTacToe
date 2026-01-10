@@ -161,32 +161,42 @@ public class LoginController implements Initializable {
     }
 
     private void handleLoginResult(NetworkMessage msg) {
-        if (!isProcessing) {
-            return;
-        }
-        isProcessing = false;
-        disableForm(false);
-        ResultPayload result = client.getGson().fromJson(msg.getPayload(), ResultPayload.class);
-        if (result.isSuccess()) {
-            System.out.print("\n------------------------------------- payload"+client.getGson().fromJson(result.getJsonPayload(), Player.class));
-            if (result.getJsonPayload() != null && !result.getJsonPayload().toString().isEmpty()) {
-                Player player = client.getGson().fromJson(result.getJsonPayload(), Player.class);
-                session.login(player);
-                
-            } else {
-                String username = nameTextField.getText().trim();
-                session.login(username, null);
-                session.setUsername(username);
-            }
-            App.showInfo("Login Successful", "Welcome back, " + session.getUsername() + "!");
-            cleanup();
-            Navigation.navigateTo(Navigation.homePage);
-
+    if (!isProcessing) return;
+    isProcessing = false;
+    disableForm(false);
+    
+    ResultPayload result = client.getGson().fromJson(msg.getPayload(), ResultPayload.class);
+    
+    if (result.isSuccess()) {
+        // 1. Populate the session FIRST
+        if (result.getJsonPayload() != null && !result.getJsonPayload().toString().isEmpty()) {
+            Player player = client.getGson().fromJson(result.getJsonPayload(), Player.class);
+            session.login(player);
         } else {
-            App.showError("Login Failed", (String) result.getMessage());
-            client.disconnect();
+            String username = nameTextField.getText().trim();
+            session.login(username, null);
         }
+
+        // 2. NOW send the update (session.getUsername() won't be null now)
+        try {
+            client.send(new NetworkMessage(
+                MessageType.UPDATE_STATUS,
+                session.getUsername(), 
+                "Server",
+                client.getGson().toJsonTree("WAITING") 
+            ));
+        } catch (Exception e) {
+            System.err.println("Failed to notify server of WAITING status: " + e.getMessage());
+        }
+
+        App.showInfo("Login Successful", "Welcome back, " + session.getUsername() + "!");
+        cleanup();
+        Navigation.navigateTo(Navigation.homePage);
+    } else {
+        App.showError("Login Failed", (String) result.getMessage());
+        client.disconnect();
     }
+}
 
     private void disableForm(boolean disable) {
         nameTextField.setDisable(disable);
