@@ -71,6 +71,7 @@ public class Game_boardController implements Initializable {
     private Circle recordingDot;
     @FXML
     private HBox recordingBox;
+    private boolean videoIsShowing = false;
 
     public static enum GameMode {
         vsComputer, twoPlayer, withFriend
@@ -358,19 +359,17 @@ public class Game_boardController implements Initializable {
             statusLabel.setText(result);
 
             boolean isWin = result.toLowerCase().contains("win");
-            boolean isLose = result.toLowerCase().contains("lose");
-
             if (isWin) {
                 updateScore(mySymbol);
                 updateUserSessionScore(100);
-            } else if (isLose) {
+            } else {
                 updateScore(mySymbol == Player.X ? Player.O : Player.X);
                 updateUserSessionScore(-50);
             }
             PauseTransition delay = new PauseTransition(Duration.millis(500));
             delay.setOnFinished(event -> {
                 playVideoAndThen(isWin, () -> {
-                    quitGame(); 
+                    quitGame();
                 });
             });
             delay.play();
@@ -416,48 +415,61 @@ public class Game_boardController implements Initializable {
     }
 
     private void playVideoAndThen(boolean isWin, Runnable onFinished) {
-        System.out.println(isWin ? "Playing WIN video..." : "Playing LOSE/DRAW video...");
+        if (engine.isGameOver() && videoIsShowing) {
+            return;
+        }
+        videoIsShowing = true;
+
         String videoPath = isWin ? "/videos/win.mp4" : "/videos/lose.mp4";
         URL resource = getClass().getResource(videoPath);
+
         if (resource == null) {
-            System.err.println("Video not found: " + videoPath);
             onFinished.run();
             return;
         }
+
         Media media = new Media(resource.toExternalForm());
         MediaPlayer mediaPlayer = new MediaPlayer(media);
         MediaView mediaView = new MediaView(mediaPlayer);
-        
+
         mediaView.setFitWidth(400);
         mediaView.setFitHeight(250);
-        
-        
-        StackPane root = new StackPane(mediaView);
-        Scene scene = new Scene(root, 400, 250);
 
+        StackPane root = new StackPane(mediaView);
+        // Add a black background to make it look like a professional player
+        root.setStyle("-fx-background-color: black; -fx-border-color: #3fefef; -fx-border-width: 2;");
+
+        Scene scene = new Scene(root, 400, 250);
         Stage videoStage = new Stage();
+        videoStage.initStyle(StageStyle.UNDECORATED); // Makes it look better
         videoStage.initModality(Modality.APPLICATION_MODAL);
         videoStage.setScene(scene);
-        videoStage.setResizable(false);
 
-        mediaPlayer.setOnEndOfMedia(() -> {
-            mediaPlayer.stop();
+        // Clean up function to ensure it only runs ONCE
+        Runnable cleanUp = () -> {
+            if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+                mediaPlayer.stop();
+            }
             mediaPlayer.dispose();
             videoStage.close();
+            videoIsShowing = false;
             Platform.runLater(onFinished);
-        });
-        videoStage.setOnCloseRequest(event -> {
-            mediaPlayer.stop();
-            mediaPlayer.dispose(); 
-            Platform.runLater(onFinished); 
+        };
+
+        mediaPlayer.setOnEndOfMedia(cleanUp);
+        videoStage.setOnCloseRequest(e -> cleanUp.run());
+
+        // Fallback timer just in case the video file fails to signal 'EndOfMedia'
+        PauseTransition safetyTimeout = new PauseTransition(Duration.seconds(5));
+        safetyTimeout.setOnFinished(e -> {
+            if (videoStage.isShowing()) {
+                cleanUp.run();
+            }
         });
 
-        PauseTransition videoDuration = new PauseTransition(Duration.seconds(3));
-        videoDuration.setOnFinished(e -> {
-            Platform.runLater(onFinished);
-        });
         videoStage.show();
         mediaPlayer.play();
+        safetyTimeout.play();
     }
 
     private void showPlayAgainPopup(String message) {
