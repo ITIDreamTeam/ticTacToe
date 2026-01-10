@@ -37,6 +37,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -72,9 +76,6 @@ public class Game_boardController implements Initializable {
         vsComputer, twoPlayer, withFriend
     };
 
-    // Add a pane in your FXML to hold the video, or just pop up a new stage
-    // For this example, I assume you might want to show it on top of the board
-    // @FXML private StackPane videoContainer; 
     private Button[][] buttons = new Button[3][3];
     private GameEngine engine;
     private int xScore = 0;
@@ -365,12 +366,14 @@ public class Game_boardController implements Initializable {
             } else if (isLose) {
                 updateScore(mySymbol == Player.X ? Player.O : Player.X);
                 updateUserSessionScore(-50);
-            } else {
-                updateUserSessionScore(10);
             }
-            playVideoAndThen(isWin, () -> {
-                quitGame();
+            PauseTransition delay = new PauseTransition(Duration.millis(500));
+            delay.setOnFinished(event -> {
+                playVideoAndThen(isWin, () -> {
+                    quitGame(); 
+                });
             });
+            delay.play();
         });
     }
 
@@ -413,14 +416,48 @@ public class Game_boardController implements Initializable {
     }
 
     private void playVideoAndThen(boolean isWin, Runnable onFinished) {
-        // we will add video here 
         System.out.println(isWin ? "Playing WIN video..." : "Playing LOSE/DRAW video...");
+        String videoPath = isWin ? "/videos/win.mp4" : "/videos/lose.mp4";
+        URL resource = getClass().getResource(videoPath);
+        if (resource == null) {
+            System.err.println("Video not found: " + videoPath);
+            onFinished.run();
+            return;
+        }
+        Media media = new Media(resource.toExternalForm());
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        MediaView mediaView = new MediaView(mediaPlayer);
+        
+        mediaView.setFitWidth(400);
+        mediaView.setFitHeight(250);
+        
+        
+        StackPane root = new StackPane(mediaView);
+        Scene scene = new Scene(root, 400, 250);
+
+        Stage videoStage = new Stage();
+        videoStage.initModality(Modality.APPLICATION_MODAL);
+        videoStage.setScene(scene);
+        videoStage.setResizable(false);
+
+        mediaPlayer.setOnEndOfMedia(() -> {
+            mediaPlayer.stop();
+            mediaPlayer.dispose();
+            videoStage.close();
+            Platform.runLater(onFinished);
+        });
+        videoStage.setOnCloseRequest(event -> {
+            mediaPlayer.stop();
+            mediaPlayer.dispose(); 
+            Platform.runLater(onFinished); 
+        });
 
         PauseTransition videoDuration = new PauseTransition(Duration.seconds(3));
         videoDuration.setOnFinished(e -> {
             Platform.runLater(onFinished);
         });
-        videoDuration.play();
+        videoStage.show();
+        mediaPlayer.play();
     }
 
     private void showPlayAgainPopup(String message) {
