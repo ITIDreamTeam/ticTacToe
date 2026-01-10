@@ -50,26 +50,33 @@ public final class GameService {
         if (userName.isEmpty() || password.length() < 4) {
             return new ResultPayload(false, "INVALID_INPUT", "Username required, password min 4 chars.");
         }
-        System.out.print(userName + email);
+        
+        System.out.println("Registering: " + userName + " " + email);
+        
         if (playerDao.isUsernameExist(userName)) {
             return new ResultPayload(false, "DUPLICATE_USERNAME", "Username already exists.");
         }
+        
         Player player = new Player(userName, email, password);
         player.setScore(300);
+        
         try {
             playerDao.register(player);
             ResultPayload response = new ResultPayload(true, "OK", "Registered successfully.");
             response.setJsonPayload(gson.toJson(player));
             return response;
         } catch (SQLException ex) {
-            return new ResultPayload(false, "INVALID_INPUT", "Un expected behavior");
+            ex.printStackTrace();
+            return new ResultPayload(false, "DB_ERROR", "Database error occurred");
         }
     }
 
     public ResultPayload login(RegisterRequest request) {
         String userName = clean(request.getUsername());
         String password = request.getPassword() == null ? "" : request.getPassword();
-        System.out.print("this is the login player :" + request.getPassword());
+        
+        System.out.println("Login attempt: " + userName);
+        
         if (userName.isEmpty() || password.length() < 4) {
             return new ResultPayload(false, "INVALID_INPUT", "Username required, password min 4 chars.");
         }
@@ -87,12 +94,12 @@ public final class GameService {
                 updateStats();
                 ResultPayload response = new ResultPayload(true, "OK", "Login successful.");
                 response.setJsonPayload(gson.toJson(player));
-
                 return response;
             }
 
         } catch (SQLException ex) {
-            return new ResultPayload(false, "INVALID_INPUT", "Un expected behavior");
+            ex.printStackTrace();
+            return new ResultPayload(false, "DB_ERROR", "Database error occurred");
         }
     }
 
@@ -109,8 +116,16 @@ public final class GameService {
             return false;
         }
 
-        System.out.println("Updating state for " + username + " to: " + state);
-        return playerDao.updatePlayerState(username, state);
+        System.out.println("Updating state for " + username + " to: " + state + 
+                " (0=OFFLINE, 1=ONLINE, 2=IN_GAME, 3=WAITING)");
+        
+        boolean result = playerDao.updatePlayerState(username, state);
+        
+        if (result) {
+            updateStats();
+        }
+        
+        return result;
     }
 
     public void setOnStatsChanged(Runnable callback) {
@@ -127,6 +142,7 @@ public final class GameService {
         if (username == null || username.isEmpty()) {
             return false;
         }
+        
         boolean success = playerDao.updatePlayerScore(username, points);
 
         if (success) {
@@ -139,75 +155,149 @@ public final class GameService {
 
     public synchronized void findMatch(ClientSession playerSession) {
         matchmakingQueue.add(playerSession);
+        updatePlayerState(playerSession.getUsername(), 3);
 
         if (matchmakingQueue.size() >= 2) {
             ClientSession player1 = matchmakingQueue.poll();
             ClientSession player2 = matchmakingQueue.poll();
+            
             ActiveGame game = new ActiveGame(player1, player2, false);
             activeGames.put(player1.getUsername(), game);
             activeGames.put(player2.getUsername(), game);
-            player1.send(new NetworkMessage(MessageType.GAME_START, "server", player1.getUsername(), gson.toJsonTree(new GameStartDto(player2.getUsername(), true, false))));
-            player2.send(new NetworkMessage(MessageType.GAME_START, "server", player2.getUsername(), gson.toJsonTree(new GameStartDto(player1.getUsername(), false, false))));
+            
+            updatePlayerState(player1.getUsername(), 2);
+            updatePlayerState(player2.getUsername(), 2);
+            
+            player1.send(new NetworkMessage(
+                    MessageType.GAME_START, 
+                    "server", 
+                    player1.getUsername(), 
+                    gson.toJsonTree(new GameStartDto(player2.getUsername(), true, false))
+            ));
+            
+            player2.send(new NetworkMessage(
+                    MessageType.GAME_START, 
+                    "server", 
+                    player2.getUsername(), 
+                    gson.toJsonTree(new GameStartDto(player1.getUsername(), false, false))
+            ));
+            
+            System.out.println("Match started: " + player1.getUsername() + " vs " + player2.getUsername());
         }
     }
 
     public void handleGameMove(ClientSession session, GameMoveDto move) {
         ActiveGame game = activeGames.get(session.getUsername());
         if (game == null) {
+            System.err.println("No active game found for: " + session.getUsername());
             return;
         }
 
         if (game.makeMove(move.getRow(), move.getColumn(), session.getUsername())) {
             ClientSession opponent = game.getOpponent(session.getUsername());
-            opponent.send(new NetworkMessage(MessageType.UPDATE_BOARD, session.getUsername(), opponent.getUsername(), gson.toJsonTree(move)));
+            
+            if (opponent != null && opponent.isConnected()) {
+                opponent.send(new NetworkMessage(
+                        MessageType.UPDATE_BOARD, 
+                        session.getUsername(), 
+                        opponent.getUsername(), 
+                        gson.toJsonTree(move)
+                ));
+            }
 
             GameEngine gameEngine = game.getGameEngine();
             GameEngine.Player winner = gameEngine.getWinner();
+            
             if (winner != GameEngine.Player.NONE) {
-                session.send(new NetworkMessage(MessageType.GAME_OVER, "server", session.getUsername(), gson.toJsonTree("You Win!")));
-                opponent.send(new NetworkMessage(MessageType.GAME_OVER, "server", opponent.getUsername(), gson.toJsonTree("You Lose!")));
+                session.send(new NetworkMessage(
+                        MessageType.GAME_OVER, 
+                        "server", 
+                        session.getUsername(), 
+                        gson.toJsonTree("You Win!")
+                ));
+                
+                if (opponent != null && opponent.isConnected()) {
+                    opponent.send(new NetworkMessage(
+                            MessageType.GAME_OVER, 
+                            "server", 
+                            opponent.getUsername(), 
+                            gson.toJsonTree("You Lose!")
+                    ));
+                }
+                
                 cleanupGame(game, winner);
+                
             } else if (gameEngine.isBoardFull()) {
-                session.send(new NetworkMessage(MessageType.GAME_OVER, "server", session.getUsername(), gson.toJsonTree("It's a Draw!")));
-                opponent.send(new NetworkMessage(MessageType.GAME_OVER, "server", opponent.getUsername(), gson.toJsonTree("It's a Draw!")));
+                session.send(new NetworkMessage(
+                        MessageType.GAME_OVER, 
+                        "server", 
+                        session.getUsername(), 
+                        gson.toJsonTree("It's a Draw!")
+                ));
+                
+                if (opponent != null && opponent.isConnected()) {
+                    opponent.send(new NetworkMessage(
+                            MessageType.GAME_OVER, 
+                            "server", 
+                            opponent.getUsername(), 
+                            gson.toJsonTree("It's a Draw!")
+                    ));
+                }
+                
                 cleanupGame(game, GameEngine.Player.NONE);
             }
 
         } else {
-            session.send(new NetworkMessage(MessageType.ERROR, "server", session.getUsername(), gson.toJsonTree(new ErrorPayload("INVALID_MOVE", "Invalid move"))));
+            session.send(new NetworkMessage(
+                    MessageType.ERROR, 
+                    "server", 
+                    session.getUsername(), 
+                    gson.toJsonTree(new ErrorPayload("INVALID_MOVE", "Invalid move"))
+            ));
         }
     }
 
     private void cleanupGame(ActiveGame game, GameEngine.Player winner) {
+        String player1 = game.getPlayerX().getUsername();
+        String player2 = game.getPlayerO().getUsername();
         String winnerName = null;
+        
         if (winner == GameEngine.Player.X) {
-            winnerName = game.getPlayerX().getUsername();
-            playerDao.updatePlayerScore(game.getPlayerX().getUsername(), 100);
-            playerDao.updatePlayerScore(game.getPlayerO().getUsername(), -50);
+            winnerName = player1;
+            playerDao.updatePlayerScore(player1, 100);
+            playerDao.updatePlayerScore(player2, -50);
+            System.out.println("Game ended: " + player1 + " wins against " + player2);
+            
         } else if (winner == GameEngine.Player.O) {
-            winnerName = game.getPlayerO().getUsername();
-            playerDao.updatePlayerScore(game.getPlayerO().getUsername(), 100);
-            playerDao.updatePlayerScore(game.getPlayerX().getUsername(), -50);
-        } else { // Draw
-            playerDao.updatePlayerScore(game.getPlayerX().getUsername(), 50);
-            playerDao.updatePlayerScore(game.getPlayerO().getUsername(), 50);
+            winnerName = player2;
+            playerDao.updatePlayerScore(player2, 100);
+            playerDao.updatePlayerScore(player1, -50);
+            System.out.println("Game ended: " + player2 + " wins against " + player1);
+            
+        } else {
+            playerDao.updatePlayerScore(player1, 50);
+            playerDao.updatePlayerScore(player2, 50);
+            System.out.println("Game ended: Draw between " + player1 + " and " + player2);
         }
 
-        gameDao.addGame(game.getPlayerX().getUsername(), game.getPlayerO().getUsername(), winnerName);
+        gameDao.addGame(player1, player2, winnerName);
 
-        playerDao.updatePlayerState(game.getPlayerX().getUsername(), 1); // 1 for Online
-        playerDao.updatePlayerState(game.getPlayerO().getUsername(), 1); // 1 for Online
+        playerDao.updatePlayerState(player1, 1);
+        playerDao.updatePlayerState(player2, 1);
 
-        activeGames.remove(game.getPlayerX().getUsername());
-        activeGames.remove(game.getPlayerO().getUsername());
+        activeGames.remove(player1);
+        activeGames.remove(player2);
 
         updateStats();
     }
 
     public void handleSurrender(ClientSession session) {
         ActiveGame game = activeGames.get(session.getUsername());
+        
         if (game != null) {
-            ClientSession opponent = game.getOpponent(session.getUsername());
+            String surrenderer = session.getUsername();
+            ClientSession opponent = game.getOpponent(surrenderer);
+            
             if (opponent != null && opponent.isConnected()) {
                 opponent.send(new NetworkMessage(
                         MessageType.OPPONENT_LEFT,
@@ -216,33 +306,69 @@ public final class GameService {
                         gson.toJsonTree("Your opponent surrendered. You Win!")
                 ));
             }
-            GameEngine.Player winnerSymbol = (game.getPlayerX() == opponent)
-                    ? GameEngine.Player.X
-                    : GameEngine.Player.O;
+            
+            GameEngine.Player winnerSymbol = (game.getPlayerX().getUsername().equals(surrenderer))
+                    ? GameEngine.Player.O
+                    : GameEngine.Player.X;
 
             cleanupGame(game, winnerSymbol);
-            System.out.println(session.getUsername() + " surrendered.");
-            updateStats();
+            
+            System.out.println(surrenderer + " surrendered to " + 
+                    (opponent != null ? opponent.getUsername() : "disconnected opponent"));
         }
     }
 
     public void handlePlayerDisconnect(ClientSession session) {
-        ActiveGame game = activeGames.get(session.getUsername());
+        String username = session.getUsername();
+        ActiveGame game = activeGames.get(username);
+        
         if (game != null) {
-            ClientSession opponent = game.getOpponent(session.getUsername());
-            opponent.send(new NetworkMessage(MessageType.OPPONENT_LEFT, session.getUsername(), opponent.getUsername(), gson.toJsonTree("Your opponent has disconnected. You win!")));
+            ClientSession opponent = game.getOpponent(username);
+            
+            if (opponent != null && opponent.isConnected()) {
+                opponent.send(new NetworkMessage(
+                        MessageType.OPPONENT_LEFT, 
+                        username, 
+                        opponent.getUsername(), 
+                        gson.toJsonTree("Your opponent has disconnected. You win!")
+                ));
+            }
 
-            GameEngine.Player winner = game.getPlayerX() == opponent ? GameEngine.Player.X : GameEngine.Player.O;
+            GameEngine.Player winner = (game.getPlayerX().getUsername().equals(username)) 
+                    ? GameEngine.Player.O 
+                    : GameEngine.Player.X;
+                    
             cleanupGame(game, winner);
+            
+            System.out.println(username + " disconnected during game");
         }
     }
 
-//    public void startPrivateGame(ClientSession player1, ClientSession player2) {
-//        ActiveGame game = new ActiveGame(player1, player2);
-//        activeGames.put(player1.getUsername(), game);
-//        activeGames.put(player2.getUsername(), game);
-//        System.out.println("Private game started: " + player1.getUsername() + " vs " + player2.getUsername());
-//    }
+    public void startPrivateGame(ClientSession player1, ClientSession player2, boolean isRecorded) {
+        ActiveGame game = new ActiveGame(player1, player2, isRecorded);
+        activeGames.put(player1.getUsername(), game);
+        activeGames.put(player2.getUsername(), game);
+        
+        updatePlayerState(player1.getUsername(), 2);
+        updatePlayerState(player2.getUsername(), 2);
+        
+        player1.send(new NetworkMessage(
+                MessageType.GAME_START, 
+                "server", 
+                player1.getUsername(), 
+                gson.toJsonTree(new GameStartDto(player2.getUsername(), true, isRecorded))
+        ));
+        
+        player2.send(new NetworkMessage(
+                MessageType.GAME_START, 
+                "server", 
+                player2.getUsername(), 
+                gson.toJsonTree(new GameStartDto(player1.getUsername(), false, isRecorded))
+        ));
+        
+        System.out.println("Private game started: " + player1.getUsername() + " vs " + player2.getUsername() + 
+                " (Recorded: " + isRecorded + ")");
+    }
 
     public ResultPayload changePassword(ChangePasswordRequest request) {
         String username = request.getUsername();
@@ -260,12 +386,4 @@ public final class GameService {
             return new ResultPayload(false, "DB_ERROR", "Failed to update password.");
         }
     }
-    public void startPrivateGame(ClientSession player1, ClientSession player2, boolean isRecorded) {
-    ActiveGame game = new ActiveGame(player1, player2, isRecorded);
-    activeGames.put(player1.getUsername(), game);
-    activeGames.put(player2.getUsername(), game);
-    player1.send(new NetworkMessage(MessageType.GAME_START, "server", player1.getUsername(), gson.toJsonTree(new GameStartDto(player2.getUsername(), true, isRecorded))));
-    player2.send(new NetworkMessage(MessageType.GAME_START, "server", player2.getUsername(), gson.toJsonTree(new GameStartDto(player1.getUsername(), false, isRecorded))));
-    System.out.println("Private game started: " + player1.getUsername() + " vs " + player2.getUsername());
-}
 }
