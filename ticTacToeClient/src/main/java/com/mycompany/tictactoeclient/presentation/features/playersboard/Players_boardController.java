@@ -254,12 +254,11 @@ if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
             }
 
             String opponentName = response.getSenderUsername();
-            boolean recordGame = response.isRecordGame();
 
             System.out.println(opponentName + " accepted your invite!");
 
             Platform.runLater(() -> {
-                gameSession.setOnlineSession(opponentName, recordGame, true);
+                gameSession.setOnlineSession(opponentName, true);
                 App.showInfo("Invitation Accepted",
                         opponentName + " accepted your invitation!");
                 navigateToGameBoard();

@@ -65,14 +65,10 @@ public class Invite_popupController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        setupListeners();
         recordCheckBox.selectedProperty().bindBidirectional(
                 RecordingSettings.recordingEnabledProperty()
         );
-    }
-
-    @FXML
-    private void onClickCheckBox(ActionEvent event) {
-        setupListeners();
     }
 
     private void setupListeners() {
@@ -117,7 +113,6 @@ public class Invite_popupController implements Initializable {
         delayTimeline.play();
     }
 
-
     private void sendInviteRequest() {
         boolean recordGame = recordCheckBox.isSelected();
 
@@ -155,7 +150,9 @@ public class Invite_popupController implements Initializable {
     }
 
     private void handleAcceptResponse(NetworkMessage msg) {
-if (responseReceived) return;
+        if (responseReceived) {
+            return;
+        }
         if (!msg.getUsername().equalsIgnoreCase(opponent.getName())) {
             return;
         }
@@ -164,16 +161,15 @@ if (responseReceived) return;
 
         Platform.runLater(() -> {
             InviteResponse response = client.getGson().fromJson(msg.getPayload(), InviteResponse.class);
-            
+
             GameSessionManager.getInstance().setOnlineSession(
-                opponent.getName(), 
-                recordCheckBox.isSelected(),
-                true
+                    opponent.getName(),
+                    true
             );
-            App.showInfo("Invitation Accepted", 
-                opponent.getName() + " accepted your invitation!");
-            
-            closePopup(); 
+            App.showInfo("Invitation Accepted",
+                    opponent.getName() + " accepted your invitation!");
+
+            closePopup();
             try {
                 App.setRoot("game_board");
             } catch (IOException e) {
@@ -184,21 +180,21 @@ if (responseReceived) return;
     }
 
     private void handleDeclineResponse(NetworkMessage msg) {
-if (responseReceived) {
-        return;
-    }
+        if (responseReceived) {
+            return;
+        }
 
-    if (!msg.getUsername().equalsIgnoreCase(opponent.getName())) {
-        return;
-    }
+        if (!msg.getUsername().equalsIgnoreCase(opponent.getName())) {
+            return;
+        }
 
-    responseReceived = true;
-    cleanup();
-    
-    Platform.runLater(() -> {
-        App.showWarning("Invitation Declined", opponent.getName() + " declined your invitation.");
-        closePopup();
-    });
+        responseReceived = true;
+        cleanup();
+
+        Platform.runLater(() -> {
+            App.showWarning("Invitation Declined", opponent.getName() + " declined your invitation.");
+            closePopup();
+        });
     }
 
     private void handleTimeout() {

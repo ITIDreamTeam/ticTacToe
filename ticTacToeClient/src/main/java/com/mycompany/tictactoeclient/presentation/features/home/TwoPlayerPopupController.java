@@ -57,8 +57,7 @@ public class TwoPlayerPopupController implements Initializable {
         String p1 = player1Field.getText().isEmpty() ? "Player 1" : player1Field.getText();
         String p2 = player2Field.getText().isEmpty() ? "Player 2" : player2Field.getText();
 
-        GameSessionManager.getInstance().setLocalPvpSession(p1, p2, recordButton.isSelected());
-        Game_boardController.setGameMode(Game_boardController.GameMode.twoPlayer);
+        GameSessionManager.getInstance().setLocalPvpSession(p1, p2);
 
         stage.close();
         Navigation.navigateTo(Navigation.gameBoardPage);

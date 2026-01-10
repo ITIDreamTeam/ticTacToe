@@ -68,6 +68,7 @@ public class GameEngine {
                         : PlayerType.O;
         if (isRecorded && recordedGame != null) {
             MoveRecord moveRecord = new MoveRecord(row, col, type);
+            System.out.println("Recorded move: " + row + col + type);
             recordedGame.addMove(moveRecord);
         }
         return true;

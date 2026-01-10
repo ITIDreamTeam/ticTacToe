@@ -116,7 +116,6 @@ statusLabel.setText("Accepting invitation...");
             Platform.runLater(() -> {
                 gameSession.setOnlineSession(
                     invite.getSenderUsername(), 
-                    invite.isRecordGame(), 
                     false                       
                 );
                 App.showInfo("Game Starting", 

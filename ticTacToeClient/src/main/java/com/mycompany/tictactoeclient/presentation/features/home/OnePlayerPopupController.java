@@ -61,31 +61,17 @@ public class OnePlayerPopupController implements Initializable {
     }
 
     private void handleStartButton(javafx.event.ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mycompany/tictactoeclient/game_board.fxml"));
-            Parent root = loader.load();
-            Game_boardController gameController = loader.getController();
-
-            GameSession.playerX = session.isLoggedIn() ? session.getUsername() : "Player";
-            GameSession.playerO = "Computer";
-            gameController.setGameMode(Game_boardController.GameMode.vsComputer);
-            gameController.setPlayersName(session.isLoggedIn() ? session.getUsername() : "Player", "Computer");
-            ToggleButton selected = (ToggleButton) difficultyGroup.getSelectedToggle();
-            GameSessionManager.getInstance().setComputerSession(recordButton.isSelected());
-            if (selected == easyButton) {
-                difficulty = GameEngine.gameDifficulty.Easy;
-            } else if (selected == mediumButton) {
-                difficulty = GameEngine.gameDifficulty.Medium;
-            } else if (selected == hardButton) {
-                difficulty = GameEngine.gameDifficulty.Hard;
-            }
-            System.out.println("Starting One Player Game:");
-            System.out.println("Difficulty: " + difficulty);
-            stage.close();
-            Navigation.navigateTo(Navigation.gameBoardPage);
-        } catch (IOException ex) {
-            System.getLogger(OnePlayerPopupController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        ToggleButton selected = (ToggleButton) difficultyGroup.getSelectedToggle();
+        if (selected == easyButton) {
+            difficulty = GameEngine.gameDifficulty.Easy;
+        } else if (selected == mediumButton) {
+            difficulty = GameEngine.gameDifficulty.Medium;
+        } else if (selected == hardButton) {
+            difficulty = GameEngine.gameDifficulty.Hard;
         }
+        GameSessionManager.getInstance().setComputerSession();
+        stage.close();
+        Navigation.navigateTo(Navigation.gameBoardPage);
     }
 
     @FXML

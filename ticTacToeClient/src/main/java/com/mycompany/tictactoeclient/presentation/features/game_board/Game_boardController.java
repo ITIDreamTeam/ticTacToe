@@ -71,19 +71,18 @@ public class Game_boardController implements Initializable {
     public static enum GameMode {
         vsComputer, twoPlayer, withFriend
     };
-    public static GameMode currentMode = GameMode.vsComputer;
-    private GameEngine.Player nextStarter = GameEngine.Player.X;
 
     // Add a pane in your FXML to hold the video, or just pop up a new stage
     // For this example, I assume you might want to show it on top of the board
     // @FXML private StackPane videoContainer; 
-
     private Button[][] buttons = new Button[3][3];
     private GameEngine engine;
     private int xScore = 0;
     private int oScore = 0;
     private Timeline blinkingTimeline;
 
+    public GameMode currentMode;
+    private GameEngine.Player nextStarter = GameEngine.Player.X;
     private GameEngine.Player mySymbol;
     private String opponentName;
 
@@ -94,8 +93,6 @@ public class Game_boardController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         engine = new GameEngine();
-        playerNameX.setText(GameSession.playerX);
-        playerNameO.setText(GameSession.playerO);
 
         linePane.prefWidthProperty().bind(gameGrid.widthProperty());
         linePane.prefHeightProperty().bind(gameGrid.heightProperty());
@@ -111,7 +108,7 @@ public class Game_boardController implements Initializable {
                 gameGrid.add(btn, col, row);
             }
         }
-        engine.difficulty = OnePlayerPopupController.difficulty;
+        this.currentMode = sessionManager.getGameMode();
 
         Platform.runLater(() -> {
             RecordingSettings.recordingEnabledProperty()
@@ -121,10 +118,20 @@ public class Game_boardController implements Initializable {
             updateRecordingState(RecordingSettings.isRecordingEnabled());
         });
 
+        if (this.currentMode == null) {
+            this.currentMode = GameMode.vsComputer;
+        }
+
+        if (this.currentMode == GameMode.withFriend) {
+            setupOnlineGame();
+        } else {
+            setupLocalOrComputerGame();
+        }
+
         RecordedGameDetails recordedGameDetails = App.getRecordedGameDetails();
         if (recordedGameDetails != null) {
             startReplay(recordedGameDetails);
-            App.setRecordedGameDetails(null); // Clear after use
+            App.setRecordedGameDetails(null);
         } else {
             startNewGame();
         }
@@ -204,7 +211,7 @@ public class Game_boardController implements Initializable {
         engine.resetGame(nextStarter);
         if (currentMode == GameMode.withFriend) {
             setupOnlineGame();
-        } else { // Covers vsComputer and twoPlayer
+        } else {
             setupLocalOrComputerGame();
         }
     }
@@ -450,7 +457,11 @@ public class Game_boardController implements Initializable {
     @FXML
     private void onBackClicked(ActionEvent event) {
         if (currentMode == GameMode.withFriend && !engine.isGameOver()) {
-            try { gameApi.sendSurrender(); } catch (Exception e) { e.printStackTrace(); }
+            try {
+                gameApi.sendSurrender();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         quitGame();
     }
@@ -534,9 +545,5 @@ public class Game_boardController implements Initializable {
             session.setScore(currentScore + pointsToAdd);
             System.out.println("Local Session Updated: New Score = " + session.getScore());
         }
-    }
-    
-    public static void setGameMode(GameMode mode) {
-        currentMode = mode;
     }
 }

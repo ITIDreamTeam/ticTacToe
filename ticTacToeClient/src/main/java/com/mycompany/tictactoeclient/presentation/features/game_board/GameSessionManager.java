@@ -16,7 +16,6 @@ public class GameSessionManager {
     
     private String opponentUsername;
     private String userName;
-    private boolean isRecordingGame;
     private boolean isHost; 
     private GameMode gameMode;     
     
@@ -26,26 +25,23 @@ public class GameSessionManager {
         return INSTANCE;
     }
     
-    public void setOnlineSession(String opponentUsername, boolean isRecordingGame, boolean isHost) {
+    public void setOnlineSession(String opponentUsername, boolean isHost) {
         this.opponentUsername = opponentUsername;
-        this.isRecordingGame = isRecordingGame;
         this.isHost = isHost;
         this.userName = UserSession.getInstance().getUsername();
         this.gameMode = GameMode.withFriend; 
     }
 
-    public void setComputerSession(boolean isRecordingGame) {
+    public void setComputerSession() {
         this.opponentUsername = "Computer";
         this.userName = UserSession.getInstance().isLoggedIn() ? UserSession.getInstance().getUsername() : "Player";
-        this.isRecordingGame = isRecordingGame;
         this.isHost = true; 
         this.gameMode = GameMode.vsComputer;
     }
 
-    public void setLocalPvpSession(String player1, String player2, boolean isRecordingGame) {
+    public void setLocalPvpSession(String player1, String player2) {
         this.userName = player1;   
         this.opponentUsername = player2; 
-        this.isRecordingGame = isRecordingGame;
         this.isHost = true;
         this.gameMode = GameMode.twoPlayer;
     }
@@ -53,7 +49,6 @@ public class GameSessionManager {
     
     public String getOpponentName() { return opponentUsername; }
     public String getUserName() { return userName; }
-    public boolean isRecordingGame() { return isRecordingGame; }
     public GameMode getGameMode() { return gameMode; }
     
     public boolean isMyTurnFirst() {
@@ -67,7 +62,6 @@ public class GameSessionManager {
     public void clearSession() {
         this.opponentUsername = null;
         this.userName = null;
-        this.isRecordingGame = false;
         this.isHost = false;
         this.gameMode = null;
     }
