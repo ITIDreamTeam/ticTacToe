@@ -11,61 +11,71 @@ import com.mycompany.tictactoeclient.data.models.Player;
  * @author yasse
  */
 public final class UserSession {
-     private static final UserSession INSTANCE = new UserSession();
-    
-    private volatile String username ;
+
+    private static final UserSession INSTANCE = new UserSession();
+
+    private volatile String username;
     private volatile String email;
     private volatile int score;
     private volatile boolean isOnline;
-    
-    private UserSession() {}
-    
-    public static UserSession getInstance() { 
-        return INSTANCE; 
+
+    private UserSession() {
     }
-    
-    public boolean isLoggedIn() { 
-        return username != null; 
+
+    public static UserSession getInstance() {
+        return INSTANCE;
     }
-    
-    public String getUsername() { 
-        return username; 
+
+    public boolean isLoggedIn() {
+        return username != null;
     }
-    
+
+    public String getUsername() {
+        return username;
+    }
+
     public String getEmail() {
         return email;
     }
-    
+
     public int getScore() {
         return score;
     }
-    
-    public void setUsername(String username) { 
-        this.username = username; 
+
+    public void setUsername(String username) {
+        this.username = username;
     }
-    
+
     public void setEmail(String email) {
         this.email = email;
     }
-    
+
     public void setScore(int score) {
-        this.score=score;
+        this.score = score;
     }
-    
+
     public boolean isOnline() {
         return isOnline && NetworkClient.getInstance().isConnected();
     }
-    
+
     public void login(String username, String email) {
         this.username = username;
         this.email = email;
         this.isOnline = true;
     }
-        public void login(Player player) {
+
+    public void login(Player player) {
         this.username = player.getName();
         this.email = player.getEmail();
         this.score = player.getScore();
         this.isOnline = true;
+    }
+
+    public void clearSession() {
+        this.username = null;
+        this.email = null;
+        this.score = 0;
+        this.isOnline = false;
     }
 
     public void logout() {
@@ -76,19 +86,20 @@ public final class UserSession {
         if (client.isConnected()) {
             try {
                 NetworkMessage logoutMsg = new NetworkMessage(
-                    MessageType.DISCONNECT,
-                    username,
-                    "Server",
-                    null
+                        MessageType.DISCONNECT,
+                        username,
+                        "Server",
+                        null
                 );
                 client.send(logoutMsg);
-            } catch (Exception ignored) {}
-            
+            } catch (Exception ignored) {
+            }
+
             client.disconnect();
         }
         client.clearListeners();
     }
-    
+
     public void setOffline() {
         this.isOnline = false;
     }

@@ -53,22 +53,23 @@ public class App extends Application {
         NetworkClient client = NetworkClient.getInstance();
         Gson gson = client.getGson();
 
-        client.setGlobalErrorHandler(errorMsg ->
-                Platform.runLater(() -> showError("Server Error", errorMsg))
-        );
+    client.setGlobalErrorHandler(errorMsg ->
+            Platform.runLater(() -> showError("Server Error", errorMsg))
+    );
 
-        client.setOnDisconnected(() ->
-                Platform.runLater(() -> {
-                    UserSession.getInstance().setOffline();
-                    showWarning("Connection Lost",
-                            "Connection to server was lost. You have been logged out.");
-                    try {
-                        setRoot("home");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                })
-        );
+    client.setOnDisconnected(() ->
+            Platform.runLater(() -> {
+                UserSession.getInstance().clearSession();
+                showWarning("Connection Lost",
+                        "Connection to server was lost. You have been logged out.");
+                try {
+                    setRoot("home"); 
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            })
+    );
+
     }
 
     @Override
