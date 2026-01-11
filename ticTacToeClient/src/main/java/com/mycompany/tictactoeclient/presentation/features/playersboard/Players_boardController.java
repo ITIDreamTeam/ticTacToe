@@ -73,15 +73,15 @@ public class Players_boardController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         try {
             client.send(new NetworkMessage(
-                MessageType.UPDATE_STATUS,
-                UserSession.getInstance().getUsername(),
-                "Server",
-                client.getGson().toJsonTree("ONLINE")
+                    MessageType.UPDATE_STATUS,
+                    UserSession.getInstance().getUsername(),
+                    "Server",
+                    client.getGson().toJsonTree("ONLINE")
             ));
         } catch (Exception e) {
             System.err.println("Failed to update status to ONLINE");
         }
-        
+
         setupListView();
         setupSearchFilter();
         setupAllListeners();
@@ -110,7 +110,7 @@ public class Players_boardController implements Initializable {
     private void setupAllListeners() {
         onlinePlayersListener = this::handleOnlinePlayersUpdate;
         client.on(MessageType.ONLINE_PLAYERS_UPDATE, onlinePlayersListener);
-        
+
         receiveInviteListener = this::handleReceiveInvite;
         client.on(MessageType.SEND_REQUEST, receiveInviteListener);
     }
@@ -118,7 +118,7 @@ public class Players_boardController implements Initializable {
     public void cleanup() {
         client.off(MessageType.ONLINE_PLAYERS_UPDATE, onlinePlayersListener);
         client.off(MessageType.SEND_REQUEST, receiveInviteListener);
-        
+
         if (currentInvitePopup != null && currentInvitePopup.isShowing()) {
             currentInvitePopup.close();
             currentInvitePopup = null;
@@ -206,7 +206,7 @@ public class Players_boardController implements Initializable {
             System.out.println("Popup already showing, ignoring new invite");
             return;
         }
-        
+
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/com/mycompany/tictactoeclient/request_popup.fxml")
@@ -223,7 +223,7 @@ public class Players_boardController implements Initializable {
             if (playersListView.getScene() != null && playersListView.getScene().getWindow() != null) {
                 Stage ownerStage = (Stage) playersListView.getScene().getWindow();
                 popupStage.initOwner(ownerStage);
-                
+
                 javafx.beans.value.ChangeListener<Number> centerListener = (obs, oldVal, newVal) -> {
                     if (popupStage.isShowing() && !Double.isNaN(popupStage.getWidth())) {
                         double x = ownerStage.getX() + (ownerStage.getWidth() - popupStage.getWidth()) / 2;
@@ -235,7 +235,7 @@ public class Players_boardController implements Initializable {
 
                 ownerStage.xProperty().addListener(centerListener);
                 ownerStage.yProperty().addListener(centerListener);
-                
+
                 popupStage.setOnShown(e -> {
                     centerListener.changed(null, null, null);
                 });
@@ -248,7 +248,7 @@ public class Players_boardController implements Initializable {
             }
 
             currentInvitePopup = popupStage;
-            
+
             popupController.setStage(popupStage);
             popupController.setInviteData(invite);
 

@@ -50,7 +50,7 @@ public class HomeController implements Initializable {
                 client.getGson().toJsonTree("WAITING")
             ));
         } catch (Exception e) {
-            System.err.println("Failed to revert status to WAITING");
+            System.err.println("Failed to update status to WAITING");
         }
         setupButtonHoverEffects();
         updateUI();

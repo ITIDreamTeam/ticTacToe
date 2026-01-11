@@ -412,8 +412,9 @@ public final class MessageRouter {
         if(newStatus.equals("WAITING")) stateValue = 3; 
         if(newStatus.equals("IN_GAME")) stateValue = 2;
         if(newStatus.equals("ONLINE"))  stateValue = 1;
-
+        
         gameService.updatePlayerState(msg.getUsername(), stateValue);
         gameService.updateStats();
+        broadcastOnlinePlayers();
     }
 }
