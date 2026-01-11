@@ -33,11 +33,9 @@ public class NetworkClient {
     private BufferedWriter out;
     private volatile boolean running;
 
-//    private String host = "192.168.137.1";
-    private String host = "127.0.0.1";
-    private int port = 5005;
+    private String host ;
+    private int port ;
 
-    // Global handlers
     private Consumer<String> globalErrorHandler;
     private Runnable onDisconnected;
 
@@ -49,9 +47,8 @@ public class NetworkClient {
     }
 
     public void configure(String host, int port) {
-//        this.host = "192.168.137.1";
         this.host = host;
-        this.port = 5005;
+        this.port = port;
     }
 
     public boolean isConnected() {

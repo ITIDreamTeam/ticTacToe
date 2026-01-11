@@ -113,9 +113,7 @@ public class LoginController implements Initializable {
 
         new Thread(() -> {
             try {
-                client.configure("127.0.0.1", 5005);
                 client.connect();
-
                 RegisterRequest req = new RegisterRequest(username, null, password);
                 NetworkMessage msg = new NetworkMessage(
                         MessageType.LOGIN,

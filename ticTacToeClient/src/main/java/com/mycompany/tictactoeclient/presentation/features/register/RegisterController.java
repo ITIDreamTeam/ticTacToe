@@ -192,7 +192,6 @@ public class RegisterController implements Initializable {
     ResultPayload result = client.getGson().fromJson(msg.getPayload(), ResultPayload.class);
     
     if (result.isSuccess()) {
-        // 1. First, store the player data in the session
         if (result.getJsonPayload() != null && !result.getJsonPayload().toString().isEmpty()) {
             Player player = client.getGson().fromJson(result.getJsonPayload(), Player.class);
             session.login(player);
@@ -205,9 +204,6 @@ public class RegisterController implements Initializable {
             UserSession.getInstance().setUsername(username);
             session.login(username, email);
         }
-
-        // 2. NOW notify the server to set state to WAITING
-        // This ensures session.getUsername() is not null
         try {
             client.send(new NetworkMessage(
                 MessageType.UPDATE_STATUS,

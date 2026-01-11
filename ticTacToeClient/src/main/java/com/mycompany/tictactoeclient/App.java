@@ -15,6 +15,7 @@ import java.util.Optional;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
 
 public class App extends Application {
 
@@ -39,6 +40,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        askForServerIp();
         primaryStage = stage;
         scene = new Scene(loadFXML("home"), 640, 480);
         stage.setScene(scene);
@@ -46,6 +48,19 @@ public class App extends Application {
         stage.setTitle("Tic Tac Toe Online");
         stage.setOnCloseRequest(e -> handleAppClose());
         stage.show();
+    }
+private void askForServerIp() {
+        TextInputDialog dialog = new TextInputDialog("127.0.0.1"); // Default value
+        dialog.setTitle("Server Configuration");
+        dialog.setHeaderText("Connect to Game Server");
+        dialog.setContentText("Please enter the Server IP Address:");
+        Optional<String> result = dialog.showAndWait();
+        String ipAddress = result.orElse("127.0.0.1");
+        if (ipAddress.trim().isEmpty()) {
+            ipAddress = "127.0.0.1";
+        }
+        NetworkClient.getInstance().configure(ipAddress, 5005);
+        System.out.println("Client configured to connect to: " + ipAddress);
     }
 
     @Override
