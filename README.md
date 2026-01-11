@@ -107,6 +107,36 @@ CREATE TABLE GAME (
 - NetBeans private user files
 - Derby database directories/files
 
+# Tic-Tac-Toe Network Game
+
+## Team Members
+1. Yassen
+2. Nadin
+3. Basmala
+4. Mina
+
+## How to Run the Project
+### Prerequisites
+- Java 23.0.2 installed.
+- Apache Derby Database running on port 1527.
+- Database named `ticTacToe` created.
+
+### Steps
+1. **Database:** Run the script provided in `database/tables.txt` to create the tables.
+2. **Server:**
+   - Open terminal in `Executables` folder.
+   - Run: `java -jar tictactoe-server.jar`
+3. **Client:**
+   - Open terminal in `Executables` folder.
+   - Run: `java -jar tictactoe-client.jar`
+   - (If prompted, enter the Server IP address).
+
+## Project Features
+- User Authentication (Login/Register).
+- Real-time list of online players.
+- Game invitation system.
+- Live Tic-Tac-Toe gameplay with score tracking.
+
 ---
 
 ## 7) Quick Start Checklist (new teammate)
