@@ -38,14 +38,6 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </TextField>
-                        <Button fx:id="usernameEditIconBtn" mnemonicParsing="false" onAction="#onEditUsername" styleClass="icon-button">
-                           <graphic>
-                              <ImageView fx:id="usernameEditIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../../icons/Edit-20.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic></Button>
                      </children>
                   </HBox>
                   <Label prefHeight="26.0" prefWidth="150.0" text="Email" />
@@ -56,14 +48,6 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </TextField>
-                        <Button fx:id="emailEditIconBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onEditEmail" styleClass="icon-button">
-                           <graphic>
-                              <ImageView fx:id="emailEditIcon" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../../icons/Edit-20.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic></Button>
                      </children>
                   </HBox>
                   <Label text="Score" />
@@ -78,7 +62,7 @@
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                      <children>
                         <Label prefWidth="200.0" text="Recorded games" />
-                        <Button fx:id="viewRecordedGamesBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onViewRecordedGames" styleClass="icon-button">
+                        <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onViewRecordedGames" styleClass="icon-button">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
